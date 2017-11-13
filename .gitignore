@@ -1,0 +1,5 @@
+# Optional npm cache directory
+.npm
+
+# bower
+assets/libs

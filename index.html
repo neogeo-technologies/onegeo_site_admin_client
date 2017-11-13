@@ -1,0 +1,2730 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <script>;window.isMobile=(function(a){if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))){return true;}else{return false;};})(navigator.userAgent||navigator.vendor||window.opera);</script>
+        <script src="libs/jquery/dist/jquery.min.js"></script>
+        <script src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="libs/editablegrid/editablegrid.js"></script>
+        <script src="libs/editablegrid/editablegrid_renderers.js"></script>
+        <script src="libs/editablegrid/editablegrid_editors.js"></script>
+        <script src="libs/editablegrid/editablegrid_validators.js"></script>
+        <script src="libs/editablegrid/editablegrid_utils.js"></script>
+        <script src="libs/editablegrid/editablegrid_charts.js"></script>
+        <script src="libs/moment/min/moment-with-locales.min.js"></script>
+        <script src="js/jquery.sortable.js"></script>  <!-- deprecated -->
+        <script src="js/utils.js"></script>
+        <script src="js/main.js"></script>
+        <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="libs/editablegrid/editablegrid.css"/>
+        <link rel="stylesheet" href="styles/default.css"/>
+    </head>
+    <body>
+
+        <!-- START MODALS -->
+        <div id="modal-add-source" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Ajouter une source de données</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Veuillez indiquer/sélectionner l'URI de la source de données.</p>
+                        <form>
+                            <div class="form-group">
+                                <input list="source-options" id="source-uri" class="form-control" />
+                                <datalist id="source-options"></datalist>
+                            </div>
+                            <div class="form-group">
+                                <p>Ainsi que son type.</p>
+                                <div class="form-group">
+                                    <select id="source-mode" class="form-control"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <p>Puis indiquer un nom.</p>
+                                <input type="text" class="form-control" id="source-name">
+                            </div>
+                        </form>
+                        <button type="button" id="confirm-add-source" class="btn btn-default btn-block">Ajouter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-del-source" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Êtes-vous absolument sûr ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action est irreversible et supprimera <strong>définitivement</strong> les contextes d'indexation et configurations associés à cette source.</p>
+                        <form>
+                            <div class="form-group">
+                                <p>Pour confirmer, veuillez réécrire le nom de la source à supprimer.</p>
+                                <input type="text" class="form-control" id="control-source-name" placeholder="URI de la source à supprimer">
+                            </div>
+                        </form>
+                        <button type="button" id="confirm-del-source" class="btn btn-danger btn-block">Oui, supprimer définitivement cette source de données</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-add-context" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Générer le contexte d'indexation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action permet de générer un contexte d'indexation à partir de la ressource de données sélectionnée.</p>
+                        <p>Une ressource ne peut être associés qu'à un seul contexte d'indexation.</p>
+                        <div align="right">
+                            <form class="form-inline">
+                                <input type="text" class="form-control" id="context-name" placeholder="Nom">
+                                <button type="button" id="confirm-add-context" class="btn btn-default">Créer <span class="glyphicon glyphicon-send"></span></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-del-context" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Êtes-vous absolument sûr ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action est irreversible et supprimera <strong>définitivement</strong> le contexte sélectionné.</p>
+                        <form>
+                            <div class="form-group">
+                                <p>Pour confirmer, veuillez réécrire le nom du contexte.</p>
+                                <input type="text" class="form-control" id="control-context-name">
+                            </div>
+                        </form>
+                        <button type="button" id="confirm-del-context" class="btn btn-danger btn-block">Oui, détruire définitivement ce contexte.</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-add-analyzer" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Créer un nouvel analyseur</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action permet de générer un analyseur d'indexation et de recherche.</p>
+                        <div align="right">
+                            <form class="form-inline">
+                                <input type="text" class="form-control" id="analyzer-name" placeholder="Nom">
+                                <button type="button" id="confirm-add-analyzer" class="btn btn-default">Créer <span class="glyphicon glyphicon-send"></span></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-del-analyzer" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Êtes-vous absolument sûr ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action est irreversible et supprimera <strong>définitivement</strong> l'analyseur.</p>
+                        <form>
+                            <div class="form-group">
+                                <p>Pour confirmer, veuillez réécrire le nom de l'analyseur.</p>
+                                <input type="text" class="form-control" id="control-analyzer-name">
+                            </div>
+                        </form>
+                        <button type="button" id="confirm-del-analyzer" class="btn btn-danger btn-block">Oui, supprimer définitivement l'analyseur</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-add-tokenfilter" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Créer un nouveau <i>token-filter</i></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action permet de générer un <i>token-filter</i>.</p>
+                        <div align="right">
+                            <form class="form-inline">
+                                <input type="text" class="form-control" id="tokenfilter-name" placeholder="Nom">
+                                <button type="button" id="confirm-add-tokenfilter" class="btn btn-default">Créer <span class="glyphicon glyphicon-send"></span></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-del-tokenfilter" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Êtes-vous absolument sûr ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action est irreversible et supprimera <strong>définitivement</strong> le <i>token-filter</i> selectionné.</p>
+                        <form>
+                            <div class="form-group">
+                                <p>Pour confirmer, veuillez réécrire le nom du <i>token-filter</i>.</p>
+                                <input type="text" class="form-control" id="control-tokenfilter-name">
+                            </div>
+                        </form>
+                        <button type="button" id="confirm-del-tokenfilter" class="btn btn-danger btn-block">Oui, supprimer définitivement le <i>token-filter</i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-add-tokenizer" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Créer un nouveau tokenizer</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action permet de générer un tokenizer.</p>
+                        <div align="right">
+                            <form class="form-inline">
+                                <input type="text" class="form-control" id="tokenizer-name" placeholder="Nom">
+                                <button type="button" id="confirm-add-tokenizer" class="btn btn-default">Créer <span class="glyphicon glyphicon-send"></span></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-del-tokenizer" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Êtes-vous absolument sûr ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action est irreversible et supprimera <strong>définitivement</strong> le tokenizer selectionné.</p>
+                        <form>
+                            <div class="form-group">
+                                <p>Pour confirmer, veuillez réécrire le nom du tokenizer.</p>
+                                <input type="text" class="form-control" id="control-tokenizer-name">
+                            </div>
+                        </form>
+                        <button type="button" id="confirm-del-tokenizer" class="btn btn-danger btn-block">Oui, supprimer définitivement le <i>tokenizer</i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-add-model" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Créer un nouveau service de recherche</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action permet de générer un nouveau service de recherche.</p>
+                        <div align="right">
+                            <form class="form-inline">
+                                <input type="text" class="form-control" id="model-name" placeholder="Nom">
+                                <button type="button" id="confirm-add-model" class="btn btn-default">Créer <span class="glyphicon glyphicon-send"></span></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-del-model" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Êtes-vous absolument sûr ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette action est irreversible et supprimera <strong>définitivement</strong> le service de recherche selectionné.</p>
+                        <form>
+                            <div class="form-group">
+                                <p>Pour confirmer, veuillez réécrire le nom du service de recherche.</p>
+                                <input type="text" class="form-control" id="control-model-name">
+                            </div>
+                        </form>
+                        <button type="button" id="confirm-del-model" class="btn btn-danger btn-block">Oui, supprimer définitivement le service de recherche</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-error" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal-success" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END MODALS -->
+
+        <!-- START HEADER -->
+        <div class="page-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-offset-0 col-md-12">
+                        <span class="title">Site d'administration de Onegeo</span>
+                        <div class="btn-group login">
+                            <button type="button" class="btn btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" id="log-out">Se déconnecter</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END HEADER -->
+
+        <!-- START MAIN CONTAINER -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-offset-0 col-md-12">
+                    <ul id="menu" class="nav nav-default" role="tablist">
+                        <li role="presentation">
+                            <a href="#indices" aria-controls="indices" role="tab" data-toggle="tab">Profils d'indexation</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#profiles" aria-controls="profiles" role="tab" data-toggle="tab">Profils de recherche</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#analysis" aria-controls="analysis" role="tab" data-toggle="tab">Profils d'analyses</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="main-container">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-offset-0 col-md-12">
+                        <div class="tab-content">
+
+                            <!-- PROFILS D'INDEXATION -->
+                            <div role="tabpanel" class="tab-pane fade in active" id="indices">
+
+                                <div id="sources-container">
+                                    <h4>Source(s) de données</h4>
+                                    <br />
+                                    <div id="table-sources" class="table-responsive"></div>
+                                    <nav aria-label="Page navigation" style="text-align: center;">
+                                        <ul id="table-sources-paginator" class="pagination pagination-sm"></ul>
+                                    </nav>
+                                    <div align="right">
+                                        <button type="button" id="del-source" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-del-source">Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                        <button type="button" id="add-source" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-add-source">Ajouter</button>
+                                    </div>
+                                </div>
+
+                                <div id="resources-container">
+                                    <hr />
+                                    <h4>Ressource(s) disponible(s) pour la source de données sélectionnée</h4>
+                                    <br />
+                                    <div id="table-resources" class="table-responsive"></div>
+                                    <nav aria-label="Page navigation" style="text-align: center;">
+                                        <ul id="table-resources-paginator" class="pagination pagination-sm"></ul>
+                                    </nav>
+                                </div>
+
+                                <div id="context-container">
+                                    <hr />
+                                    <h4>Configuration du profil d'indexation  <strong id="context-label"></strong></h4>
+                                    <br />
+                                    <div class="alert" role="alert" id="tasks-info"></div>
+                                    <br />
+                                    <form class="form-inline">
+                                        <div class="form-group">
+                                            <label for="reindex-frequency">Fréquence de mise à jour de l'index</label>
+                                            <select id="reindex-frequency" class="form-control">
+                                                <option value="daily">Tous les jours</option>
+                                                <option value="weekly">Toutes les semaines</option>
+                                                <option value="monthly">Tous les mois</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                    <br />
+                                    <div id="table-context-properties" class="table-responsive"></div>
+                                    <nav aria-label="Page navigation" style="text-align: center;">
+                                        <ul id="table-context-paginator" class="pagination pagination-sm"></ul>
+                                    </nav>
+                                    <div align="right">
+                                        <button type="button" id="del-context" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-del-context">Détruire <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sauvegarder <span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="#" id="update-context">Sauvegarder la configuration</a></li>
+                                                <li><a href="#" id="update-context-force-rebuild">Indexer les données</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PROFILS DE RECHERCHE -->
+                            <div role="tabpanel" class="tab-pane fade" id="profiles">
+
+                                <div id="models-container">
+                                    <h4>Profil(s) de recherche</h4>
+                                    <br />
+                                    <div id="table-models" class="table-responsive"></div>
+                                    <nav aria-label="Page navigation" style="text-align: center;">
+                                        <ul id="table-models-paginator" class="pagination pagination-sm"></ul>
+                                    </nav>
+                                    <div align="right">
+                                        <button type="button" id="del-model" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-del-model">Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                        <button type="button" id="add-model" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-add-model">Ajouter</button>
+                                    </div>
+                                </div>
+
+                                <div id="model-properties">
+                                    <hr />
+                                    <h4>Configuration du profil de recherche</h4>
+                                    <br />
+                                    <form>
+                                        <div class="form-group">
+                                            <label class="control-label">Liste des contextes d'indexation ajoutés à la recherche</label>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <ul id="chosen-contexts" class="connected list-chosen grabbable"></ul>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <ul id="choice-contexts" class="connected list-choice grabbable"></ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <label class="control-label" for="table-model-qs">Liste des paramètres de la chaîne de recherche</label>
+                                        <div id="table-model-qs" class="table-responsive"></div>
+
+                                        <div class="form-group">
+                                            <label for="model-config-json">Définition du modèle de requête<a class="btn btn-link"><span class="glyphicon glyphicon-info-sign"></span></a> </label>
+                                            <textarea class="form-control" id="model-config-json" rows="24"></textarea>
+                                        </div>
+                                        <div class="form-group" align="right">
+                                            <button type="button" id="update-model" class="btn btn-sm btn-default">Sauvegarder les modifications</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- PROFILS D'ANALYSE -->
+                            <div role="tabpanel" class="tab-pane fade" id="analysis">
+                                <h4>Configuration des profils d'analyse</h4>
+                                <hr />
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <ul class="nav nav-pills nav-stacked">
+                                            <li role="presentation">
+                                                <a href="#analyzers" aria-controls="analyzers" role="tab" data-toggle="tab">Analyzers</a>
+                                            </li>
+                                            <li role="presentation">
+                                                <a href="#tokenizers" aria-controls="tokenizers" role="tab" data-toggle="tab">Tokenizers</a>
+                                            </li>
+                                            <li role="presentation">
+                                                <a href="#tokenfilters" aria-controls="filters" role="tab" data-toggle="tab">Token-Filters</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="tab-content">
+
+                                            <!-- TOKENIZERS -->
+                                            <div role="tabpanel" class="tab-pane fade" id="tokenizers">
+                                                <div id="tokenizers-container">
+                                                    <div id="table-tokenizers" class="table-responsive"></div>
+                                                    <nav aria-label="Page navigation" style="text-align: center;">
+                                                        <ul id="table-tokenizers-paginator" class="pagination pagination-sm"></ul>
+                                                    </nav>
+                                                    <div align="right">
+                                                        <button type="button" id="del-tokenizer" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-del-tokenizer">Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                                        <button type="button" id="add-tokenizer" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-add-tokenizer">Ajouter</button>
+                                                    </div>
+                                                </div>
+                                                <div id="tokenizer-properties">
+                                                    <hr />
+                                                    <h4>Définition du <em>tokenizer</em> sélectionné</h4>
+                                                    <br />
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <textarea class="form-control" id="tokenizer-config-json" rows="12"></textarea>
+                                                        </div>
+                                                        <div class="form-group" align="right">
+                                                            <button type="button" id="update-tokenizer" class="btn btn-sm btn-default">Sauvegarder les modifications</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <!-- TOKEN FILTERS -->
+                                            <div role="tabpanel" class="tab-pane fade" id="tokenfilters">
+                                                <div id="tokenfilters-container">
+                                                    <div id="table-tokenfilters" class="table-responsive"></div>
+                                                    <nav aria-label="Page navigation" style="text-align: center;">
+                                                        <ul id="table-tokenfilters-paginator" class="pagination pagination-sm"></ul>
+                                                    </nav>
+                                                    <div align="right">
+                                                        <button type="button" id="del-tokenfilter" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-del-tokenfilter">Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                                        <button type="button" id="add-tokenfilter" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-add-tokenfilter">Ajouter</button>
+                                                    </div>
+                                                </div>
+                                                <div id="tokenfilter-properties">
+                                                    <hr />
+                                                    <h4>Définition du filtre sélectionné</h4>
+                                                    <br />
+                                                    <form>
+                                                        <div class="form-group">
+                                                            <textarea class="form-control" id="tokenfilter-config-json" rows="12"></textarea>
+                                                        </div>
+                                                        <div class="form-group" align="right">
+                                                            <button type="button" id="update-tokenfilter" class="btn btn-sm btn-default">Sauvegarder les modifications</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <!-- ANALYZERS -->
+                                            <div role="tabpanel" class="tab-pane fade" id="analyzers">
+                                                <div id="analyzers-container">
+                                                    <div id="table-analyzers" class="table-responsive"></div>
+                                                    <nav aria-label="Page navigation" style="text-align: center;">
+                                                        <ul id="table-analyzers-paginator" class="pagination pagination-sm"></ul>
+                                                    </nav>
+                                                    <div class="form-group" align="right">
+                                                        <button type="button" id="del-analyzer" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#modal-del-analyzer">Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                                        <button type="button" id="add-analyzer" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-add-analyzer">Ajouter</button>
+                                                    </div>
+                                                </div>
+                                                <div id="analyzers-properties">
+                                                    <hr />
+                                                    <h4>Propriétés de l'analyseur sélectionné</h4>
+                                                    <br />
+                                                    <form class="form-horizontal">
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="choice-tokenizer"><i>Tokenizer</i></label>
+                                                            <select id="choice-tokenizer" class="form-control"></select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label" for="chosen-filters"><i>Token-filters</i></label>
+                                                            <div class="row">
+                                                                <div class="col-sm-6">
+                                                                    <ul id="chosen-filters" class="connected list-chosen grabbable"></ul>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <ul id="choice-filters" class="connected list-choice grabbable"></ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!--
+                                                        <div class="form-group">
+                                                            <textarea class="form-control" id="analyzer-config-json" rows="12"></textarea>
+                                                        </div>
+                                                        -->
+                                                        <div align="right">
+                                                            <button type="button" id="update-analyzer" class="btn btn-sm btn-default">Sauvegarder les modifications</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+
+let DATE_FORMAT = "dddd Do MMMM YYYY à HH:mm:ss",
+
+    API_BASE_URL = window.location.origin + '/onegeo/api/',
+
+    ERROR,
+    SUCCESS,
+
+    SOURCES = [],
+    RESOURCES = [],
+    CONTEXTS = [],
+    CONTEXT_PROPERTIES = [],
+    MODELS = [],
+    TOKENIZERS = [],
+    TOKEN_FILTERS = [],
+    ANALYZERS = [],
+
+    CURRENT_SOURCE,
+    CURRENT_SOURCE_PK,
+
+    CURRENT_RESOURCE,
+    CURRENT_RESOURCE_PK,
+
+    CURRENT_CONTEXT,
+    CURRENT_CONTEXT_PK,
+
+    CURRENT_MODEL,
+    CURRENT_MODEL_PK,
+
+    CURRENT_TOKENIZER,
+    CURRENT_TOKENIZER_PK,
+
+    CURRENT_FILTER,
+    CURRENT_FILTER_PK,
+
+    CURRENT_ANALYZER,
+    CURRENT_ANALYZER_PK,
+
+    GRID_CLASS_NAME_PROPERTY = 'table table-striped table-bordered table-hover table-condensed',
+
+    SOURCES_CONTAINER = 'table-sources',
+    RESOURCES_CONTAINER = 'table-resources',
+    CONTEXTS_CONTAINER = 'table-contexts',
+    CONTEXT_PROPERTIES_CONTAINER = 'table-context-properties',
+    MODELS_CONTAINER = 'table-models',
+	MODEL_QS_CONTAINER = 'table-model-qs',
+    TOKENIZERS_CONTAINER = 'table-tokenizers',
+    FILTERS_CONTAINER = 'table-tokenfilters',
+    ANALYZERS_CONTAINER = 'table-analyzers',
+
+    SOURCE_METADATA = [
+        {
+            name: 'name',
+            label: 'Nom',
+            editable: false,
+            datatype: 'string'
+        }, {
+            name: 'mode',
+            label: 'Type de source',
+            editable: false,
+            datatype: 'string'
+        }, {
+            name: 'uri',
+            label: 'URI de la source de données',
+            editable: false,
+            datatype: 'url'
+        }
+    ],
+    RESOURCE_METADATA = [
+        {
+            name: 'name',
+            label: 'Nom de la ressource',
+            editable: false,
+            datatype: 'string'
+        }, {
+            name: 'context',
+            label: "Contexte d'indexation",
+            editable: false,
+            datatype: 'html'
+        }
+    ],
+    CONTEXT_METADATA = [
+        {
+            name: 'name',
+            label: 'Nom du contexte',
+            editable: false,
+            datatype: 'string'
+        }, {
+            name: 'resource',
+            label: 'Nom de la ressource',
+            editable: false,
+            datatype: 'string'
+        }, {
+            name: 'source',
+            label: 'URI de la source de données',
+            editable: false,
+            datatype: 'string'
+        }, {
+            name: 'analyzer',
+            label: 'Analyseur par défaut',
+            editable: true,
+            datatype: 'string',
+            values: {}
+        }, {
+            name: 'search_analyzer',
+            label: 'Analyseur de recherche par défaut',
+            editable: true,
+            datatype: 'string',
+            values: {}
+        }
+    ],
+    CONTEXT_PROPERTY_METADATA = [
+        {
+            name: 'rejected',
+            label: 'Exclure',
+            editable: true,
+            datatype: 'boolean'
+        }, {
+            name: 'count',
+            label: 'Occurance',
+            editable: false,
+            datatype: 'integer'
+        }, {
+            name: 'name',
+            label: 'Nom',
+            editable: false,
+            datatype: 'string'
+        }, {
+            name: 'alias',
+            label: 'Alias',
+            editable: true,
+            datatype: 'string'
+        }, {
+            name: 'type',
+            label: 'Type',
+            editable: true,
+            datatype: 'string',
+            values: {
+                binary: 'binary',
+                boolean: 'boolean',
+                byte: 'byte',
+                date: 'date',
+                date_range: 'date_range',
+                double: 'double',
+                double_range: 'double_range',
+                float: 'float',
+                float_range: 'float_range',
+                half_float: 'half_float',
+                integer: 'integer',
+                integer_range: 'integer_range',
+                ip: 'ip',
+                keyword: 'keyword',
+                long: 'long',
+                long_range: 'long_range',
+                pdf: 'pdf',
+                scaled_float: 'scaled_float',
+                short: 'short',
+                text: 'text'
+            }
+        }, {
+            name: 'pattern',
+            label: 'pattern',
+            editable: true,
+            datatype: 'string'
+        }, {
+            name: 'searchable',
+            label: 'Analyser',
+            editable: true,
+            datatype: 'boolean'
+        }, {
+            name: 'analyzer',
+            label: 'Analyseur',
+            editable: true,
+            datatype: 'string',
+            values: {}
+        }, {
+            name: 'search_analyzer',
+            label: 'Analyseur (recherche)',
+            editable: true,
+            datatype: 'string',
+            values: {}
+        }, {
+            name: 'weight',
+            label: 'Poids',
+            editable: true,
+            datatype: 'integer'
+        }
+    ],
+    MODELS_METADATA = [
+        {
+            name: 'name',
+            label: 'Nom',
+            editable: false,
+            datatype: 'string'
+        },
+        {
+            name: 'url',
+            label: 'URL du service',
+            editable: false,
+            datatype: 'url'
+        }
+    ],
+    MODEL_QS_METADATA = [
+        {
+            name: 'key',
+            label: 'Paramètre de la chaîne de requête',
+            editable: false,
+            datatype: 'string'
+        },
+        {
+            name: 'description',
+            label: 'Description',
+            editable: false,
+            datatype: 'string'
+        },
+        {
+            name: 'type',
+            label: 'Type',
+            editable: false,
+            datatype: 'string'
+        }
+    ],
+    TOKENIZERS_METADATA = [
+        {
+            name: 'reserved',
+            label: 'Editable',
+            editable: false,
+            datatype: 'boolean'
+        }, {
+            name: 'name',
+            label: 'Nom',
+            editable: false,
+            datatype: 'string'
+        }
+    ],
+    FILTERS_METADATA = [
+        {
+            name: 'reserved',
+            label: 'Editable',
+            editable: false,
+            datatype: 'boolean'
+        }, {
+            name: 'name',
+            label: 'Nom',
+            editable: false,
+            datatype: 'string'
+        }
+    ],
+    ANALYZERS_METADATA = [
+        {
+            name: 'reserved',
+            label: 'Editable',
+            editable: false,
+            datatype: 'boolean'
+        }, {
+            name: 'name',
+            label: 'Nom',
+            editable: false,
+            datatype: 'string'
+        }
+    ],
+
+    sourcesGrid = new EditableGrid('Sources', {pageSize: 5}),
+    resourcesGrid = new EditableGrid('Resources', {pageSize: 10}),
+    contextsGrid = new EditableGrid('Contexts', {pageSize: 10}),
+    contextPropertiesGrid = new EditableGrid('ContextProperties'),
+    modelsGrid = new EditableGrid('Models', {pageSize: 10}),
+	modelQsGrid = new EditableGrid('ModelQs'),
+    tokenizersGrid = new EditableGrid('Tokenizers', {pageSize: 10}),
+    filtersGrid = new EditableGrid('Filters', {pageSize: 10}),
+    analyzersGrid = new EditableGrid('Analyzers', {pageSize: 10});
+
+
+function sourcesParser(data){
+    SOURCES = data;  // set global
+    const m = [];
+    for (let i = 0; i < data.length; i ++) {
+        m.push({
+            id: i,
+            values: [
+                data[i].name,
+                data[i].mode,
+                data[i].uri
+            ]
+        });
+    };
+    return m;
+};
+
+function resourcesParser(data){
+    RESOURCES = data;  // set global
+    const m = [];
+    for (let i = 0; i < data.length; i ++) {
+        m.push({
+            id: i,
+            values: [
+                data[i].name
+            ]
+        });
+    };
+    return m;
+};
+
+function modelsParser(data){
+    MODELS = data;  // set global
+    const m = [];
+    for (let i = 0; i < data.length; i ++) {
+        m.push({
+            id: i,
+            values: [
+                data[i].name,
+                API_BASE_URL + 'profiles/' + data[i].name + '/search?'
+            ]
+        });
+    };
+    return m;
+};
+
+function modelQsParser(data){
+    const m = [];
+    for (let i = 0; i < data.length; i ++) {
+        m.push({
+            id: i,
+            values: [
+                data[i].key,
+                data[i].description || '',
+                data[i].type || ''
+            ]
+        });
+    };
+    return m;
+};
+
+function tokenizersParser(data){
+    TOKENIZERS = data;  // set global
+    const m = [];
+    for (let i = 0; i < data.length; i ++) {
+        m.push({
+            id: i,
+            values: [
+                data[i].reserved,
+                data[i].name
+            ]
+        });
+    };
+    return m;
+};
+
+function filtersParser(data){
+    TOKEN_FILTERS = data;  // set global
+    const m = [];
+    for (let i = 0; i < data.length; i ++) {
+        m.push({
+            id: i,
+            values: [
+                data[i].reserved,
+                data[i].name
+            ]
+        });
+    };
+    return m;
+};
+
+
+function analyzersParser(data){
+    ANALYZERS = data;  // set global
+    const m = [];
+    for (let i = 0; i < data.length; i ++) {
+        m.push({
+            id: i,
+            values: [
+                data[i].reserved,
+                data[i].name
+            ]
+        });
+    };
+    return m;
+};
+
+
+function InfoHeaderRenderer(message){
+    this.message = message;
+};
+
+InfoHeaderRenderer.prototype = new CellRenderer();
+
+InfoHeaderRenderer.prototype.render = function(cell, value){
+    if (value) {
+
+        const $link = $('<a>')
+            .attr({
+                class: 'btn btn-link'
+            })
+            .popover({
+                content: this.message,
+                html: true,
+                placement: 'top',
+                template: '<div class="popover popover-info" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+                trigger: 'hover'
+            })
+            .html('<span class="glyphicon glyphicon-info-sign"></span>');
+
+        $(cell)
+            .prepend('<br/>')
+            .prepend($link);
+    };
+};
+
+
+EditableGrid.prototype.updatePaginator = function(grid){
+
+    const paginator = $('#' + this.currentContainerid + '-paginator').empty();
+    const pageCount = this.getPageCount();
+
+    const interval = this.getSlidingPageInterval(9);
+    if (interval == null) {
+        return;
+    };
+
+    const pages = this.getPagesInInterval(interval, function(pageIndex, isCurrent){
+        const pageLink = $('<li>').html('<a href="#">' + (pageIndex + 1) + '</a>');
+        if (isCurrent) {
+            return pageLink.addClass('active');
+        };
+        return pageLink.click(function(e){
+            e.stopPropagation();
+            grid.setPageIndex(parseInt(e.currentTarget.innerText) - 1);
+            selectRow(grid, rowIdOnTop(grid));
+            e.preventDefault();
+        });
+    });
+
+    const firstLink = $('<li>').html('<a href="#" aria-label="First page"><span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span></a>');
+    if (!this.canGoBack()) {
+        firstLink.addClass('disabled');
+    } else {
+        firstLink.click(function(e){
+            e.stopPropagation();
+            grid.firstPage();
+            selectRow(grid, rowIdOnTop(grid));
+            e.preventDefault();
+        });
+    };
+    paginator.append(firstLink);
+
+    const prevLink = $('<li>').html('<a href="#" aria-label="Previous page"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></a>');
+    if (!this.canGoBack()) {
+        prevLink.addClass('disabled');
+    } else {
+        prevLink.click(function(e){
+            e.stopPropagation();
+            grid.prevPage();
+            selectRow(grid, rowIdOnTop(grid));
+            e.preventDefault();
+        });
+    };
+    paginator.append(prevLink);
+
+    for (p = 0; p < pages.length; p++) {
+        paginator.append(pages[p]);
+    };
+
+    const nextLink = $('<li>').html('<a href="#" aria-label="Next page"><span class="glyphicon glyphicon-forward" aria-hidden="true"></span></a>');
+    if (!this.canGoForward()) {
+        nextLink.addClass('disabled');
+    } else {
+        nextLink.click(function(e){
+            e.stopPropagation();
+            grid.nextPage();
+            selectRow(grid, rowIdOnTop(grid));
+            e.preventDefault();
+        });
+    };
+    paginator.append(nextLink);
+
+    const lastLink = $('<li>').html('<a href="#" aria-label="Last page"><span class="glyphicon glyphicon-fast-forward aria-hidden="true"></span></a>');
+    if (!this.canGoForward()) {
+        lastLink.addClass('disabled');
+    } else {
+        lastLink.click(function(e){
+            e.stopPropagation();
+            grid.lastPage();
+            selectRow(grid, rowIdOnTop(grid));
+            e.preventDefault();
+        });
+    };
+    paginator.append(lastLink);
+};
+
+
+sourcesGrid.initializeGrid = function(){
+    let grid = sourcesGrid;
+    with (this) {
+        rowSelected = function(pRowIdx, nRowIdx){
+            CURRENT_SOURCE_PK = grid.getRowId(nRowIdx);
+            CURRENT_SOURCE = getSource(CURRENT_SOURCE_PK);
+            switchSelection(grid, pRowIdx, nRowIdx);
+
+            Method.getResources(CURRENT_SOURCE.location, function(res){
+                CURRENT_SOURCE.addResources(res);
+            }, function(err){
+                if (err.status == 423) {
+                    // TODO
+                    return errorHandler(err);
+                } else {
+                    return errorHandler(err);
+                };
+            }, function(){
+                updateResources(getResources(CURRENT_SOURCE_PK), 0);
+            }, null)
+        };
+        tableRendered = function(){
+            this.updatePaginator(grid);
+        };
+    };
+};
+
+
+resourcesGrid.initializeGrid = function(){
+
+    const grid = resourcesGrid;
+
+    with (this) {
+        rowSelected = function(pRowIdx, nRowIdx){
+            CURRENT_RESOURCE_PK = grid.getRowId(nRowIdx);
+            CURRENT_RESOURCE = getResource(CURRENT_SOURCE_PK, CURRENT_RESOURCE_PK)
+            switchSelection(grid, pRowIdx, nRowIdx);
+            if (CURRENT_RESOURCE.index) {
+                $('#context-container').show();
+                Method.getContext(
+                    CURRENT_RESOURCE.index,
+                    updateContext,
+                    function errorHandler(jqXHR, textStatus, errorThrown){
+                        if (jqXHR.status === 500) {
+                            ERROR = "Le serveur ne répond pas !<br/>Veuillez contacter l'administrateur du site.";
+                        } else {
+                            ERROR = (jqXHR.responseJSON) ? jqXHR.responseJSON.error : undefined;
+                        };
+                        $modalError.modal('show');
+                    },
+                    null,
+                    function(){
+                        Method.getContextTasks(CURRENT_CONTEXT.location, updateTasks, errorHandler, null, null);
+                    });
+            } else {
+                $('#context-container').hide();
+            };
+        };
+
+        setCellRenderer('context', new CellRenderer({
+            render: function(cell, value){
+                cell.style.textAlign = 'center';
+                cell.style.width = '205px';
+                const rowId = grid.getRowId(cell.rowIndex);
+                const resource = getResource(CURRENT_SOURCE_PK, rowId);
+                if (resource.index) {
+                    cell.innerHTML = '<span class="glyphicon glyphicon-pencil"></span>';
+                } else {
+                    cell.innerHTML = '<button type="button" id="new-context" class="btn btn-xs btn-default btn-block" data-toggle="modal" data-target="#modal-add-context">Créer</button>';
+                };
+            }
+        }));
+
+        tableRendered = function(){
+            this.updatePaginator(grid);
+        };
+
+    };
+};
+
+
+contextPropertiesGrid.initializeRow = function (row, rowIndex, columnId, value){
+    const $row = $(row);
+
+    if (columnId == 0 && value == true) {
+        $row.find('td:not(:first-child) input').prop('disabled', true);
+        $row.find('td:not(:first-child)').addClass('text-muted');
+    } else if (columnId == 0 && value == false) {
+        $row.find('td:not(:first-child) input').prop('disabled', false);
+        $row.find('td:not(:first-child)').removeClass('text-muted');
+    };
+
+    if (columnId == 4 && ['text', 'pdf'].indexOf(value) == -1) {
+        contextPropertiesGrid.setValueAt(rowIndex, 6, false, true)
+        contextPropertiesGrid.setValueAt(rowIndex, 7, null, true);
+        contextPropertiesGrid.setValueAt(rowIndex, 8, null, true);
+    };
+
+    if (columnId == 6 && value == false) {
+        contextPropertiesGrid.setValueAt(rowIndex, 7, null, true);
+        contextPropertiesGrid.setValueAt(rowIndex, 8, null, true);
+    };
+};
+
+contextPropertiesGrid.initializeGrid = function(){
+
+    let grid = contextPropertiesGrid;
+
+    with (this) {
+
+        setHeaderRenderer('rejected', new InfoHeaderRenderer("Si coché, l'attribut ne sera pas indéxé."));
+        setHeaderRenderer('searchable', new InfoHeaderRenderer("Si coché, l'attribut sera analysé."));
+        setHeaderRenderer('analyzer', new InfoHeaderRenderer("Analyseur utilisé pour l'indexation des données."));
+        setHeaderRenderer('search_analyzer', new InfoHeaderRenderer("Analyseur utilisé lors d'une recherche."));
+
+        let row;
+        rowSelected = function(_, rowId) {
+            row = rowId;
+        };
+
+        addCellValidator('pattern', new CellValidator({
+            isValid: function(value){
+                const $ce11 = $(grid.getRow(row)).find('td.editablegrid-type');
+                const $cell = $(grid.getRow(row)).find('td.editablegrid-pattern');
+                $ce11.removeClass('danger');
+                $cell.removeClass('danger');
+                if ([null, undefined, ''].indexOf(value) != -1) {
+                    return true;
+                };
+                if (grid.getValueAt(row, 4) != 'date') {
+                    $ce11.addClass('danger');
+                    $cell.addClass('danger');
+                    return false;
+                };
+                return true;
+            }
+        }));
+
+        addCellValidator('searchable', new CellValidator({
+            isValid: function(value){
+                let resp = true;
+                const $row = $(grid.getRow(row));
+                const $cell4 = $row.find('td.editablegrid-type');
+                const $cell6 = $row.find('td.editablegrid-searchable');
+                if (value && ['text', 'pdf'].indexOf(grid.getValueAt(row, 4)) == -1) {
+                    $cell4.addClass('danger');
+                    $cell6.addClass('danger');
+                    resp = false;
+                } else {
+                    $cell4.removeClass('danger');
+                    $cell6.removeClass('danger');
+                };
+                return resp;
+            }
+        }));
+
+        addCellValidator('analyzer', new CellValidator({
+            isValid: function(value){
+                let resp = true;
+                const $row = $(grid.getRow(row));
+                const $cell4 = $row.find('td.editablegrid-type');
+                const $cell6 = $row.find('td.editablegrid-searchable');
+                const $cell7 = $row.find('td.editablegrid-analyzer');
+                $cell4.removeClass('danger');
+                $cell6.removeClass('danger');
+                $cell7.removeClass('danger');
+                if ([null, undefined, ''].indexOf(value) != -1) {
+                    return true;
+                };
+                if (grid.getValueAt(row, 6) == false) {
+                    $cell6.addClass('danger');
+                    $cell7.addClass('danger');
+                    resp = false;
+                };
+                if (['text', 'pdf'].indexOf(grid.getValueAt(row, 4)) == -1) {
+                    $cell4.addClass('danger');
+                    resp = false;
+                };
+                return resp;
+            }
+        }));
+
+        addCellValidator('search_analyzer', new CellValidator({
+            isValid: function(value){
+                let resp = true;
+                const $row = $(grid.getRow(row));
+                const $cell4 = $row.find('td.editablegrid-type');
+                const $cell6 = $row.find('td.editablegrid-searchable');
+                const $cell7 = $row.find('td.editablegrid-analyzer');
+                const $cell8 = $row.find('td.editablegrid-search_analyzer');
+                $cell4.removeClass('danger');
+                $cell6.removeClass('danger');
+                $cell7.removeClass('danger');
+                $cell8.removeClass('danger');
+                if (value == '' || value == null || value == undefined) {
+                    return true;
+                };
+                if ([null, undefined, ''].indexOf(grid.getValueAt(row, 7)) != -1) {
+                    $cell7.addClass('danger');
+                    $cell8.addClass('danger');
+                    resp = false;
+                };
+                if (grid.getValueAt(row, 6) == false) {
+                    $cell6.addClass('danger');
+                    resp = false;
+                };
+                if (['text', 'pdf'].indexOf(grid.getValueAt(row, 4)) == -1) {
+                    $cell4.addClass('danger');
+                    resp = false;
+                };
+                return resp;
+            }
+        }));
+
+        tableRendered = function(){
+            this.updatePaginator(grid);
+        };
+
+        modelChanged = function(rowIndex, columnIndex, oldValue, newValue, row){
+            grid.initializeRow(row, rowIndex, columnIndex, newValue);
+        };
+
+    };
+
+};
+
+
+modelsGrid.initializeGrid = function(){
+
+    let grid = modelsGrid;
+
+    with (this) {
+        rowSelected = function(pRowIdx, nRowIdx){
+            CURRENT_MODEL_PK = grid.getRowId(nRowIdx);
+            CURRENT_MODEL = getModel(CURRENT_MODEL_PK)
+            updateModelConfiguration(CURRENT_MODEL);
+            switchSelection(grid, pRowIdx, nRowIdx);
+        };
+
+        tableRendered = function(){
+            this.updatePaginator(grid);
+        };
+    };
+};
+
+
+modelQsGrid.initializeGrid = function(){
+
+    let grid = modelQsGrid;
+
+};
+
+
+tokenizersGrid.initializeGrid = function(){
+
+    let grid = tokenizersGrid;
+
+    with (this) {
+        rowSelected = function(pRowIdx, nRowIdx){
+            CURRENT_TOKENIZER_PK = grid.getRowId(nRowIdx);
+            CURRENT_TOKENIZER = getTokenizer(CURRENT_TOKENIZER_PK)
+            updateTokenizerConfiguration(CURRENT_TOKENIZER);
+            switchSelection(grid, pRowIdx, nRowIdx);
+        };
+
+        setCellRenderer('reserved', new CellRenderer({
+            render: function(cell, value){
+                cell.style.textAlign = 'center';
+                cell.style.width = '32px';
+                if (value == false) {
+                    cell.innerHTML = '<span class="glyphicon glyphicon-pencil"></span>';
+                } else {
+                    cell.innerHTML = '';
+                };
+            }
+        }));
+
+        setHeaderRenderer('reserved', new CellRenderer({
+            render: function(cell, value){
+                cell.style.textAlign = 'center';
+                cell.style.width = '32px';
+                cell.innerHTML = '<span class="glyphicon glyphicon-pencil"></span>';
+            }
+        }));
+
+        tableRendered = function(){
+            this.updatePaginator(grid);
+        };
+    };
+};
+
+
+filtersGrid.initializeGrid = function(){
+
+    let grid = filtersGrid;
+
+    with (this) {
+        rowSelected = function(pRowIdx, nRowIdx){
+            CURRENT_FILTER_PK = grid.getRowId(nRowIdx);
+            CURRENT_FILTER = getFilter(CURRENT_FILTER_PK);
+            updateFilterConfiguration(CURRENT_FILTER);
+            switchSelection(grid, pRowIdx, nRowIdx);
+        };
+
+        setCellRenderer('reserved', new CellRenderer({
+            render: function(cell, value){
+                cell.style.textAlign = 'center';
+                cell.style.width = '32px';
+                if (value == false) {
+                    cell.innerHTML = '<span class="glyphicon glyphicon-pencil"></span>';
+                } else {
+                    cell.innerHTML = '';
+                };
+            }
+        }));
+
+        setHeaderRenderer('reserved', new CellRenderer({
+            render: function(cell, value){
+                cell.style.textAlign = 'center';
+                cell.style.width = '32px';
+                cell.innerHTML = '<span class="glyphicon glyphicon-pencil"></span>';
+            }
+        }));
+
+        tableRendered = function(){
+            this.updatePaginator(grid);
+        };
+    };
+};
+
+
+analyzersGrid.initializeGrid = function(){
+
+    let grid = analyzersGrid;
+
+    with (this) {
+        rowSelected = function(pRowIdx, nRowIdx){
+            CURRENT_ANALYZER_PK = grid.getRowId(nRowIdx);
+            CURRENT_ANALYZER = getAnalyzer(CURRENT_ANALYZER_PK);
+            updateAnalyzerConfiguration(CURRENT_ANALYZER);
+            switchSelection(grid, pRowIdx, nRowIdx);
+        };
+
+        setCellRenderer('reserved', new CellRenderer({
+            render: function(cell, value){
+                cell.style.textAlign = 'center';
+                cell.style.width = '32px';
+                if (value == false) {
+                    cell.innerHTML = '<span class="glyphicon glyphicon-pencil"></span>';
+                } else {
+                    cell.innerHTML = '';
+                };
+            }
+        }));
+
+        setHeaderRenderer('reserved', new CellRenderer({
+            render: function(cell, value){
+                cell.style.textAlign = 'center';
+                cell.style.width = '32px';
+                cell.innerHTML = '<span class="glyphicon glyphicon-pencil"></span>';
+            }
+        }));
+
+        tableRendered = function(){
+            this.updatePaginator(grid);
+        };
+    };
+};
+
+
+function getSourceByLocation(location){
+    for (const source of SOURCES) {
+        if (source.location === location) {
+            return source;
+        };
+    };
+};
+
+
+function getResourceByLocation(location){
+    for (const source of SOURCES) {
+        for (const resource of source.resources) {
+            if (resource.location === location) {
+                return [resource, source];
+            };
+        };
+    };
+};
+
+
+function retreiveRowByKey(grid, obj, key, col){
+    for (const row of grid.data) {
+        if (obj[key] == row.columns[col]) {
+            return row.id;
+        };
+    };
+};
+
+
+function retreiveSourceRow(obj){
+    return retreiveRowByKey(sourcesGrid, obj, 'name', 0);
+};
+
+
+function retreiveResourceRow(obj){
+    return retreiveRowByKey(resourcesGrid, obj, 'name', 0);
+};
+
+
+function retreiveAnalyzerRow(obj){
+    return retreiveRowByKey(analyzersGrid, obj, 'name', 1);
+};
+
+
+function retreiveFilterRow(obj){
+    return retreiveRowByKey(filtersGrid, obj, 'name', 1);
+};
+
+
+function retreiveTokenizerRow(obj){
+    return retreiveRowByKey(tokenizersGrid, obj, 'name', 1);
+};
+
+
+function retreiveModelRow(obj){
+    return retreiveRowByKey(modelsGrid, obj, 'name', 0);
+};
+
+
+function getSource(sourceId){
+    return SOURCES[sourceId];
+};
+
+
+function getResources(sourceId){
+    return SOURCES[sourceId].resources;
+};
+
+
+function getResource(sourceId, resourceId){
+    return SOURCES[sourceId].resources[resourceId];
+};
+
+
+function getResourceProperties(sourceId, resourceId){
+    return SOURCES[sourceId].resources[resourceId].columns;
+};
+
+
+function getContext(contextId){
+    return CONTEXTS[contextId];
+};
+
+
+function getContextProperties(contextId){
+    return CONTEXTS[contextId].columns;
+};
+
+
+function getAnalyzer(analyzerId){
+    return ANALYZERS[analyzerId];
+};
+
+
+function getFilter(filterId){
+    return TOKEN_FILTERS[filterId];
+};
+
+
+function getTokenizer(tokenizerId){
+    return TOKENIZERS[tokenizerId];
+};
+
+
+function getFilterConfiguration(filterId){
+    return TOKEN_FILTERS[filterId].config;
+};
+
+
+function getTokenizerConfiguration(tokenizerId){
+    return TOKENIZERS[tokenizerId].config;
+};
+
+
+function getModel(modelId){
+    return MODELS[modelId];
+};
+
+
+function rowIdOnTop(grid){
+    if (grid.pageSize) {
+        return grid.pageSize * grid.getCurrentPageIndex();
+    };
+    return 0;
+};
+
+function selectRow(grid, nRowIdx){
+    if (nRowIdx === undefined) {
+        return;
+    };
+    var pRowIdx = grid.lastSelectedRowIndex;
+    if (pRowIdx > -1) {
+        deselectRow(grid, pRowIdx);
+    };
+    grid.rowSelected(pRowIdx, nRowIdx);
+    grid.lastSelectedRowIndex = nRowIdx;
+};
+
+
+function switchSelection(grid, p, n){
+    $(grid.getRow(p)).toggleClass();
+    $(grid.getRow(n)).toggleClass('selected');
+};
+
+
+function updateGrid(grid, containerId, metadata, data, row){
+
+    const $grid = $('#' + containerId);
+
+    grid.load({
+        'metadata': metadata,
+        'data': data
+    });
+
+    grid.renderGrid(containerId, GRID_CLASS_NAME_PROPERTY);
+
+    grid.initializeGrid();
+    grid.refreshGrid();
+
+    if (data.length > 0) {
+        selectRow(grid, row);
+        $grid.show();
+    } else {
+        $grid.hide()
+    };
+};
+
+
+function updateSources(arr, reinitialize){
+
+    $('#sources-container').find('.alert').remove();
+    if (arr.length === 0) {
+        const alert = $('<div/>').attr({'class': 'alert alert-warning', 'role': 'alert'}).text("Vous n'avez défini aucune source de données !");
+        $('#sources-container').find('br').after(alert);
+        $('#resources-container').hide();
+        $('#context-container').hide();
+        $('#del-source').addClass('disabled').prop('disabled', true);
+    } else {
+        $('#sources-container').find('.alert').remove();
+        $('#del-source').removeClass('disabled').prop('disabled', false);
+    };
+
+    const grid = sourcesGrid;
+    if (reinitialize) {
+        CURRENT_SOURCE = undefined
+    };
+    const row = (CURRENT_SOURCE) ? retreiveSourceRow(CURRENT_SOURCE) : rowIdOnTop(grid);
+    const data = sourcesParser(arr) || [];
+
+    updateGrid(grid, SOURCES_CONTAINER, SOURCE_METADATA, data, row);
+};
+
+
+function updateResources(arr, forceRow){
+
+    if (arr.length > 0) {
+        $('#resources-container').show();
+    } else {
+        $('#resources-container').hide();
+        $('#context-container').hide();
+    };
+
+    const grid = resourcesGrid;
+    let row = (CURRENT_RESOURCE) ? retreiveResourceRow(CURRENT_RESOURCE) : rowIdOnTop(grid);
+    row = (forceRow != undefined) ? forceRow : row;
+    const data = resourcesParser(arr) || [];
+
+    updateGrid(grid, RESOURCES_CONTAINER, RESOURCE_METADATA, data, row);
+};
+
+
+function updateCurrentContext(obj){
+    const columns = [];
+    for (const row of obj) {
+        const col = row.columns;
+        columns.push({
+            rejected: col[0],
+            count: col[1],
+            name: col[2],
+            alias: col[3],
+            type: col[4],
+            pattern: col[5],
+            searchable: col[6],
+            analyzer: col[7],
+            search_analyzer: col[8],
+            weight: col[9]
+        });
+    };
+    CURRENT_CONTEXT.columns = columns;
+    CURRENT_CONTEXT.reindex_frequency = $('#reindex-frequency').val();
+    return CURRENT_CONTEXT;
+};
+
+
+function updateContext(obj){
+
+    CURRENT_CONTEXT = obj;
+
+    if (obj) {
+        $('#context-container').show();
+    } else {
+        $('#context-container').hide();
+    };
+
+    const data = [],
+          columns = obj.columns;
+    for (let i = 0; i < columns.length; i ++) {
+        col = columns[i];
+        data.push({
+            id: i,
+            values: [
+                col.rejected,
+                col.count,
+                col.name,
+                col.alias,
+                col.type,
+                col.pattern,
+                col.searchable,
+                col.analyzer,
+                col.search_analyzer,
+                col.weight
+            ]
+        });
+    };
+    updateContextProperties(data);
+    $('#context-label').text(CURRENT_CONTEXT.name);
+    $('#reindex-frequency').val(CURRENT_CONTEXT.reindex_frequency);
+};
+
+
+function updateTasks(data){
+
+    const $tasksInfo = $('#tasks-info')
+        .empty()
+        .removeClass('alert-info')
+        .removeClass('alert-success')
+        .removeClass('alert-danger')
+        .removeClass('alert-warning');
+
+    if (data.length > 0) {
+        const task = data[0];
+        if (task.success == true) {
+            $tasksInfo.addClass('alert-success')
+            $tasksInfo.append('<p><strong>Fin : </strong>' + moment(task.dates.stop).format(DATE_FORMAT) + '</p>');
+        } else if (task.success == false) {
+            $tasksInfo.addClass('alert-danger');
+        } else {
+            $tasksInfo.addClass('alert-warning');
+            $tasksInfo.append('<p><strong>Fin : </strong><button type="button" class="btn btn-default btn-xs" onclick="reloadContext();">Rafraîchir <span class="glyphicon glyphicon-refresh"></span></button></p>');
+        };
+        $tasksInfo.prepend('<p><strong>Début : </strong>' + moment(task.dates.start).format(DATE_FORMAT) + '</p>');
+        $tasksInfo.prepend('<p><strong>Description : </strong>' + task.description + '</p>');
+        $tasksInfo.prepend('<h4>Dernière opération réalisée</h4>');
+    } else {
+        $tasksInfo
+            .addClass('alert-info')
+            .html('Aucune tâche récente.');
+    };
+
+};
+
+
+function updateContextProperties(data){
+    Method.getAnalyzers(function(res){
+        let values = {'': ''};
+        for (const analyzer of res) {
+            values[analyzer.name] = analyzer.name;
+        };
+        for (const meta of CONTEXT_PROPERTY_METADATA) {
+            if (meta.name === 'analyzer' || meta.name === 'search_analyzer') {
+                meta.values = values;
+            };
+        };
+
+        const grid = contextPropertiesGrid;
+        updateGrid(grid, CONTEXT_PROPERTIES_CONTAINER, CONTEXT_PROPERTY_METADATA, data, undefined);
+
+        const rows = grid.tBody.rows;
+        for (let i = 0; i < rows.length; i ++) {
+            const row = rows[i];
+            const values = grid.getRowValues(grid.getRowIndex(row.rowId));
+            for (const k in values) {
+                grid.initializeRow(row, grid.getRowIndex(row.rowId), grid.getColumnIndex(k), values[k]);
+            };
+        };
+
+
+    }, errorHandler, null, null);
+};
+
+
+function updateAnalyzers(obj){
+
+    $('#analyzers-container').find('.alert').remove();
+    if (obj.length === 0) {
+        const alert = $('<div/>').attr({'class': 'alert alert-warning', 'role': 'alert'}).text("Vous n'avez défini aucun analyseur !");
+        $('#analyzers-container').find('br').after(alert);
+        $('#del-analyzer').addClass('disabled').prop('disabled', true);
+        $('#analyzers-properties').hide();
+    } else {
+        $('#analyzers-container').find('.alert').remove();
+        $('#del-analyzer').removeClass('disabled').prop('disabled', false);
+        $('#analyzers-properties').show();
+    };
+
+    const grid = analyzersGrid;
+    const row = (CURRENT_ANALYZER) ? retreiveAnalyzerRow(CURRENT_ANALYZER) : rowIdOnTop(grid);
+    const data = analyzersParser(obj) || [];
+
+    updateGrid(grid, ANALYZERS_CONTAINER, ANALYZERS_METADATA, data, row);
+};
+
+
+var $choiceFilters = $('#choice-filters'),
+    $chosenFilters = $('#chosen-filters'),
+    $tokenizer = $('#choice-tokenizer');
+
+
+    // function updateTokenizerConfiguration(obj){
+    //
+    //     $('#tokenizer-config-json').addClass('disabled').prop('disabled', true).val(undefined).hide();
+    //     $('#update-tokenizer').addClass('disabled').prop('disabled', true).hide();
+    //
+    //     if (!('config' in obj) && obj.reserved === true) {
+    //         $('#tokenizer-properties').hide();
+    //     } else {
+    //         $('#tokenizer-config-json').removeClass('disabled').prop('disabled', false).val(JSON.stringify(obj.config, null, 4)).show();
+    //         $('#update-tokenizer').removeClass('disabled').prop('disabled', false).show();
+    //         $('#tokenizer-properties').show();
+    //     };
+    // };
+
+
+function updateAnalyzerConfiguration(data){
+
+    $choiceFilters.empty();
+    $chosenFilters.empty();
+    $tokenizer.empty();
+
+    let fun1 = function(res){
+        $('<option/>').text('').appendTo($tokenizer).attr('selected', 'selected')
+        for (const tokenizer of res) {
+            const $opt = $('<option/>').text(tokenizer.name).appendTo($tokenizer);
+            if (data.tokenizer === tokenizer.name) {
+                $opt.attr('selected','selected');
+            };
+        };
+    };
+
+    let fun2 = Method.getFilters(function(res){
+        if ('tokenfilters' in data) {
+            for (const tokenfilter of data.tokenfilters){
+                $('<li/>').text(tokenfilter).appendTo($chosenFilters);
+            };
+        };
+        for (const tokenfilter of res) {
+            if (('tokenfilters' in data) && (data.tokenfilters.indexOf(tokenfilter.name) == -1)) {
+                $('<li/>').text(tokenfilter.name).appendTo($choiceFilters);
+            } else if (!('filters' in data)) {
+                $('<li/>').text(tokenfilter.name).appendTo($choiceFilters);
+            };
+        };
+        $choiceFilters.sortable({connectWith: '.connected'});
+        $chosenFilters.sortable({connectWith: '.connected'});
+
+    }, errorHandler, null, null);
+
+    // $('#analyzer-config-json').addClass('disabled').prop('disabled', true).val(undefined).hide();
+
+    if (('tokenfilters' in data || 'tokenizer' in data) || data.reserved == false) {
+        Method.getTokenizers(fun1, errorHandler, undefined, fun2);
+        // $('#analyzer-config-json').removeClass('disabled').prop('disabled', false).val(JSON.stringify(data.config, null, 4)).show();
+        $('#analyzers-properties').show();
+    } else {
+        $('#analyzers-properties').hide();
+    };
+};
+
+
+function updateFilters(obj){
+
+    $('#tokenfilters-container').find('.alert').remove();
+    if (obj.length === 0) {
+        const alert = $('<div/>').attr({'class': 'alert alert-warning', 'role': 'alert'}).text("Vous n'avez défini aucun filtre !");
+        $('#tokenfilters-container').find('br').after(alert);
+        $('#del-tokenfilter').addClass('disabled').prop('disabled', true);
+        $('#tokenfilter-properties').hide();
+    } else {
+        $('#tokenfilters-container').find('.alert').remove();
+        $('#del-tokenfilter').removeClass('disabled').prop('disabled', false);
+        $('#tokenfilter-properties').show();
+    };
+
+    const grid = filtersGrid;
+    const row = (CURRENT_FILTER) ? retreiveFilterRow(CURRENT_FILTER) : rowIdOnTop(grid);
+    const data = filtersParser(obj) || [];
+    updateGrid(grid, FILTERS_CONTAINER, FILTERS_METADATA, data, row);
+};
+
+
+function updateFilterConfiguration(obj){
+
+    $('#tokenfilter-config-json').addClass('disabled').prop('disabled', true).val(undefined).hide();
+    $('#update-tokenfilter').addClass('disabled').prop('disabled', true).hide();
+
+    if (!('config' in obj) && obj.reserved === true) {
+        $('#tokenfilter-properties').hide();
+    } else {
+        $('#tokenfilter-config-json').removeClass('disabled').prop('disabled', false).val(JSON.stringify(obj.config, null, 4)).show();
+        $('#update-tokenfilter').removeClass('disabled').prop('disabled', false).show();
+        $('#tokenfilter-properties').show();
+    };
+
+};
+
+
+function updateTokenizers(obj){
+
+    $('#tokenizers-container').find('.alert').remove();
+    if (obj.length === 0) {
+        const alert = $('<div/>').attr({'class': 'alert alert-warning', 'role': 'alert'}).text("Vous n'avez défini aucun tokenizer !");
+        $('#tokenizers-container').find('br').after(alert);
+        $('#del-tokenizer').addClass('disabled').prop('disabled', true);
+        $('#tokenizer-properties').hide();
+    } else {
+        $('#tokenizers-container').find('.alert').remove();
+        $('#del-tokenizer').removeClass('disabled').prop('disabled', false);
+        $('#tokenizer-properties').show();
+    };
+
+    const grid = tokenizersGrid;
+    const row = (CURRENT_TOKENIZER) ? retreiveTokenizerRow(CURRENT_TOKENIZER) : rowIdOnTop(grid);
+    const data = tokenizersParser(obj) || [];
+
+    updateGrid(grid, TOKENIZERS_CONTAINER, TOKENIZERS_METADATA, data, row);
+};
+
+
+function updateTokenizerConfiguration(obj){
+
+    $('#tokenizer-config-json').addClass('disabled').prop('disabled', true).val(undefined).hide();
+    $('#update-tokenizer').addClass('disabled').prop('disabled', true).hide();
+
+    if (!('config' in obj) && obj.reserved === true) {
+        $('#tokenizer-properties').hide();
+    } else {
+        $('#tokenizer-config-json').removeClass('disabled').prop('disabled', false).val(JSON.stringify(obj.config, null, 4)).show();
+        $('#update-tokenizer').removeClass('disabled').prop('disabled', false).show();
+        $('#tokenizer-properties').show();
+    };
+};
+
+
+function updateModels(obj){
+
+    $('#models-container').find('.alert').remove();
+    if (obj.length === 0) {
+        const alert = $('<div/>').attr({'class': 'alert alert-warning', 'role': 'alert'}).text("Vous n'avez défini aucun modèle !");
+        $('#models-container').find('br').after(alert);
+        $('#del-model').addClass('disabled').prop('disabled', true);
+        $('#model-properties').hide();
+    } else {
+        $('#models-container').find('.alert').remove();
+        $('#del-model').removeClass('disabled').prop('disabled', false);
+        $('#model-properties').show();
+    };
+
+    const grid = modelsGrid;
+    const row = (CURRENT_MODEL) ? retreiveModelRow(CURRENT_MODEL) : rowIdOnTop(grid);
+    const data = modelsParser(obj) || [];
+
+    updateGrid(grid, MODELS_CONTAINER, MODELS_METADATA, data, row);
+};
+
+
+var $choiceContexts = $('#choice-contexts'),
+    $chosenContexts = $('#chosen-contexts');
+
+
+function updateModelConfiguration(obj){
+
+    $choiceContexts.empty();
+    $chosenContexts.empty();
+
+    $('#model-config-json').addClass('disabled').prop('disabled', true).val(undefined).hide();
+    $updateModel.addClass('disabled').prop('disabled', true).hide();
+
+    if (obj.config === null) {
+        $('#model-properties').hide();
+        return;
+    };
+
+    $('#model-config-json').removeClass('disabled').prop('disabled', false).val(JSON.stringify(obj.config, null, 4)).show();
+    $updateModel.removeClass('disabled').prop('disabled', false).show();
+    $('#model-properties').show();
+
+    Method.getContexts(
+        function(res){
+            for (const context of obj.indices){
+                $('<li/>').text(context).appendTo($chosenContexts);
+            };
+            for (const context of res) {
+                if (obj.indices.indexOf(context.name) == -1) {
+                    $('<li/>').text(context.name).appendTo($choiceContexts);
+                };
+            };
+            $choiceContexts.sortable({connectWith: '.connected'});
+            $chosenContexts.sortable({connectWith: '.connected'});
+        },
+        errorHandler,
+        null,
+        null
+    );
+
+    $('#table-model-qs').addClass('disabled').prop('disabled', true).hide();
+    $('label[for="table-model-qs"]').addClass('disabled').prop('disabled', true).hide();
+    if (obj.qs_params) {
+        const data = modelQsParser(obj.qs_params) || [];
+        updateGrid(modelQsGrid, MODEL_QS_CONTAINER, MODEL_QS_METADATA, data, 0);
+       $('#table-model-qs').removeClass('disabled').prop('disabled', false).show();
+       $('label[for="table-model-qs"]').removeClass('disabled').prop('disabled', false).show();
+    };
+
+	$('#model-properties').find('.alert').remove();
+    if (obj.extended) {
+        const alert = $('<div/>').attr({'class': 'alert alert-warning', 'role': 'alert'}).text('Un plugin est actif !');
+        $('#model-properties').find('br').after(alert);
+    }
+
+};
+
+
+function loadTab(hash){
+    if (hash === '#indices') {
+        Method.getSources(updateSources, errorHandler, null, null);
+    };
+    if (hash === '#profiles') {
+        Method.getModels(updateModels, errorHandler, null, null);
+    };
+    if (hash === '#analysis') {
+        $('#analysis a[href="#analyzers"]').tab('show');
+    };
+};
+
+
+function closeAllModal(){
+    $('.modal').modal('hide');
+};
+
+
+var $modalError = $('#modal-error')
+    .on('show.bs.modal', function(e){
+        closeAllModal();
+        $(this).find('.modal-header h4').html("( ⧉ ⦣ ⧉ )");
+        $(this).find('.modal-body p').html(ERROR || "Une erreur s'est produite...");
+    })
+    .on('hidden.bs.modal', function(e){
+        ERROR = undefined;
+    });
+
+
+var $modalSuccess = $('#modal-success')
+    .on('show.bs.modal', function(e){
+        closeAllModal();
+        $(this).find('.modal-header h4').html('');
+        $(this).find('.modal-body p').html(SUCCESS || "L'opération a réussie !");
+    })
+    .on('hidden.bs.modal', function(e){
+        SUCCESS = undefined;
+    });
+
+
+function errorHandler(jqXHR, textStatus, errorThrown){
+
+    if (jqXHR.status === 500) {
+        ERROR = "Le serveur ne répond pas !<br/>Veuillez contacter l'administrateur du site.";
+    } else {
+        ERROR = (jqXHR.responseJSON) ? jqXHR.responseJSON.error : undefined;
+    };
+    $modalError.modal('show');
+};
+
+
+function doneHandler(response, textStatus, jqXHR){
+    SUCCESS = (jqXHR.responseJSON) ? jqXHR.responseJSON.message : undefined;
+    $modalSuccess.modal('show');
+};
+
+
+// SOURCES & RESOURCES //
+
+var $sourceMode = $('#source-mode');
+
+
+var $sourceUri = $('#source-uri')
+    .on('input', function(e){
+        let m;
+        const regex_file = /^file:\/\//g,
+              regex_wfs = /wfs/g,
+              regex_geonet = /geonet/g;
+
+        if ((m = regex_file.exec($(this).val())) !== null) {
+            $sourceMode.val('pdf');
+        };
+        if ((m = regex_wfs.exec($(this).val())) !== null) {
+            $sourceMode.val('wfs');
+        };
+        if ((m = regex_geonet.exec($(this).val())) !== null) {
+            $sourceMode.val('geonet');
+        };
+    });
+
+
+var $sourceName = $('#source-name')
+    .on('input', function(e){
+        let m;
+        const regex = /^[a-z0-9_]{2,100}$/g;
+        if ((m = regex.exec($(this).val())) !== null) {
+            $confirmAddSource.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmAddSource.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $confirmAddSource = $('#confirm-add-source')
+    .on('click', function(e){
+        const data = {
+            uri: $sourceUri.val(),
+            name: $sourceName.val(),
+            mode: $sourceMode.val()
+        };
+        Method.postSource(data, null, errorHandler, doneHandler, function(){
+            Method.getSources(updateSources, errorHandler, null, null);
+        });
+    })
+    .addClass('disabled')
+    .prop('disabled', true);
+
+
+var $modalAddSource = $('#modal-add-source')
+    .on('show.bs.modal', function(e){
+        const $this = $(this);
+        $this.find('datalist').empty();
+        $sourceUri.val('');
+        $sourceName.val('');
+
+        Method.getAvailableModes(function(obj){
+            for (const k in obj) {
+                $('<option value="' + k +'">').text(obj[k]).appendTo($sourceMode);
+            };
+        }, errorHandler, function(){
+            Method.getAvailableSources(function(res){
+                for (const v of res) {
+                    $('<option value="' + v +'">').appendTo($this.find('datalist'));
+                };
+            }, errorHandler, null, null);
+        }, null);
+    })
+    .on('hidden.bs.modal', function(e){
+        const $this = $(this);
+        $this.find('select').empty();
+        $this.find('input[name="source"]').val('');
+    });
+
+
+var $confirmDelSource = $('#confirm-del-source')
+    .on('click', function(e){
+        Method.deleteSource(CURRENT_SOURCE.location, null, errorHandler, doneHandler, function(){
+            Method.getSources(function(res){
+                updateSources(res, true);
+            }, errorHandler, null, null);
+        });
+    })
+    .addClass('disabled')
+    .prop('disabled', true);
+
+
+var $controlSourceName = $('#control-source-name')
+    .on('input', function(e){
+        if ($(this).val() === CURRENT_SOURCE.name) {
+            $confirmDelSource.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmDelSource.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $modalDelSource = $('#modal-del-source')
+    .on('show.bs.modal', function(e){
+        $controlSourceName.val('');
+    })
+    .on('hidden.bs.modal', function(e){
+        $controlSourceName.val('');
+    });
+
+
+// CONTEXTS //
+
+
+function reloadSources() {
+    Method.getSources(updateSources, errorHandler, null, null);
+};
+
+
+function reloadContext() {
+    Method.getContext(
+        CURRENT_CONTEXT.location,
+        updateContext,
+        errorHandler,
+        null,
+        function(){
+            Method.getContextTasks(CURRENT_CONTEXT.location, updateTasks, errorHandler, null, null)
+        });
+};
+
+
+var $contextName = $('#context-name')
+    .on('input', function(e){
+        let m;
+        const regex = /^[a-z0-9_]{2,100}$/g;
+        if ((m = regex.exec($(this).val())) !== null) {
+            $confirmAddContext.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmAddContext.addClass('disabled').prop('disabled', true);
+        };
+    })
+    .keyup(function(e){
+        if (e.keyCode == 13) {
+            // TODO
+        };
+    });
+
+
+var $confirmAddContext = $('#confirm-add-context')
+    .on('click', function(e){
+        const data = {
+            name: $contextName.val(),
+            resource: CURRENT_RESOURCE.location
+        };
+        Method.postContext(data, null, errorHandler, doneHandler, reloadSources);
+    });
+
+
+var $modalAddContext = $('#modal-add-context')
+    .on('show.bs.modal', function(e){
+        $contextName.val(CamelToSnake(NoDot(CURRENT_RESOURCE.name)));
+    })
+    .on('hidden.bs.modal', function(e){
+        $contextName.val('');
+    });
+
+
+var $confirmDelContext = $('#confirm-del-context')
+    .on('click', function(e){
+        Method.deleteContext(CURRENT_CONTEXT.location, null, errorHandler, doneHandler, reloadSources);
+    })
+    .addClass('disabled').prop('disabled', true);
+
+
+var $controlContextName = $('#control-context-name')
+    .on('input', function(e){
+        if ($(this).val() === CURRENT_CONTEXT.name) {
+            $confirmDelContext.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmDelContext.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $modalDelContext = $('#modal-del-context')
+    .on('show.bs.modal', function(e){
+        $controlContextName.val('');
+    })
+    .on('hidden.bs.modal', function(e){
+        $controlContextName.val('');
+    });
+
+
+var $updateContext = $('#update-context')
+    .on('click', function(e){
+        const data = updateCurrentContext(contextPropertiesGrid.data);
+        Method.putContext(data, null, errorHandler, doneHandler, reloadContext);
+    });
+
+
+var $updateContextForceRebuild = $('#update-context-force-rebuild')
+    .on('click', function(e){
+        const data = updateCurrentContext(contextPropertiesGrid.data);
+        Method.putContext(data, function(){
+            Method.action({type: 'rebuild', index: CURRENT_CONTEXT.name}, null, errorHandler, doneHandler, reloadContext);
+        }, errorHandler, null, null);
+    });
+
+
+// MODELS //
+
+
+function reloadModels() {
+    Method.getModels(updateModels, errorHandler, null, null);
+};
+
+
+var $modelName = $('#model-name')
+    .on('input', function(e){
+        let m;
+        const regex = /^[a-z0-9_]{2,100}$/g;
+        if ((m = regex.exec($(this).val())) !== null) {
+            $confirmAddModel.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmAddModel.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $confirmAddModel = $('#confirm-add-model')
+    .on('click', function(e){
+        Method.postModel({name: $modelName.val()}, null, errorHandler, doneHandler, reloadModels);
+    });
+
+
+var $modalAddModel = $('#modal-add-model')
+    .on('show.bs.modal', function(e){
+        $modelName.val('');
+        $confirmAddModel.addClass('disabled').prop('disabled', true);
+    })
+    .on('hidden.bs.modal', function(e){
+        $modelName.val('');
+        $confirmAddModel.addClass('disabled').prop('disabled', true);
+    });
+
+
+var $confirmDelModel = $('#confirm-del-model')
+    .on('click', function(e){
+        Method.deleteModel(CURRENT_MODEL.location, null, errorHandler, doneHandler, reloadModels);
+    })
+    .addClass('disabled').prop('disabled', true);
+
+
+var $controlModelName = $('#control-model-name')
+    .on('input', function(e){
+        if ($(this).val() === CURRENT_MODEL.name) {
+            $confirmDelModel.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmDelModel.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $modalDelModel = $('#modal-del-model')
+    .on('show.bs.modal', function(e){
+        $controlModelName.val('');
+    })
+    .on('hidden.bs.modal', function(e){
+        $controlModelName.val('');
+    });
+
+
+var $updateModel = $('#update-model')
+    .on('click', function(e){
+
+        const model = CURRENT_MODEL;
+
+        model.indices = [];
+        $('#chosen-contexts > li').each(function(m){
+            model.indices.push($(this).text());
+        });
+
+        try {
+            model.config = JSON.parse($('#model-config-json').val());
+        } catch (err) {
+            ERROR = 'Le document JSON est malformé : <br />' + err;
+            $modalError.modal('show');
+            return;
+        };
+
+        console.log(model)
+
+        Method.putModel(model, null, errorHandler, doneHandler, reloadModels);
+    });
+
+
+// TOKENIZERS //
+
+
+function reloadTokenizers() {
+    Method.getTokenizers(updateTokenizers, errorHandler, null, null);
+};
+
+
+var $tokenizerName = $('#tokenizer-name')
+    .on('input', function(e){
+        let m;
+        const regex = /^[a-z0-9_]{2,100}$/g;
+        if ((m = regex.exec($(this).val())) !== null) {
+            $confirmAddTokenizer.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmAddTokenizer.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $confirmAddTokenizer = $('#confirm-add-tokenizer')
+    .on('click', function(e){
+        Method.postTokenizer({name: $tokenizerName.val()}, null, errorHandler, doneHandler, reloadTokenizers);
+    });
+
+
+var $modalAddTokenizer = $('#modal-add-tokenizer')
+    .on('show.bs.modal', function(e){
+        $tokenizerName.val('');
+        $confirmAddTokenizer.addClass('disabled').prop('disabled', true);
+    })
+    .on('hidden.bs.modal', function(e){
+        $tokenizerName.val('');
+        $confirmAddTokenizer.addClass('disabled').prop('disabled', true);
+    });
+
+
+var $confirmDelTokenizer = $('#confirm-del-tokenizer')
+    .on('click', function(e){
+        Method.deleteTokenizer(CURRENT_TOKENIZER.location, null, errorHandler, doneHandler, reloadTokenizers);
+    })
+    .addClass('disabled').prop('disabled', true);
+
+
+var $controlTokenizerName = $('#control-tokenizer-name')
+    .on('input', function(e){
+        if ($(this).val() === CURRENT_TOKENIZER.name) {
+            $confirmDelTokenizer.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmDelTokenizer.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $modalDelTokenizer = $('#modal-del-tokenizer')
+    .on('show.bs.modal', function(e){
+        $controlTokenizerName.val('');
+    })
+    .on('hidden.bs.modal', function(e){
+        $controlTokenizerName.val('');
+    });
+
+
+var $updateTokenizer = $('#update-tokenizer')
+    .on('click', function(e){
+        const config = $('#tokenizer-config-json').val();
+        try {
+            JSON.parse(config);
+        } catch (err) {
+            ERROR = 'Le document JSON est malformé : <br />' + err;
+            $modalError.modal('show');
+            return;
+        };
+        const data = {
+            name: CURRENT_TOKENIZER.name,
+            location: CURRENT_TOKENIZER.location,
+            config: JSON.parse(config)
+        };
+        Method.putTokenizer(data, null, errorHandler, doneHandler, reloadTokenizers);
+    });
+
+
+// TOKEN FILTERS //
+
+
+function reloadFilters() {
+    Method.getFilters(updateFilters, errorHandler, null, null);
+};
+
+
+var $tokenFilterName = $('#tokenfilter-name')
+    .on('input', function(e){
+        let m;
+        const regex = /^[a-z0-9_]{2,100}$/g;
+        if ((m = regex.exec($(this).val())) !== null) {
+            $confirmAddTokenFilter.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmAddTokenFilter.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $confirmAddTokenFilter = $('#confirm-add-tokenfilter')
+    .on('click', function(e){
+        Method.postFilter({name: $tokenFilterName.val()}, null, errorHandler, doneHandler, reloadFilters);
+    });
+
+
+var $modalAddFilter = $('#modal-add-tokenfilter')
+    .on('show.bs.modal', function(e){
+        $tokenFilterName.val('');
+        $confirmAddTokenFilter.addClass('disabled').prop('disabled', true);
+    })
+    .on('hidden.bs.modal', function(e){
+        $tokenFilterName.val('');
+        $confirmAddTokenFilter.addClass('disabled').prop('disabled', true);
+    });
+
+
+var $confirmDelFilter = $('#confirm-del-tokenfilter')
+    .on('click', function(e){
+        Method.deleteFilter(CURRENT_FILTER.location, null, errorHandler, doneHandler, reloadFilters);
+    })
+    .addClass('disabled').prop('disabled', true);
+
+
+var $controlTokenFilterName = $('#control-tokenfilter-name')
+    .on('input', function(e){
+        if ($(this).val() === CURRENT_FILTER.name) {
+            $confirmDelFilter.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmDelFilter.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $modalDelTokenFilter = $('#modal-del-tokenfilter')
+    .on('show.bs.modal', function(e){
+        $controlTokenFilterName.val('');
+    })
+    .on('hidden.bs.modal', function(e){
+        $controlTokenFilterName.val('');
+    });
+
+
+$('#update-tokenfilter')
+    .on('click', function(e){
+        const config = $('#tokenfilter-config-json').val();
+        try {
+            JSON.parse(config);
+        } catch (err) {
+            ERROR = 'Le document JSON est malformé : <br />' + err;
+            $modalError.modal('show');
+            return;
+        };
+
+        const data = {
+            name: CURRENT_FILTER.name,
+            location: CURRENT_FILTER.location,
+            config: JSON.parse(config)
+        };
+        Method.putFilter(data, null, errorHandler, doneHandler, reloadFilters);
+    });
+
+
+// ANALYZERS //
+
+
+function reloadAnalyzers() {
+    Method.getAnalyzers(updateAnalyzers, errorHandler, null, null);
+};
+
+
+var $analyzerName = $('#analyzer-name')
+    .on('input', function(e){
+        let m;
+        const regex = /^[a-z0-9_]{2,100}$/g;
+        if ((m = regex.exec($(this).val())) !== null) {
+            $confirmAddAnalyzer.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmAddAnalyzer.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $confirmAddAnalyzer = $('#confirm-add-analyzer')
+    .on('click', function(e){
+        Method.postAnalyzer({name: $analyzerName.val() }, null, errorHandler, doneHandler, reloadAnalyzers);
+    });
+
+
+var $modalAddAnalyzer = $('#modal-add-analyzer')
+    .on('show.bs.modal', function(e){
+        $analyzerName.val('');
+        $confirmAddAnalyzer.addClass('disabled').prop('disabled', true);
+    })
+    .on('hidden.bs.modal', function(e){
+        $analyzerName.val('');
+        $confirmAddAnalyzer.addClass('disabled').prop('disabled', true);
+    });
+
+
+var $confirmDelAnalyzer = $('#confirm-del-analyzer')
+    .on('click', function(e){
+        Method.deleteAnalyzer(CURRENT_ANALYZER.location, null, errorHandler, doneHandler, reloadAnalyzers);
+    })
+    .addClass('disabled').prop('disabled', true);
+
+
+var $controlAnalyzerName = $('#control-analyzer-name')
+    .on('input', function(e){
+        if ($(this).val() === CURRENT_ANALYZER.name) {
+            $confirmDelAnalyzer.removeClass('disabled').prop('disabled', false);
+        } else {
+            $confirmDelAnalyzer.addClass('disabled').prop('disabled', true);
+        };
+    });
+
+
+var $modalDelAnalyzer = $('#modal-del-analyzer')
+    .on('show.bs.modal', function(e){
+        $controlAnalyzerName.val('');
+    })
+    .on('hidden.bs.modal', function(e){
+        $controlAnalyzerName.val('');
+    });
+
+
+var $updateAnalyzer = $('#update-analyzer')
+    .on('click', function(e){
+        const analyzer = CURRENT_ANALYZER;
+        analyzer.filters = [];
+        $('#chosen-filters > li').each(function(m){
+            analyzer.filters.push($(this).text());
+        });
+        analyzer.tokenizer = $('#choice-tokenizer').val();
+        // analyzer.config = JSON.parse($('#analyzer-config-json').val());
+        Method.putAnalyzer(analyzer, null, errorHandler, doneHandler, reloadAnalyzers);
+    });
+
+
+//
+
+let HASH_MENU = [];
+$('#menu a[data-toggle="tab"]')
+    .each(function(e){
+        HASH_MENU.push($(this).prop('hash'));
+    })
+    .on('hide.bs.tab', function(e){
+        e.stopPropagation();
+        closeAllModal();
+    })
+    .on('show.bs.tab', function(e){
+        e.stopPropagation();
+        $this = $(e.target);
+        $that = $(e.relatedTarget);
+        $thisHash = $this.prop('hash');
+        loadTab($thisHash);
+        window.location = $thisHash;
+    });
+
+let ANALYSIS_MENU = [];
+$('#analysis a[data-toggle="tab"]')
+    .each(function(e){
+        ANALYSIS_MENU.push($(this).prop('hash'));
+    })
+    .on('hide.bs.tab', function(e){
+        e.stopPropagation();
+        closeAllModal();
+    })
+    .on('show.bs.tab', function(e){
+        e.stopPropagation();
+        $this = $(e.target);
+        $that = $(e.relatedTarget);
+
+        if ($this.prop('hash') === '#tokenizers') {
+            Method.getTokenizers(updateTokenizers, errorHandler, null, null);
+        };
+        if ($this.prop('hash') === '#tokenfilters') {
+            Method.getFilters(updateFilters, errorHandler, null, null);
+        };
+        if ($this.prop('hash') === '#analyzers') {
+            Method.getAnalyzers(updateAnalyzers, errorHandler, null, null);
+        };
+    });
+
+$('textarea').keydown(function(e){
+    if (e.keyCode === 9) {
+        const $this = $(this);
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        const val = $this.val();
+        $this.val(val.substring(0, start) + '\t' + val.substring(end));
+        this.selectionStart = this.selectionEnd = start + 1;
+        e.preventDefault();
+    };
+});
+
+
+$('label[for="model-config-json"] a')
+    .popover({
+        content: 'Cf. Query DSL dans la documentation Elasticsearch.',
+        html: true,
+        placement: 'top',
+        template: '<div class="popover popover-info" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+        trigger: 'hover'
+    });
+
+
+$('pop-info').popover();
+
+
+$('#log-out').click(function(e){
+	e.preventDefault()
+	const request = new XMLHttpRequest();
+	request.open('get', '/', false, 'false', 'false');
+	request.send();
+	window.location.reload();
+});
+
+window.onhashchange = function(e){
+    $('#menu a[href="' + window.location.hash + '"]').tab('show');
+    e.preventDefault();
+};
+
+
+window.onload = function(e){
+    const hash = window.location.hash;
+    const h = (HASH_MENU.indexOf(hash) === -1) ? '#indices' : hash;
+    $('#menu a[href="' + h + '"]').tab('show');
+    moment.locale('fr');
+    e.preventDefault();
+};
+
+    </script>
+</html>
