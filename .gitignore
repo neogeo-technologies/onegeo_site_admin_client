@@ -1,5 +1,6 @@
 # Optional npm cache directory
 .npm
+npm-debug.log
 
 # bower
-assets/libs
+src/assets/libs
