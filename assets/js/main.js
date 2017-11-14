@@ -59,7 +59,7 @@ function httpDelete(location, onSuccess, onFailure, onDone, onAlways){
 
 
 var Method = {
-    url: window.location.origin + '/query?path=',
+    url: window.location.origin + '/api',
     getAvailableSources: function(onSuccess, onFailure, onDone, onAlways){
         $ajax(this.url + '/sources_directories', 'GET', null, onSuccess, onFailure, onDone, onAlways);
     },
