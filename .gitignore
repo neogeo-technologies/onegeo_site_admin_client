@@ -2,4 +2,4 @@
 .npm
 
 # bower
-assets/libs
+src/assets/libs
