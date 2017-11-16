@@ -49,7 +49,7 @@ function $ajax(url, type, data, onSuccess, onFailure, onDone, onAlways) {
 
 
 function httpPut(data, onSuccess, onFailure, onDone, onAlways){
-    $ajax(this.url + data.location, 'PUT', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
+    $ajax(this.url + '/' + data.location, 'PUT', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
 };
 
 
