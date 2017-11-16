@@ -353,11 +353,11 @@ ul.list-chosen > li.sortable-placeholder {
 }
 
 ul.list-choice > li.sortable-placeholder {
-    background-image: url('/imgs/minus.png');
+    background-image: url('/assets/imgs/minus.png');
 }
 
 ul.list-chosen > li.sortable-placeholder {
-    background-image: url('/imgs/plus.png');
+    background-image: url('/assets/imgs/plus.png');
 }
 
 .grabbable {
