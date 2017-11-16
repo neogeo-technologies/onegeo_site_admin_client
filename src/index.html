@@ -2706,11 +2706,15 @@ $('pop-info').popover();
 
 $('#log-out').click(function(e){
     e.preventDefault()
-    const xhr = new XMLHttpRequest();
-    xhr.open('HEAD', '/', true);
-    xhr.setRequestHeader('Authorization', null);
-    xhr.send();
-    window.location.reload();
+    $.ajax({
+        type: 'GET',
+        url: API_BASE_URL + 'sources',
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Authorization', null);
+        },
+    }).always(function() {
+        window.location.reload();
+    });
 });
 
 
