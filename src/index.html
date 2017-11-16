@@ -2705,12 +2705,14 @@ $('pop-info').popover();
 
 
 $('#log-out').click(function(e){
-	e.preventDefault()
-	const request = new XMLHttpRequest();
-	request.open('get', '/', false, 'false', 'false');
-	request.send();
-	window.location.reload();
+    e.preventDefault()
+    const xhr = new XMLHttpRequest();
+    xhr.open('HEAD', '/', true);
+    xhr.setRequestHeader('Authorization', null);
+    xhr.send();
+    window.location.reload();
 });
+
 
 window.onhashchange = function(e){
     $('#menu a[href="' + window.location.hash + '"]').tab('show');

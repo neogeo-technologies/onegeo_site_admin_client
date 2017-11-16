@@ -139,7 +139,7 @@ var Method = {
         $ajax(this.url + '/profiles', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
     },
     getTask: function(location, onSuccess, onFailure, onDone, onAlways){
-        $ajax(this.url + location, 'GET', null, onSuccess, onFailure, onDone, onAlways);
+        $ajax(this.url + '/' + location, 'GET', null, onSuccess, onFailure, onDone, onAlways);
     },
     action: function(data, onSuccess, onFailure, onDone, onAlways){
         $ajax(this.url + '/action', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
