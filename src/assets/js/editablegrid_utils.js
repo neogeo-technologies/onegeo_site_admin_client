@@ -95,74 +95,54 @@ function Table(containerId, containerName, metadata, buttons, options) {
 		onRowUnselected: function(row) {},
 	};
 
-	this.actions = {
-		add: (buttons.indexOf('add') > -1) ? function() {} : undefined,
-		remove: (buttons.indexOf('remove') > -1) ? function() {} : undefined,
-		open: (buttons.indexOf('open') > -1) ? function() {} : undefined
+	this.buttons = {before: {}, after: {}};
+	for (const name in buttons) {
+		this.buttons[buttons[name].position][name] = $(buttons[name].html).click(function(e) {
+			e.preventDefault();
+			buttons[name].method.apply(that, arguments);
+		});
 	};
-
-	this.buttons = {
-		$add: (buttons.indexOf('add') > -1) ? $('#' + containerId).parent().find('button[name="add"]')
-			.on('click', function(e) {
-				if (typeof that.events.onRowUnselected === 'function') {
-					that.actions.add.apply(this, arguments);
-				};
-			}) : undefined,
-		$remove: (buttons.indexOf('remove') > -1) ? $('#' + containerId).parent().find('button[name="remove"]')
-			.on('click', function(e) {
-				if (typeof that.events.onRowUnselected === 'function') {
-					that.actions.remove.apply(this, arguments);
-				};
-			}) : undefined,
-		$open: (buttons.indexOf('open') > -1) ? $('#' + containerId).parent().find('button[name="open"]')
-			.on('click', function(e) {
-				if (typeof that.events.onRowUnselected === 'function') {
-					that.actions.open.apply(this, arguments);
-				};
-			}) : undefined
-	};
-
+	
 	this.grid = new EditableGrid(containerName, {pageSize: this.options.pageSize || 10});
 
 	this.grid.initializeGrid = function() {
-		with (this) {
 
-			tableRendered = function() {
-				this.updatePaginator(this);
-			};
-
-			for (const column of this.columns) {
-				if (column.datatype == 'boolean') {
-					setCellRenderer(column.name, new CellRenderer({
-						render: function(cell, value) {
-							cell.style.textAlign = 'center';
-							// cell.style.width = '32px';
-							cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '';
-						}
-					}));
-				}
-			};
-
-			rowSelected = function(pRowIdx, nRowIdx) {
-				const pRow = this.getRow(pRowIdx);
-				const nRow = this.getRow(nRowIdx);
-				$(pRow).removeClass('selected');
-				if (pRowIdx != nRowIdx) {
-					$(nRow).addClass('selected');
-					that.buttons.$open && that.buttons.$open.removeClass('disabled').prop('disabled', false);
-					that.buttons.$remove && that.buttons.$remove.removeClass('disabled').prop('disabled', false);
-					if (typeof that.events.onRowUnselected === 'function') {
-						that.events.onRowUnselected.apply(this, arguments);
-					};
-				} else {
-					that.buttons.$open && that.buttons.$open.addClass('disabled').prop('disabled', true);
-					that.buttons.$remove && that.buttons.$remove.addClass('disabled').prop('disabled', true);
-					if (typeof that.events.onRowUnselected === 'function') {
-						that.events.onRowSelected.apply(this, arguments);
-					};
-				};
-			}.bind(this);
+		this.tableRendered = function() {
+			this.updatePaginator(this);
 		};
+
+		for (const column of this.columns) {
+			if (column.datatype == 'boolean') {
+				setCellRenderer(column.name, new CellRenderer({
+					render: function(cell, value) {
+						cell.style.textAlign = 'center';
+						// cell.style.width = '32px';
+						cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '';
+					}
+				}));
+			}
+		};
+
+		this.rowSelected = function(pRowIdx, nRowIdx) {
+			const pRow = this.getRow(pRowIdx);
+			const nRow = this.getRow(nRowIdx);
+			$(pRow).removeClass('selected');
+			if (pRowIdx != nRowIdx) {
+				$(nRow).addClass('selected');
+				that.buttons.$open && that.buttons.$open.removeClass('disabled').prop('disabled', false);
+				that.buttons.$remove && that.buttons.$remove.removeClass('disabled').prop('disabled', false);
+				if (typeof that.events.onRowUnselected === 'function') {
+					that.events.onRowUnselected.apply(this, arguments);
+				};
+			} else {
+				that.buttons.$open && that.buttons.$open.addClass('disabled').prop('disabled', true);
+				that.buttons.$remove && that.buttons.$remove.addClass('disabled').prop('disabled', true);
+				if (typeof that.events.onRowUnselected === 'function') {
+					that.events.onRowSelected.apply(this, arguments);
+				};
+			};
+		}.bind(this);
+
 	};
 };
 
@@ -170,10 +150,19 @@ Table.prototype.constructor = Table;
 
 Table.prototype.update = function(data) {
 	const $container = $(this.container);
+
 	if (data.length < 1) {
-		$container.hide();
-		// TODO: Afficher un message s'il n'y pas de données.
-		// TODO: Masquer les boutons
+		
+		// Début de code moche
+		const $buttonGroup = $('<div class="buttons-on-the-right-side"/>');
+		for (const name in this.buttons.before) {
+			$buttonGroup.append(this.buttons.before[name]);
+		};
+		$container.before($buttonGroup);
+		// Fin de code moche
+
+		$container.html('<div class="alert alert-info" role="alert">Vide</div>')
+		$container.show();
 	} else {
 		this.grid.load({
 			metadata: this.metadata,
@@ -182,7 +171,20 @@ Table.prototype.update = function(data) {
 		this.grid.renderGrid(this.container.id, 'table table-striped table-bordered table-hover table-condensed');
 		this.grid.initializeGrid();
 		this.grid.refreshGrid();
-		$container.show();
+
+		// Début de code moche
+		$buttonGroup = $('<div class="buttons-on-the-right-side"/>');
+		for (const name in this.buttons.before) {
+			$buttonGroup.append(this.buttons.before[name]);
+		};
+		$container.before($buttonGroup);
+		$buttonGroup = $('<div class="buttons-on-the-right-side"/>');
+		for (const name in this.buttons.after) {
+			$buttonGroup.append(this.buttons.after[name]);
+		};
+		$container.after($buttonGroup);
+		// Fin de code moche
+
 	};
 };
 

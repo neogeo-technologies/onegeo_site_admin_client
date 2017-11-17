@@ -21,12 +21,12 @@
 		// John Resig - https://johnresig.com/ - MIT Licensed
 		(function() {
 			var cache = {};
-			this.template = function template(str, data) {
+			this.templator = function templator(str, data) {
 			// Figure out if we're getting a template, or if we need to
 			// load the template - and be sure to cache the result.
 			var fn = !/\W/.test(str) ?
 				cache[str] = cache[str] ||
-				template(document.getElementById(str).innerHTML) :
+				templator(document.getElementById(str).innerHTML) :
 				// Generate a reusable function that will serve as a template
 				// generator (and which will be cached).
 				new Function("obj",
@@ -81,23 +81,19 @@
 	<!-- Template pour le contenu de la fenêtre "modal" -->
 	<template id="base_modal_content">
 		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<button type="button" name="close" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			<h4 class="modal-title">{%= heading.title.text %}</h4>
 		</div>
 		<div class="modal-body">
 			{% for (const entry of body) { %}
-			{%= template(entry.template, entry.data) %}
+			{%= templator(entry.template, entry.data) %}
 			{% }; %}
 		</div>
 		<div class="modal-footer">
 			{% for (const entry of footer) { %}
-			{%= template(entry.template, entry.data) %}
+			{%= templator(entry.template, entry.data) %}
 			{% }; %}
 		</div>
-	</template>
-
-	<!-- TODO: Template pour le contenu d'un "tabpanel" -->
-	<template>
 	</template>
 
 	<!-- Corps de la page -->
@@ -153,49 +149,24 @@
 							<div id="home" role="tabpanel" class="tab-pane fade in">
 								<span>Page d'accueil</span>
 							</div>
-
 							<div id="sources" role="tabpanel" class="tab-pane fade in">
-								<div class="buttons-on-the-right-side">
-									<button type="button" name="add" class="btn btn-primary">Nouveau</button>
-								</div>
 								<div id="table-sources" class="table-responsive"></div>
 								<nav aria-label="Page navigation" style="text-align: center;">
 									<ul id="table-sources-paginator" class="pagination pagination-sm"></ul>
 								</nav>
-								<div class="buttons-on-the-right-side">
-									<button type="button" name="remove" class="btn btn-danger">Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-									<button type="button" name="open" class="btn btn-default">Ouvrir</button>
-								</div>
 							</div>
-
 							<div id="indices" role="tabpanel" class="tab-pane fade in">
-								<div class="buttons-on-the-right-side">
-									<button type="button" name="add" class="btn btn-primary">Nouveau</button>
-								</div>
 								<div id="table-indices" class="table-responsive"></div>
 								<nav aria-label="Page navigation" style="text-align: center;">
 									<ul id="table-indices-paginator" class="pagination pagination-sm"></ul>
 								</nav>
-								<div class="buttons-on-the-right-side">
-									<button type="button" name="remove" class="btn btn-danger">Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-									<button type="button" name="open" class="btn btn-default">Ouvrir</button>
-								</div>
 							</div>
-
 							<div id="services" role="tabpanel" class="tab-pane fade in">
-								<div class="buttons-on-the-right-side">
-									<button type="button" name="add" class="btn btn-primary">Nouveau</button>
-								</div>
 								<div id="table-services" class="table-responsive"></div>
 								<nav aria-label="Page navigation" style="text-align: center;">
 									<ul id="table-services-paginator" class="pagination pagination-sm"></ul>
 								</nav>
-								<div class="buttons-on-the-right-side">
-									<button type="button" name="remove" class="btn btn-danger">Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-									<button type="button" name="open" class="btn btn-default">Ouvrir</button>
-								</div>
 							</div>
-
 						</div>
 					</div>
 				</div>
@@ -206,14 +177,11 @@
 	<script>
 $(function() {
 
-
 	let onegeoClient = new OnegeoClient('/query?path=');  // TODO -> Déplacer le path dans un fichier de configuration
 
 
-	let $modal = $('.modal[role="dialog"]').modal({
-		'backdrop': 'static',
-		'show': false
-	});
+	// Définition de la fenêtre "modal"
+	let $modal = $('.modal[role="dialog"]').modal({'backdrop': 'static', 'show': false});
 
 
 	let onXhrFailure = function(cb) {
@@ -228,7 +196,8 @@ $(function() {
 
 	let openModalSignIn = function(callback) {
 
-		$modal.find('.modal-content').html(template('base_modal_content', {
+		// Construit la fenêtre "modal"..
+		$modal.find('.modal-content').html(templator('base_modal_content', {
 			heading: {
 				title: {
 					text: 'Connectez-vous'
@@ -265,10 +234,10 @@ $(function() {
 			}]
 		}));
 
+		// Définit les actions..
 		const $username = $modal.find('input[name=username]');
 		const $password = $modal.find('input[name=password]');
-
-		$modal.find('button[name=submit]').click(function(e) {
+		$modal.find('button[name="submit"]').click(function(e) {
 			if ($username.val() && $password.val()) {
 				onegeoClient.connect($username.val(), $password.val(), function(isLogged) {
 					if (isLogged) {
@@ -284,15 +253,19 @@ $(function() {
 				!$username.val() ? $username.focus() : $password.focus();
 			};
 		});
+		$modal.find('button[name="close"]').click(function(e) {
+			$('a[href="' + HASH_TAB[0] + '"]').tab('show');
+		});
 
+		// Puis ouvre la fenêtre "modal"..
 		$modal.modal('show');
-
 	};
 
 
 	let openModalSignOut = function(callback) {
 
-		$modal.find('.modal-content').html(template('base_modal_content', {
+		// Construit la fenêtre "modal"..
+		$modal.find('.modal-content').html(templator('base_modal_content', {
 			heading: {
 				title: {
 					text: 'Fermer la session'
@@ -316,6 +289,7 @@ $(function() {
 			}]
 		}));
 
+		// Définit les actions..
 		$modal.find('button[name=submit]').click(function(e) {
 			onegeoClient.disconnect(function() {
 				$('[name="identity"]').empty();
@@ -323,50 +297,15 @@ $(function() {
 			});
 		});
 
+		// Puis ouvre la fenêtre "modal"..
 		$modal.modal('show');
-
 	};
 
 
-	// let openModalRemove = function(e, grid, callback) {
-	//
-	// 	e.preventDefault();
-	//
-	// 	const $submit = $('<button type="button" class="btn btn-danger disabled" disabled>Oui, supprimer définitivement cette source</button>')
-	// 		.on('click', function(e) {
-	// 			e.preventDefault();
-	// 			typeof callback === 'function' && callback();
-	// 			e.stopPropagation();
-	// 		});
-	//
-	// 	const $input = $('<input type="text" class="form-control" placeholder="Nom de la source de données à supprimer"/>')
-	// 		.on('input', function(e) {
-	// 			if ($(this).val() === grid.getRowValues(grid.lastSelectedRowIndex)['name']) {
-	// 				$submit.removeClass('disabled').prop('disabled', false);
-	// 			} else {
-	// 				$submit.addClass('disabled').prop('disabled', true);
-	// 			};
-	// 		});
-	//
-	// 	$modal.find('.modal-title').text('Êtes-vous absolument sûr ?');
-	// 	$modal.find('.modal-body').append('\
-	// 		<p>Cette action est irreversible et supprimera <strong>définitivement</strong> cette ressource ainsi que toutes les configurations associées à celle-ci.</p>\
-	// 		<form/>\
-	// 			<div class="form-group"/>\
-	// 				<p>Pour confirmer, veuillez réécrire le nom de la ressource à supprimer.</p>'
-	// 				+ $input[0].outerHTML +
-	// 			'</div>\
-	// 		</form>'
-	// 	)
-	// 	$modal.find('.modal-footer').prepend($submit);
-	// 	$modal.modal('show');
-	//
-	// 	e.stopPropagation();
-	// };
+	let openModalAddSource = function(callback, uri_options, type_options) {
 
-
-	let openModalAddSource = function(grid, callback, uri_options, type_options) {
-		$modal.find('.modal-content').html(template('base_modal_content', {
+		// Construit la fenêtre "modal"..
+		$modal.find('.modal-content').html(templator('base_modal_content', {
 			heading: {
 				title: {
 					text: 'Ajouter une nouvelle source de données'
@@ -418,21 +357,23 @@ $(function() {
 			}]
 		}));
 
+		// Définit les actions..
 		const $name = $modal.find('input[name=name]');
 		const $uri = $modal.find('input[name=uri]');
 		const $type = $modal.find('input[name=type]');
-
 		$modal.find('button[name=submit]').click(function(e) {
-			// TODO
+			typeof callback === 'function' && callback();
 		});
 
+		// Puis ouvre la fenêtre "modal"..
 		$modal.modal('show');
-
 	};
 
 
 	let openModalSource = function(grid, callback) {
-		$modal.find('.modal-content').html(template('base_modal_content', {
+
+		// Construit la fenêtre "modal"..
+		$modal.find('.modal-content').html(templator('base_modal_content', {
 			heading: {
 				title: {
 					text: 'Source : ' + grid.getRowValues(grid.lastSelectedRowIndex)['name']
@@ -451,113 +392,196 @@ $(function() {
 			}]
 		}));
 
+		// Définit les actions..
 		$('#button[name="close"]').click(function(e) {
 			$modal.modal('hide');
 		});
 
+		// Puis ouvre la fenêtre "modal"..
 		$modal.modal('show');
-
 	};
 
 	// Définition des tableaux :
 	let tables = {
-		sourceTable: {
-			table: new Table('table-sources', 'Sources', [
-				{
-					name: 'name',
-					label: 'Nom',
-					editable: false,
-					datatype: 'string'
-				}, {
-					name: 'mode',
-					label: 'Type',
-					editable: false,
-					datatype: 'string'
-				}, {
-					name: 'uri',
-					label: 'URI',
-					editable: false,
-					datatype: 'url'
-				}
-			], ['add', 'open', 'remove']),
-			method: {
-				add: function() { /* TODO */ },
-				open: function() {
-					console.log(0)
+
+		// Tableau des sources de données :
+		'sourceTable': {
+			table: new Table('table-sources', 'Sources', [{
+				name: 'name',
+				label: 'Nom',
+				editable: false,
+				datatype: 'string'
+			}, {
+				name: 'mode',
+				label: 'Type',
+				editable: false,
+				datatype: 'string'
+			}, {
+				name: 'uri',
+				label: 'URI',
+				editable: false,
+				datatype: 'url'
+			}], {
+				'add': {
+					method: function() {
+						const grid = this.grid;
+						openModalAddSource(function() {
+							// TODO
+						}, [
+							// TODO
+						], [
+							// TODO
+						]);
+					},
+					position: 'before',
+					html: templator('button', {
+						text: 'Nouveau',
+						attrs: {
+							name: 'add',
+							type: 'button'
+						}
+					})
 				},
-				remove: function() { /* TODO */ }
-			}
-		},
-		indexProfilesTable: {
-			table: new Table('table-indices', 'Indices', [
-				{
-					name: 'name',
-					label: 'Nom',
-					editable: false,
-					datatype: 'string'
-				// }, {
-				// 	name: 'resource',
-				// 	label: 'Ressource associée',
-				// 	editable: false,
-				// 	datatype: 'string'
+				'open': {
+					method: function() { console.log('open'); },
+					position: 'after',
+					html: templator('button', {
+						text: 'Ouvrir',
+						attrs: {
+							name: 'open',
+							type: 'button'
+						}
+					})
+				},
+				'remove': {
+					method: function() { console.log('remove'); },
+					position: 'after',
+					html: templator('button', {
+						text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+						attrs: {
+							name: 'remove',
+							type: 'button'
+						}
+					})
 				}
-			], ['add', 'open', 'remove']),
-			method: {
-				add: function() { /* TODO */ },
-				open: function() { /* TODO */ },
-				remove: function() { /* TODO */ }
-			}
+			})
 		},
-		searchProfilesTable: {
-			table: new Table('table-services', 'Services', [
-				{
-					name: 'name',
-					label: 'Nom',
-					editable: false,
-					datatype: 'string'
-				}, {
-					name: 'service_url',
-					label: 'URL du service',
-					editable: false,
-					datatype: 'url'
-				}, {
-					name: 'extended',
-					label: 'Extension',
-					editable: false,
-					datatype: 'boolean'
+
+		// Tableau des profils d'indexation :
+		'indexProfilesTable': {
+			table: new Table('table-indices', 'Indices', [{
+				name: 'name',
+				label: 'Nom',
+				editable: false,
+				datatype: 'string'
+			// }, {
+			// 	name: 'resource',
+			// 	label: 'Ressource associée',
+			// 	editable: false,
+			// 	datatype: 'string'
+			}], {
+				'add': {
+					method: function() {
+						const grid = this.grid;
+					},
+					position: 'before',
+					html: templator('button', {
+						text: 'Nouveau',
+						attrs: {
+							name: 'add',
+							type: 'button'
+						}
+					})
+				},
+				'open': {
+					method: function() {
+						const grid = this.grid;
+					},
+					position: 'after',
+					html: templator('button', {
+						text: 'Ouvrir',
+						attrs: {
+							name: 'open',
+							type: 'button'
+						}
+					})
+				},
+				'remove': {
+					method: function() {
+						const grid = this.grid;
+					},
+					position: 'after',
+					html: templator('button', {
+						text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+						attrs: {
+							name: 'remove',
+							type: 'button'
+						}
+					})
 				}
-			], ['add', 'open', 'remove']),
-			method: {
-				add: function() { /* TODO */ },
-				open: function() { /* TODO */ },
-				remove: function() { /* TODO */ }
-			}
+			})
+		},
+
+		// Tableau des profils de recherche :
+		'searchProfilesTable': {
+			table: new Table('table-services', 'Services', [{
+				name: 'name',
+				label: 'Nom',
+				editable: false,
+				datatype: 'string'
+			}, {
+				name: 'service_url',
+				label: 'URL du service',
+				editable: false,
+				datatype: 'url'
+			}, {
+				name: 'extended',
+				label: 'Extension',
+				editable: false,
+				datatype: 'boolean'
+			}], {
+				'add': {
+					method: function() {
+						const grid = this.grid;
+					},
+					position: 'before',
+					html: templator('button', {
+						text: 'Nouveau',
+						attrs: {
+							name: 'add',
+							type: 'button'
+						}
+					})
+				},
+				'open': {
+					method: function() {
+						const grid = this.grid;
+					},
+					position: 'after',
+					html: templator('button', {
+						text: 'Ouvrir',
+						attrs: {
+							name: 'open',
+							type: 'button'
+						}
+					})
+				},
+				'remove': {
+					method: function() {
+						const grid = this.grid;
+					},
+					position: 'after',
+					html: templator('button', {
+						text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+						attrs: {
+							name: 'remove',
+							type: 'button'
+						}
+					})
+				}
+			})
 		}
 	};
-
-
-	for (let k in tables) {
-		const t = tables[k];
-		t.table.actions.remove = function(e) {
-			openModalRemove(e, t.table.grid, t.method.remove);
-		};
-		t.table.actions.open = function(e) {
-			openModalSource(e, t.table.grid, t.method.open);
-		};
-		t.table.actions.add = function(e) {
-			// TODO:
-			openModalAddSource(t.table.grid, t.method.add, ['file1', 'file2'], ['option1', 'option2']);
-		};
-	};
-
-
-	$('div#home[role="tabpanel"]')
-		.find('button')
-		.each(function() {
-			$('button[name="' + this.name + '"]').on('click', function(e) {
-				$('a[href="#' + this.name + '"]').tab('show');
-			});
-		});
 
 
 	$('.login button')
@@ -610,7 +634,7 @@ $(function() {
 									values: [data[i].name, data[i].mode, data[i].uri]
 								});
 							};
-							tables.sourceTable.table.update(arr);
+							tables['sourceTable'].table.update(arr);
 						},
 						failure: onFailure
 					});
@@ -624,7 +648,7 @@ $(function() {
 									values: [data[i].name]
 								});
 							};
-							tables.indexProfilesTable.table.update(arr);
+							tables['indexProfilesTable'].table.update(arr);
 						},
 						failure: onFailure
 					});
@@ -638,7 +662,7 @@ $(function() {
 									values: [data[i].name, data[i].serviceUrl, data[i].extended]
 								});
 							};
-							tables.searchProfilesTable.table.update(arr);
+							tables['searchProfilesTable'].table.update(arr);
 						},
 						failure: onFailure
 					});
