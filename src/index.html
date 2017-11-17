@@ -56,7 +56,7 @@
 
 	<!-- Template d'un élément "button" -->
 	<template id="button">
-		<button type="{%= attrs.type %}" name="{%= attrs.name %}" class="btn btn-default">{%= text %}</button>
+		<button type="{%= attrs.type %}" name="{%= attrs.name %}" class="btn {%= attrs.class || 'btn-default' %}">{%= text %}</button>
 	</template>
 
 	<!-- Template d'un élément "input" -->
@@ -96,6 +96,14 @@
 		</div>
 	</template>
 
+	<!-- Template du tableau "editablegrid" -->
+	<template id="table_grid">
+		<div id="table-{%= name %}" class="table-responsive"></div>
+		<nav aria-label="Page navigation" style="text-align: center;">
+			<ul id="table-{%= name %}-paginator" class="pagination pagination-sm"></ul>
+		</nav>
+	</template>
+
 	<!-- Corps de la page -->
 	<body>
 		<div class="modal fade" tabindex="-1" role="dialog">
@@ -107,7 +115,7 @@
 		<div class="page-header">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-offset-0 col-md-12">
+					<div class="col-md-12">
 						<span class="title">Site d'administration de Onegeo</span>
 						<span name="identity" class="username"></span>
 						<div class="btn-group login">
@@ -122,7 +130,7 @@
 		<div class="menu-container">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-offset-0 col-md-12">
+					<div class="col-md-12">
 						<ul id="menu" class="nav nav-default" role="tablist">
 							<li role="presentation">
 								<a href="#home" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-home"></span></a>
@@ -149,24 +157,9 @@
 							<div id="home" role="tabpanel" class="tab-pane fade in">
 								<span>Page d'accueil</span>
 							</div>
-							<div id="sources" role="tabpanel" class="tab-pane fade in">
-								<div id="table-sources" class="table-responsive"></div>
-								<nav aria-label="Page navigation" style="text-align: center;">
-									<ul id="table-sources-paginator" class="pagination pagination-sm"></ul>
-								</nav>
-							</div>
-							<div id="indices" role="tabpanel" class="tab-pane fade in">
-								<div id="table-indices" class="table-responsive"></div>
-								<nav aria-label="Page navigation" style="text-align: center;">
-									<ul id="table-indices-paginator" class="pagination pagination-sm"></ul>
-								</nav>
-							</div>
-							<div id="services" role="tabpanel" class="tab-pane fade in">
-								<div id="table-services" class="table-responsive"></div>
-								<nav aria-label="Page navigation" style="text-align: center;">
-									<ul id="table-services-paginator" class="pagination pagination-sm"></ul>
-								</nav>
-							</div>
+							<div id="sources" role="tabpanel" class="tab-pane fade in"></div>
+							<div id="indices" role="tabpanel" class="tab-pane fade in"></div>
+							<div id="services" role="tabpanel" class="tab-pane fade in"></div>
 						</div>
 					</div>
 				</div>
@@ -402,185 +395,182 @@ $(function() {
 	};
 
 	// Définition des tableaux :
-	let tables = {
-
+	let table = {
 		// Tableau des sources de données :
-		'sourceTable': {
-			table: new Table('table-sources', 'Sources', [{
-				name: 'name',
-				label: 'Nom',
-				editable: false,
-				datatype: 'string'
-			}, {
-				name: 'mode',
-				label: 'Type',
-				editable: false,
-				datatype: 'string'
-			}, {
-				name: 'uri',
-				label: 'URI',
-				editable: false,
-				datatype: 'url'
-			}], {
-				'add': {
-					method: function() {
-						const grid = this.grid;
-						openModalAddSource(function() {
-							// TODO
-						}, [
-							// TODO
-						], [
-							// TODO
-						]);
-					},
-					position: 'before',
-					html: templator('button', {
-						text: 'Nouveau',
-						attrs: {
-							name: 'add',
-							type: 'button'
-						}
-					})
+		'sources': new Table('table-sources', 'Sources', [{
+			name: 'name',
+			label: 'Nom',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'mode',
+			label: 'Type',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'uri',
+			label: 'URI',
+			editable: false,
+			datatype: 'url'
+		}], {
+			'add': {
+				method: function() {
+					const grid = this.grid;
+					openModalAddSource(function() {
+						// TODO
+					}, [
+						// TODO
+					], [
+						// TODO
+					]);
 				},
-				'open': {
-					method: function() { console.log('open'); },
-					position: 'after',
-					html: templator('button', {
-						text: 'Ouvrir',
-						attrs: {
-							name: 'open',
-							type: 'button'
-						}
-					})
-				},
-				'remove': {
-					method: function() { console.log('remove'); },
-					position: 'after',
-					html: templator('button', {
-						text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-						attrs: {
-							name: 'remove',
-							type: 'button'
-						}
-					})
-				}
-			})
-		},
-
+				position: 'before',
+				html: templator('button', {
+					text: 'Nouveau',
+					attrs: {
+						name: 'add',
+						type: 'button',
+						class: 'btn-primary'
+					}
+				})
+			},
+			'open': {
+				method: function() { console.log('open'); },
+				position: 'after',
+				html: templator('button', {
+					text: 'Ouvrir',
+					attrs: {
+						name: 'open',
+						type: 'button'
+					}
+				})
+			},
+			'remove': {
+				method: function() { console.log('remove'); },
+				position: 'after',
+				html: templator('button', {
+					text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+					attrs: {
+						name: 'remove',
+						type: 'button',
+						class: 'btn-danger'
+					}
+				})
+			}
+		}),
 		// Tableau des profils d'indexation :
-		'indexProfilesTable': {
-			table: new Table('table-indices', 'Indices', [{
-				name: 'name',
-				label: 'Nom',
-				editable: false,
-				datatype: 'string'
-			// }, {
-			// 	name: 'resource',
-			// 	label: 'Ressource associée',
-			// 	editable: false,
-			// 	datatype: 'string'
-			}], {
-				'add': {
-					method: function() {
-						const grid = this.grid;
-					},
-					position: 'before',
-					html: templator('button', {
-						text: 'Nouveau',
-						attrs: {
-							name: 'add',
-							type: 'button'
-						}
-					})
+		'indices': new Table('table-indices', 'Indices', [{
+			name: 'name',
+			label: 'Nom',
+			editable: false,
+			datatype: 'string'
+		// }, {
+		// 	name: 'resource',
+		// 	label: 'Ressource associée',
+		// 	editable: false,
+		// 	datatype: 'string'
+		}], {
+			'add': {
+				method: function() {
+					const grid = this.grid;
 				},
-				'open': {
-					method: function() {
-						const grid = this.grid;
-					},
-					position: 'after',
-					html: templator('button', {
-						text: 'Ouvrir',
-						attrs: {
-							name: 'open',
-							type: 'button'
-						}
-					})
+				position: 'before',
+				html: templator('button', {
+					text: 'Nouveau',
+					attrs: {
+						name: 'add',
+						type: 'button',
+						class: 'btn-primary'
+					}
+				})
+			},
+			'open': {
+				method: function() {
+					const grid = this.grid;
 				},
-				'remove': {
-					method: function() {
-						const grid = this.grid;
-					},
-					position: 'after',
-					html: templator('button', {
-						text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-						attrs: {
-							name: 'remove',
-							type: 'button'
-						}
-					})
-				}
-			})
-		},
-
+				position: 'after',
+				html: templator('button', {
+					text: 'Ouvrir',
+					attrs: {
+						name: 'open',
+						type: 'button'
+					}
+				})
+			},
+			'remove': {
+				method: function() {
+					const grid = this.grid;
+				},
+				position: 'after',
+				html: templator('button', {
+					text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+					attrs: {
+						name: 'remove',
+						type: 'button',
+						class: 'btn-danger'
+					}
+				})
+			}
+		}),
 		// Tableau des profils de recherche :
-		'searchProfilesTable': {
-			table: new Table('table-services', 'Services', [{
-				name: 'name',
-				label: 'Nom',
-				editable: false,
-				datatype: 'string'
-			}, {
-				name: 'service_url',
-				label: 'URL du service',
-				editable: false,
-				datatype: 'url'
-			}, {
-				name: 'extended',
-				label: 'Extension',
-				editable: false,
-				datatype: 'boolean'
-			}], {
-				'add': {
-					method: function() {
-						const grid = this.grid;
-					},
-					position: 'before',
-					html: templator('button', {
-						text: 'Nouveau',
-						attrs: {
-							name: 'add',
-							type: 'button'
-						}
-					})
+		'services': new Table('table-services', 'Services', [{
+			name: 'name',
+			label: 'Nom',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'service_url',
+			label: 'URL du service',
+			editable: false,
+			datatype: 'url'
+		}, {
+			name: 'extended',
+			label: 'Extension',
+			editable: false,
+			datatype: 'boolean'
+		}], {
+			'add': {
+				method: function() {
+					const grid = this.grid;
 				},
-				'open': {
-					method: function() {
-						const grid = this.grid;
-					},
-					position: 'after',
-					html: templator('button', {
-						text: 'Ouvrir',
-						attrs: {
-							name: 'open',
-							type: 'button'
-						}
-					})
+				position: 'before',
+				html: templator('button', {
+					text: 'Nouveau',
+					attrs: {
+						name: 'add',
+						type: 'button',
+						class: 'btn-primary'
+					}
+				})
+			},
+			'open': {
+				method: function() {
+					const grid = this.grid;
 				},
-				'remove': {
-					method: function() {
-						const grid = this.grid;
-					},
-					position: 'after',
-					html: templator('button', {
-						text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-						attrs: {
-							name: 'remove',
-							type: 'button'
-						}
-					})
-				}
-			})
-		}
+				position: 'after',
+				html: templator('button', {
+					text: 'Ouvrir',
+					attrs: {
+						name: 'open',
+						type: 'button'
+					}
+				})
+			},
+			'remove': {
+				method: function() {
+					const grid = this.grid;
+				},
+				position: 'after',
+				html: templator('button', {
+					text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+					attrs: {
+						name: 'remove',
+						type: 'button',
+						class: 'btn-danger'
+					}
+				})
+			}
+		})
 	};
 
 
@@ -627,6 +617,8 @@ $(function() {
 				if (this.hash === '#sources') {
 					onegeoClient.action.get('sources', {
 						successful: function(data) {
+							const name = this.hash.substr(1);
+							$('.tab-pane#' + name).html( templator('table_grid', {name: name}));
 							const arr = [];
 							for (let i = 0; i < data.length; i ++) {
 								arr.push({
@@ -634,13 +626,15 @@ $(function() {
 									values: [data[i].name, data[i].mode, data[i].uri]
 								});
 							};
-							tables['sourceTable'].table.update(arr);
-						},
+							table[name].update(arr);
+						}.bind(this),
 						failure: onFailure
 					});
 				} else if (this.hash === '#indices') {
 					onegeoClient.action.get('indices', {
 						successful: function(data) {
+							const name = this.hash.substr(1);
+							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
 							const arr = [];
 							for (let i = 0; i < data.length; i ++) {
 								arr.push({
@@ -648,13 +642,15 @@ $(function() {
 									values: [data[i].name]
 								});
 							};
-							tables['indexProfilesTable'].table.update(arr);
-						},
+							table[name].update(arr);
+						}.bind(this),
 						failure: onFailure
 					});
 				} else if (this.hash === '#services') {
 					onegeoClient.action.get('profiles', {
 						successful: function(data) {
+							const name = this.hash.substr(1);
+							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
 							const arr = [];
 							for (let i = 0; i < data.length; i ++) {
 								arr.push({
@@ -662,8 +658,8 @@ $(function() {
 									values: [data[i].name, data[i].serviceUrl, data[i].extended]
 								});
 							};
-							tables['searchProfilesTable'].table.update(arr);
-						},
+							table[name].update(arr);
+						}.bind(this),
 						failure: onFailure
 					});
 				} else {

@@ -87,8 +87,8 @@ function Table(containerId, containerName, metadata, buttons, options) {
 	this.options = options || {};
 
 	this.metadata = metadata;
-
-	this.container = document.getElementById(containerId);
+	
+	this.containerId = containerId;
 
 	this.events = {
 		onRowSelected: function(row) {},
@@ -149,7 +149,8 @@ function Table(containerId, containerName, metadata, buttons, options) {
 Table.prototype.constructor = Table;
 
 Table.prototype.update = function(data) {
-	const $container = $(this.container);
+
+	const $container = $(document.getElementById(this.containerId));
 
 	if (data.length < 1) {
 		
