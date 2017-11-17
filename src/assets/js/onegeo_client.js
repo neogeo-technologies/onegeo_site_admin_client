@@ -152,7 +152,7 @@ OnegeoClient.prototype.__request = function(obj) {
 	}
 	*/
 
-	this.basicAuth = 'Basic ' + btoa('admin:grandlyon');  // ATTENTION !!!
+	// this.basicAuth = 'Basic ' + btoa('admin:passpass');  // ATTENTION !!!
 
 	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + obj.path : obj.path, true);
 

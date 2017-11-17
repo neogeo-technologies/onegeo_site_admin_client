@@ -16,11 +16,10 @@
 		<script src="assets/js/editablegrid_overloaded.js"></script>
 		<script src="assets/js/editablegrid_utils.js"></script>
 		<script src="assets/js/onegeo_client.js"></script>
-
 		<script>
 		// Simple JavaScript Templating
 		// John Resig - https://johnresig.com/ - MIT Licensed
-		(function(){
+		(function() {
 			var cache = {};
 			this.template = function template(str, data) {
 			// Figure out if we're getting a template, or if we need to
@@ -31,9 +30,9 @@
 				// Generate a reusable function that will serve as a template
 				// generator (and which will be cached).
 				new Function("obj",
-					"var p=[],print=function(){p.push.apply(p,arguments);};" +
+					"var _p=[],print=function(){_p.push.apply(_p,arguments);};" +
 					// Introduce the data as local variables using with(){}
-					"with(obj){p.push('" +
+					"with(obj){_p.push('" +
 					// Convert the template into pure JavaScript
 					str
 						.replace(/[\r\t\n]/g, " ")
@@ -41,41 +40,71 @@
 						.replace(/((^|%})[^\t]*)'/g, "$1\r")
 						.replace(/\t=(.*?)%}/g, "',$1,'")
 						.split("\t").join("');")
-						.split("%}").join("p.push('")
+						.split("%}").join("_p.push('")
 						.split("\r").join("\\'")
-						+ "');}return p.join('');");
+						+ "');}return _p.join('');");
 
 					// Provide some basic currying to the user
 					return data ? fn( data ) : fn;
 			};
 		})();
 		</script>
-
 		<link rel="stylesheet" href="assets/libs/bootstrap/dist/css/bootstrap.min.css"/>
 		<link rel="stylesheet" href="assets/libs/editablegrid/editablegrid.css"/>
 		<link rel="stylesheet" href="assets/styles/default.css"/>
 	</head>
 
-	<template id="modal_content">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title">{%=heading.title.text%}</h4>
-		</div>
-		<div class="modal-body">
-			{%=body%}
-		</div>
-		<div class="modal-footer">
-			{% for (const name in footer.button) { %}
-			<button type="button" name="{%=name%}" class="btn btn-default">{%=footer.button[name].text%}</button>
+	<!-- Template d'un élément "button" -->
+	<template id="button">
+		<button type="{%= attrs.type %}" name="{%= attrs.name %}" class="btn btn-default">{%= text %}</button>
+	</template>
+
+	<!-- Template d'un élément "input" -->
+	<template id="form_input">
+		<div class="form-group">
+			<input name="{%= attrs.name %}" list="{%= attrs.datalist ? attrs.name : '' %}" type="{%= attrs.type %}" class="form-control" placeholder="{%= attrs.placeholder || '' %}"/>
+			{% if (attrs.datalist) { %}
+			<datalist id="{%= attrs.name %}">
+				{% for (const value of attrs.datalist.options) { %}
+				<option value="{%= value %}">{%= value %}</option>
+				{% }; %}
+			</datalist>
 			{% }; %}
 		</div>
 	</template>
 
+	<!-- Template d'un élément "p" -->
+	<template id="paragraph">
+		<p>{%= text %}</p>
+	</template>
+
+	<!-- Template pour le contenu de la fenêtre "modal" -->
+	<template id="base_modal_content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">{%= heading.title.text %}</h4>
+		</div>
+		<div class="modal-body">
+			{% for (const entry of body) { %}
+			{%= template(entry.template, entry.data) %}
+			{% }; %}
+		</div>
+		<div class="modal-footer">
+			{% for (const entry of footer) { %}
+			{%= template(entry.template, entry.data) %}
+			{% }; %}
+		</div>
+	</template>
+
+	<!-- TODO: Template pour le contenu d'un "tabpanel" -->
+	<template>
+	</template>
+
+	<!-- Corps de la page -->
 	<body>
 		<div class="modal fade" tabindex="-1" role="dialog">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
-					<!-- Voir <template> -->
 				</div>
 			</div>
 		</div>
@@ -84,7 +113,7 @@
 				<div class="row">
 					<div class="col-md-offset-0 col-md-12">
 						<span class="title">Site d'administration de Onegeo</span>
-						<span name="username" class="username"></span>
+						<span name="identity" class="username"></span>
 						<div class="btn-group login">
 							<button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<span class="glyphicon glyphicon-user"></span>
@@ -124,6 +153,7 @@
 							<div id="home" role="tabpanel" class="tab-pane fade in">
 								<span>Page d'accueil</span>
 							</div>
+
 							<div id="sources" role="tabpanel" class="tab-pane fade in">
 								<div class="buttons-on-the-right-side">
 									<button type="button" name="add" class="btn btn-primary">Nouveau</button>
@@ -137,6 +167,7 @@
 									<button type="button" name="open" class="btn btn-default">Ouvrir</button>
 								</div>
 							</div>
+
 							<div id="indices" role="tabpanel" class="tab-pane fade in">
 								<div class="buttons-on-the-right-side">
 									<button type="button" name="add" class="btn btn-primary">Nouveau</button>
@@ -150,6 +181,7 @@
 									<button type="button" name="open" class="btn btn-default">Ouvrir</button>
 								</div>
 							</div>
+
 							<div id="services" role="tabpanel" class="tab-pane fade in">
 								<div class="buttons-on-the-right-side">
 									<button type="button" name="add" class="btn btn-primary">Nouveau</button>
@@ -163,6 +195,7 @@
 									<button type="button" name="open" class="btn btn-default">Ouvrir</button>
 								</div>
 							</div>
+
 						</div>
 					</div>
 				</div>
@@ -172,177 +205,280 @@
 	</body>
 	<script>
 $(function() {
-	let onegeoClient = new OnegeoClient('/api');
 
-	let $modal = $('.modal[role="dialog"]')  // Glob!
-		.modal({'backdrop': 'static', 'show': false})
-		.on('hidden.bs.modal', function(e) {
-			// Vide la fenêtre « modal »
-			$(this).find('.modal-body').empty();
-			$(this).find('.modal-title').val('');
-			$(this).find('.modal-footer').find('button:not(button[name="cancel"])').remove();
-		});
+
+	let onegeoClient = new OnegeoClient('/query?path=');  // TODO -> Déplacer le path dans un fichier de configuration
+
+
+	let $modal = $('.modal[role="dialog"]').modal({
+		'backdrop': 'static',
+		'show': false
+	});
+
 
 	let onXhrFailure = function(cb) {
 		if (this.status === 401) {
 			openModalSignIn(cb);
 		} else {
+			// TODO
 			alert(this.status + ' - ' + this.statusText);
 		};
 	};
 
-	let openModalSignIn = function(callback) {
-		const $user = $('<input type="text" class="form-control" placeholder="Utilisateur"/>');
-		const $pwd = $('<input type="password" class="form-control" placeholder="Mot de passe"/>');
-		const $submit = $('<button type="button" class="btn btn-primary">Se connecter</button>')
-			.on('click', function(e) {
-				if ($user.val() && $pwd.val()) {
-					onegeoClient.connect($user.val(), $pwd.val(), function(isLogged) {
-						if (isLogged) {
-							$('[name="username"]').text($user.val());
-							$modal.modal('hide');
-							typeof callback === 'function' && callback();
-						} else {
-							$pwd.val('');
-							$user.val('').focus();
-						};
-					});
-				} else {
-					!$user.val() ? $user.focus() : $pwd.focus();
-				};
-			});
 
-		$modal.find('.modal-title').text('Saisissez vos paramètres de connexion');
-		$modal.find('.modal-body').append('<form/>')
-			.append( $('<div class="form-group"/>').append($user) )
-			.append( $('<div class="form-group"/>').append($pwd) );
-		$modal.find('.modal-footer').prepend($submit);
+	let openModalSignIn = function(callback) {
+
+		$modal.find('.modal-content').html(template('base_modal_content', {
+			heading: {
+				title: {
+					text: 'Connectez-vous'
+				}
+			},
+			body: [{
+				template: 'form_input',
+				data: {
+					attrs: {
+						name: 'username',
+						type: 'text',
+						placeholder: 'Utilisateur'
+					}
+				}
+			}, {
+				template: 'form_input',
+				data: {
+					attrs: {
+						name: 'password',
+						type: 'password',
+						placeholder: 'Mot de passe'
+					}
+				}
+			}],
+			footer: [{
+				template: 'button',
+				data: {
+					text: 'Se connecter',
+					attrs: {
+						name: 'submit',
+						type: 'button'
+					}
+				}
+			}]
+		}));
+
+		const $username = $modal.find('input[name=username]');
+		const $password = $modal.find('input[name=password]');
+
+		$modal.find('button[name=submit]').click(function(e) {
+			if ($username.val() && $password.val()) {
+				onegeoClient.connect($username.val(), $password.val(), function(isLogged) {
+					if (isLogged) {
+						$('[name="identity"]').text($username.val());
+						$modal.modal('hide');
+						typeof callback === 'function' && callback();
+					} else {
+						$password.val('');
+						$username.val('').focus();
+					};
+				});
+			} else {
+				!$username.val() ? $username.focus() : $password.focus();
+			};
+		});
+
 		$modal.modal('show');
+
 	};
+
 
 	let openModalSignOut = function(callback) {
-		const $submit = $('<button type="button" class="btn btn-default">Me déconnecter</button>')
-			.on('click', function(e) {
-				onegeoClient.disconnect(function() {
-					$('[name="username"]').empty();
-					typeof callback === 'function' && callback();
-				});
-			});
 
-		$modal.find('.modal-title').text('Fermer la session');
-		$modal.find('.modal-body').append('<p/>Vous êtes sur le point de vous déconnecter.</p>');
-		$modal.find('.modal-footer').prepend($submit);
-		$modal.modal('show');
-	};
+		$modal.find('.modal-content').html(template('base_modal_content', {
+			heading: {
+				title: {
+					text: 'Fermer la session'
+				}
+			},
+			body: [{
+				template: 'paragraph',
+				data: {
+					text: 'Vous êtes sur le point de vous déconnecter.'
+				}
+			}],
+			footer: [{
+				template: 'button',
+				data: {
+					text: 'Se déconnecter',
+					attrs: {
+						name: 'submit',
+						type: 'button'
+					}
+				}
+			}]
+		}));
 
-	let openModalRemove = function(e, grid, callback) {
-		e.preventDefault();
-
-		const $submit = $('<button type="button" class="btn btn-danger disabled" disabled>Oui, supprimer définitivement cette source</button>')
-			.on('click', function(e) {
-				e.preventDefault();
+		$modal.find('button[name=submit]').click(function(e) {
+			onegeoClient.disconnect(function() {
+				$('[name="identity"]').empty();
 				typeof callback === 'function' && callback();
-				e.stopPropagation();
 			});
+		});
 
-		const $input = $('<input type="text" class="form-control" placeholder="Nom de la source de données à supprimer"/>')
-			.on('input', function(e) {
-				if ($(this).val() === grid.getRowValues(grid.lastSelectedRowIndex)['name']) {
-					$submit.removeClass('disabled').prop('disabled', false);
-				} else {
-					$submit.addClass('disabled').prop('disabled', true);
-				};
-			});
-
-		$modal.find('.modal-title').text('Êtes-vous absolument sûr ?');
-		$modal.find('.modal-body').append('\
-			<p>Cette action est irreversible et supprimera <strong>définitivement</strong> cette ressource ainsi que toutes les configurations associées à celle-ci.</p>\
-			<form/>\
-				<div class="form-group"/>\
-					<p>Pour confirmer, veuillez réécrire le nom de la ressource à supprimer.</p>'
-					+ $input[0].outerHTML +
-				'</div>\
-			</form>'
-		)
-		$modal.find('.modal-footer').prepend($submit);
 		$modal.modal('show');
 
-		e.stopPropagation();
 	};
 
-	let openModalAddSource = function(e, grid, callback, paths, modes) {
 
-		let $submit = $('<button type="button" class="btn btn-default disabled" disabled>Ajouter</button>')
-			.on('click', function(e) {
-				e.preventDefault();
-				$modal.modal('hide');
-				typeof callback === 'function' && callback();
-				e.stopPropagation();
-			});
+	// let openModalRemove = function(e, grid, callback) {
+	//
+	// 	e.preventDefault();
+	//
+	// 	const $submit = $('<button type="button" class="btn btn-danger disabled" disabled>Oui, supprimer définitivement cette source</button>')
+	// 		.on('click', function(e) {
+	// 			e.preventDefault();
+	// 			typeof callback === 'function' && callback();
+	// 			e.stopPropagation();
+	// 		});
+	//
+	// 	const $input = $('<input type="text" class="form-control" placeholder="Nom de la source de données à supprimer"/>')
+	// 		.on('input', function(e) {
+	// 			if ($(this).val() === grid.getRowValues(grid.lastSelectedRowIndex)['name']) {
+	// 				$submit.removeClass('disabled').prop('disabled', false);
+	// 			} else {
+	// 				$submit.addClass('disabled').prop('disabled', true);
+	// 			};
+	// 		});
+	//
+	// 	$modal.find('.modal-title').text('Êtes-vous absolument sûr ?');
+	// 	$modal.find('.modal-body').append('\
+	// 		<p>Cette action est irreversible et supprimera <strong>définitivement</strong> cette ressource ainsi que toutes les configurations associées à celle-ci.</p>\
+	// 		<form/>\
+	// 			<div class="form-group"/>\
+	// 				<p>Pour confirmer, veuillez réécrire le nom de la ressource à supprimer.</p>'
+	// 				+ $input[0].outerHTML +
+	// 			'</div>\
+	// 		</form>'
+	// 	)
+	// 	$modal.find('.modal-footer').prepend($submit);
+	// 	$modal.modal('show');
+	//
+	// 	e.stopPropagation();
+	// };
 
-		// Form URI
-		const $sourceUri = $('<input list="source-options" class="form-control"/>');
-		const $sourceDataList = $('<datalist id="' + $sourceUri[0].attributes['list'].value + '"/>');
-		for (const value of paths) {
-			$sourceDataList.append('<option value="' + value +'">' + value + '</option>');
-		};
 
-		// Form Mode
-		const $sourceMode = $('<select class="form-control"/>');
-		for (const key in modes) {
-			$sourceMode.append('<option value="' + key +'">' + modes[key] + '</option>');
-		};
+	let openModalAddSource = function(grid, callback, uri_options, type_options) {
+		$modal.find('.modal-content').html(template('base_modal_content', {
+			heading: {
+				title: {
+					text: 'Ajouter une nouvelle source de données'
+				}
+			},
+			body: [{
+				template: 'form_input',
+				data: {
+					attrs: {
+						name: 'name',
+						type: 'text',
+						placeholder: 'Entrez le nom de la nouvelle source de données'
+					}
+				}
+			}, {
+				template: 'form_input',
+				data: {
+					attrs: {
+						name: 'uri',
+						type: 'text',
+						placeholder: 'Sélectionnez ou indiquez la source de données',
+						datalist: {
+							options: uri_options
+						}
+					}
+				}
+			}, {
+				template: 'form_input',
+				data: {
+					attrs: {
+						name: 'type',
+						type: 'text',
+						placeholder: 'Sélectionnez ou indiquez le type de la nouvelle source de données',
+						datalist: {
+							options: type_options
+						}
+					}
+				}
+			}],
+			footer: [{
+				template: 'button',
+				data: {
+					text: 'Ajouter',
+					attrs: {
+						name: 'submit',
+						type: 'button'
+					}
+				}
+			}]
+		}));
 
-		// Form Name
-		const $sourceName = $('<input type="text" class="form-control"/>')
-			.on('input', function(e) {
-				let m;
-				const regex = /^[a-z0-9_]{2,100}$/g;
-				if ((m = regex.exec($(this).val())) !== null) {
-					$confirmAddSource.removeClass('disabled').prop('disabled', false);
-				} else {
-					$confirmAddSource.addClass('disabled').prop('disabled', true);
-				};
-			});
+		const $name = $modal.find('input[name=name]');
+		const $uri = $modal.find('input[name=uri]');
+		const $type = $modal.find('input[name=type]');
+
+		$modal.find('button[name=submit]').click(function(e) {
+			// TODO
+		});
+
+		$modal.modal('show');
+
 	};
 
-	let openModalSource = function(e, grid, callback) {
-		const context = {
+
+	let openModalSource = function(grid, callback) {
+		$modal.find('.modal-content').html(template('base_modal_content', {
 			heading: {
 				title: {
 					text: 'Source : ' + grid.getRowValues(grid.lastSelectedRowIndex)['name']
 				}
 			},
-			body: {
-
-			},
-			footer: {
-				button: {
-					close: {
-						text: 'Fermer'
+			body: [],
+			footer: [{
+				template: 'button',
+				data: {
+					text: 'Ajouter',
+					attrs: {
+						name: 'submit',
+						type: 'button'
 					}
 				}
-			}
-		};
+			}]
+		}));
 
-		$modal.find('.modal-content').html(template('modal_content', context));
-		$('#button[name="close"]').on('click', function(e) {
-			e.preventDefault();
+		$('#button[name="close"]').click(function(e) {
 			$modal.modal('hide');
-			e.stopPropagation();
 		});
+
 		$modal.modal('show');
 
-		e.stopPropagation();
 	};
 
 	// Définition des tableaux :
 	let tables = {
 		sourceTable: {
 			table: new Table('table-sources', 'Sources', [
-				{name: 'name', label: 'Nom', editable: false, datatype: 'string'},
-				{name: 'mode', label: 'Type', editable: false, datatype: 'string'},
-				{name: 'uri', label: 'URI', editable: false, datatype: 'url'}
+				{
+					name: 'name',
+					label: 'Nom',
+					editable: false,
+					datatype: 'string'
+				}, {
+					name: 'mode',
+					label: 'Type',
+					editable: false,
+					datatype: 'string'
+				}, {
+					name: 'uri',
+					label: 'URI',
+					editable: false,
+					datatype: 'url'
+				}
 			], ['add', 'open', 'remove']),
 			method: {
 				add: function() { /* TODO */ },
@@ -354,8 +490,17 @@ $(function() {
 		},
 		indexProfilesTable: {
 			table: new Table('table-indices', 'Indices', [
-				{name: 'name', label: 'Nom', editable: false, datatype: 'string'},
-				// {name: 'resource', label: 'Ressource associée', editable: false, datatype: 'string'}
+				{
+					name: 'name',
+					label: 'Nom',
+					editable: false,
+					datatype: 'string'
+				// }, {
+				// 	name: 'resource',
+				// 	label: 'Ressource associée',
+				// 	editable: false,
+				// 	datatype: 'string'
+				}
 			], ['add', 'open', 'remove']),
 			method: {
 				add: function() { /* TODO */ },
@@ -365,9 +510,22 @@ $(function() {
 		},
 		searchProfilesTable: {
 			table: new Table('table-services', 'Services', [
-				{name: 'name', label: 'Nom', editable: false, datatype: 'string'},
-				{name: 'service_url', label: 'URL du service', editable: false, datatype: 'url'},
-				{name: 'extended', label: 'Extension', editable: false, datatype: 'boolean'}
+				{
+					name: 'name',
+					label: 'Nom',
+					editable: false,
+					datatype: 'string'
+				}, {
+					name: 'service_url',
+					label: 'URL du service',
+					editable: false,
+					datatype: 'url'
+				}, {
+					name: 'extended',
+					label: 'Extension',
+					editable: false,
+					datatype: 'boolean'
+				}
 			], ['add', 'open', 'remove']),
 			method: {
 				add: function() { /* TODO */ },
@@ -377,9 +535,9 @@ $(function() {
 		}
 	};
 
+
 	for (let k in tables) {
 		const t = tables[k];
-
 		t.table.actions.remove = function(e) {
 			openModalRemove(e, t.table.grid, t.method.remove);
 		};
@@ -387,23 +545,20 @@ $(function() {
 			openModalSource(e, t.table.grid, t.method.open);
 		};
 		t.table.actions.add = function(e) {
-			// TODO..
-			// Method.getAvailableModes(function(modes) {
-			// 	Method.getAvailableSources(function(paths) {
-			// 		openModalAddSource(e, t.table.grid, t.method.add, paths, modes);
-			// 	}, onXhrFailure);
-			// }, onXhrFailure);
+			// TODO:
+			openModalAddSource(t.table.grid, t.method.add, ['file1', 'file2'], ['option1', 'option2']);
 		};
 	};
+
 
 	$('div#home[role="tabpanel"]')
 		.find('button')
 		.each(function() {
-			$('button[name="' + this.name + '"]')
-				.on('click', function(e) {
-					$('a[href="#' + this.name + '"]').tab('show');
-				});
+			$('button[name="' + this.name + '"]').on('click', function(e) {
+				$('a[href="#' + this.name + '"]').tab('show');
+			});
 		});
+
 
 	$('.login button')
 		.click(function() {
@@ -416,7 +571,9 @@ $(function() {
 			};
 		});
 
+
 	const HASH_TAB = [];
+
 
 	$('a[data-toggle="tab"]')
 		.each(function(e) {
@@ -427,6 +584,7 @@ $(function() {
 			window.location = hash;
 		})
 		.on('shown.bs.tab', function(e) {/* Rien à faire */});
+
 
 	$('a[data-toggle="tab"]:not([href="' + HASH_TAB[0] + '"])')
 		.each(function(e) {
@@ -447,7 +605,10 @@ $(function() {
 						successful: function(data) {
 							const arr = [];
 							for (let i = 0; i < data.length; i ++) {
-								arr.push({id: i, values: [data[i].name, data[i].mode, data[i].uri]});
+								arr.push({
+									id: i,
+									values: [data[i].name, data[i].mode, data[i].uri]
+								});
 							};
 							tables.sourceTable.table.update(arr);
 						},
@@ -458,7 +619,10 @@ $(function() {
 						successful: function(data) {
 							const arr = [];
 							for (let i = 0; i < data.length; i ++) {
-								arr.push({id: i, values: [data[i].name]});
+								arr.push({
+									id: i,
+									values: [data[i].name]
+								});
 							};
 							tables.indexProfilesTable.table.update(arr);
 						},
@@ -469,7 +633,10 @@ $(function() {
 						successful: function(data) {
 							const arr = [];
 							for (let i = 0; i < data.length; i ++) {
-								arr.push({id: i, values: [data[i].name, data[i].serviceUrl, data[i].extended]});
+								arr.push({
+									id: i,
+									values: [data[i].name, data[i].serviceUrl, data[i].extended]
+								});
 							};
 							tables.searchProfilesTable.table.update(arr);
 						},
@@ -481,12 +648,9 @@ $(function() {
 			});
 		});
 
+
 	$('a[href="' + HASH_TAB[0] + '"]').tab('show');
 
 });
-
-// $(window).bind('hashchange', function(e) {
-// 	e.preventDefault();
-// });
 	</script>
 </html>

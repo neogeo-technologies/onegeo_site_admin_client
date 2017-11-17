@@ -126,6 +126,7 @@ function Table(containerId, containerName, metadata, buttons, options) {
 
 	this.grid.initializeGrid = function() {
 		with (this) {
+
 			tableRendered = function() {
 				this.updatePaginator(this);
 			};
@@ -168,20 +169,20 @@ function Table(containerId, containerName, metadata, buttons, options) {
 Table.prototype.constructor = Table;
 
 Table.prototype.update = function(data) {
-	this.grid.load({
-		'metadata': this.metadata,
-		'data': data
-	});
-	this.grid.renderGrid(this.container.id, 'table table-striped table-bordered table-hover table-condensed');
-	this.grid.initializeGrid();
-	this.grid.refreshGrid();
-
-	//
 	const $container = $(this.container);
-	if (data.length > 0) {
-		$container.show();
+	if (data.length < 1) {
+		$container.hide();
+		// TODO: Afficher un message s'il n'y pas de données.
+		// TODO: Masquer les boutons
 	} else {
-		$container.hide()
+		this.grid.load({
+			metadata: this.metadata,
+			data: data
+		});
+		this.grid.renderGrid(this.container.id, 'table table-striped table-bordered table-hover table-condensed');
+		this.grid.initializeGrid();
+		this.grid.refreshGrid();
+		$container.show();
 	};
 };
 
