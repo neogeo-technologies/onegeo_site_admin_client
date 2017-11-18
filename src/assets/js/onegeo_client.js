@@ -88,7 +88,17 @@ function OnegeoClient(baseUrl) {
 				}
 			}
 		},
-		post: {},
+		post: {
+			sources: {
+				dumps: function(data) {
+					const arr = [];
+					for (const obj of data) {
+						arr.push(new Source(obj));
+					};
+					return arr;
+				}
+			},
+		},
 		put: {},
 		delete: {}
 	};

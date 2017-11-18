@@ -1,10 +1,14 @@
 body {
-    background-color: #eee;
-    color: #333;
+    background-color: #fff;
+    color: #000;
 }
 
 a {
     color: #333;
+}
+
+black {
+    color: #291809;
 }
 
 red {
@@ -31,9 +35,10 @@ div.page-header {
     padding-bottom: 0;
     margin: 0;
     border-bottom: none;
-    background-color: #291809;
-    color: #fff;
+    background-color: #fff;
+    color: #000;
     position: relative;
+    border-bottom: 1px solid #000;
 }
 
 div.page-header .title {
@@ -49,19 +54,19 @@ div.page-header .login {
 }
 
 div.page-header .login button {
+    font-size: 1.5em;
     width: 2em;
     height: 2em;
     background: transparent;
-    color: #ffffff;
-    border: none;
+    border: 1px dashed #000;
     border-radius: 9999px;
     padding: 0;
 }
 
 div.page-header .login button:hover,
 div.page-header .login button:focus {
-    background: linear-gradient(#ffffff, #f3f3f3);
-    color: #291809;
+    background-color: #000;
+    color: #fff;
 }
 
 div.page-header .username {
@@ -79,8 +84,8 @@ ul.nav.nav-default > li {
 ul.nav.nav-default > li > a {
     border-radius: 0;
     margin: 0;
-    border-left: 1px solid transparent;
-    border-right: 1px solid transparent;
+    border-left: 1px dashed transparent;
+    border-right: 1px dashed transparent;
     background: transparent;
     color: #999;
 }
@@ -95,15 +100,14 @@ ul.nav.nav-default > li.active > a:focus,
 ul.nav.nav-default > li.active > a:hover {
     color: #000;
     background-color: #fff;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
+    border-left: 1px dashed #000;
+    border-right: 1px dashed #000;
 }
 
 div.main-container {
     background-color: #fff;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    margin-top: -1px;
+    border-top: 1px dashed #000;
+    margin-top: -1px;;
     padding-top: 60px;
     padding-bottom: 90px;
     bottom: 0;

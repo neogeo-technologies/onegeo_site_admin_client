@@ -62,7 +62,10 @@
 	<!-- Template d'un élément "input" -->
 	<template id="form_input">
 		<div class="form-group">
-			<input name="{%= attrs.name %}" list="{%= attrs.datalist ? attrs.name : '' %}" type="{%= attrs.type %}" class="form-control" placeholder="{%= attrs.placeholder || '' %}"/>
+			{% if (attrs.label) { %}
+			<label for="{%='id_' + attrs.name %}">{%=attrs.label%}</label>
+			{% }; %}
+			<input id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" list="{%= attrs.datalist ? attrs.name : '' %}" type="{%= attrs.type %}" pattern="{%= attrs.pattern || '.*' %}" class="form-control" placeholder="{%= attrs.placeholder || '' %}"/>
 			{% if (attrs.datalist) { %}
 			<datalist id="{%= attrs.name %}">
 				{% for (const value of attrs.datalist.options) { %}
@@ -85,14 +88,11 @@
 			<h4 class="modal-title">{%= heading.title.text %}</h4>
 		</div>
 		<div class="modal-body">
-			{% for (const entry of body) { %}
-			{%= templator(entry.template, entry.data) %}
-			{% }; %}
-		</div>
-		<div class="modal-footer">
-			{% for (const entry of footer) { %}
-			{%= templator(entry.template, entry.data) %}
-			{% }; %}
+			<form onsubmit="{%=form.onsubmit || 'return false;' %}">
+				{% for (const entry of form.elements) { %}
+				{%= templator(entry.template, entry.data) %}
+				{% }; %}
+			</form>
 		</div>
 	</template>
 
@@ -164,7 +164,15 @@
 					</div>
 				</div>
 			</div>
-
+		</div>
+		<div class="footer navbar-fixed-bottom">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12" style="text-align: center;">
+						<p>© 2017 Neogeo-Technologies</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
 	<script>
@@ -196,41 +204,42 @@ $(function() {
 					text: 'Connectez-vous'
 				}
 			},
-			body: [{
-				template: 'form_input',
-				data: {
-					attrs: {
-						name: 'username',
-						type: 'text',
-						placeholder: 'Utilisateur'
+			form: {
+				elements: [{
+					template: 'form_input',
+					data: {
+						attrs: {
+							name: 'username',
+							type: 'text',
+							placeholder: 'Utilisateur'
+						}
 					}
-				}
-			}, {
-				template: 'form_input',
-				data: {
-					attrs: {
-						name: 'password',
-						type: 'password',
-						placeholder: 'Mot de passe'
+				}, {
+					template: 'form_input',
+					data: {
+						attrs: {
+							name: 'password',
+							type: 'password',
+							placeholder: 'Mot de passe'
+						}
 					}
-				}
-			}],
-			footer: [{
-				template: 'button',
-				data: {
-					text: 'Se connecter',
-					attrs: {
-						name: 'submit',
-						type: 'button'
+				}, {
+					template: 'button',
+					data: {
+						text: 'Se connecter',
+						attrs: {
+							name: 'submit',
+							type: 'submit'
+						}
 					}
-				}
-			}]
+				}]
+			}
 		}));
 
 		// Définit les actions..
-		const $username = $modal.find('input[name=username]');
-		const $password = $modal.find('input[name=password]');
 		$modal.find('button[name="submit"]').click(function(e) {
+			const $username = $modal.find('input[name=username]');
+			const $password = $modal.find('input[name=password]');
 			if ($username.val() && $password.val()) {
 				onegeoClient.connect($username.val(), $password.val(), function(isLogged) {
 					if (isLogged) {
@@ -264,22 +273,23 @@ $(function() {
 					text: 'Fermer la session'
 				}
 			},
-			body: [{
-				template: 'paragraph',
-				data: {
-					text: 'Vous êtes sur le point de vous déconnecter.'
-				}
-			}],
-			footer: [{
-				template: 'button',
-				data: {
-					text: 'Se déconnecter',
-					attrs: {
-						name: 'submit',
-						type: 'button'
+			form: {
+				elements: [{
+					template: 'paragraph',
+					data: {
+						text: 'Vous êtes sur le point de vous déconnecter.'
 					}
-				}
-			}]
+				}, {
+					template: 'button',
+					data: {
+						text: 'Se déconnecter',
+						attrs: {
+							name: 'submit',
+							type: 'button'
+						}
+					}
+				}]
+			}
 		}));
 
 		// Définit les actions..
@@ -304,50 +314,55 @@ $(function() {
 					text: 'Ajouter une nouvelle source de données'
 				}
 			},
-			body: [{
-				template: 'form_input',
-				data: {
-					attrs: {
-						name: 'name',
-						type: 'text',
-						placeholder: 'Entrez le nom de la nouvelle source de données'
-					}
-				}
-			}, {
-				template: 'form_input',
-				data: {
-					attrs: {
-						name: 'uri',
-						type: 'text',
-						placeholder: 'Sélectionnez ou indiquez la source de données',
-						datalist: {
-							options: uri_options
+			form: {
+				elements: [{
+					template: 'form_input',
+					data: {
+						attrs: {
+							name: 'name',
+							type: 'text',
+							placeholder: '[a-z0-9_]{3,100}',
+							label: 'Nom de la source de données',
+							pattern: '[a-z0-9_]{3,100}'
 						}
 					}
-				}
-			}, {
-				template: 'form_input',
-				data: {
-					attrs: {
-						name: 'type',
-						type: 'text',
-						placeholder: 'Sélectionnez ou indiquez le type de la nouvelle source de données',
-						datalist: {
-							options: type_options
+				}, {
+					template: 'form_input',
+					data: {
+						attrs: {
+							name: 'uri',
+							type: 'text',
+							placeholder: 'Sélectionnez ou indiquez une valeur',
+							label: 'URI de la source de données',
+							datalist: {
+								options: uri_options
+							}
 						}
 					}
-				}
-			}],
-			footer: [{
-				template: 'button',
-				data: {
-					text: 'Ajouter',
-					attrs: {
-						name: 'submit',
-						type: 'button'
+				}, {
+					template: 'form_input',
+					data: {
+						attrs: {
+							name: 'type',
+							type: 'text',
+							placeholder: 'Sélectionnez ou indiquez une valeur',
+							label: 'Protocol de la source de données',
+							datalist: {
+								options: type_options
+							}
+						}
 					}
-				}
-			}]
+				}, {
+					template: 'button',
+					data: {
+						text: 'Ajouter',
+						attrs: {
+							name: 'submit',
+							type: 'submit'
+						}
+					}
+				}]
+			}
 		}));
 
 		// Définit les actions..
@@ -371,18 +386,7 @@ $(function() {
 				title: {
 					text: 'Source : ' + grid.getRowValues(grid.lastSelectedRowIndex)['name']
 				}
-			},
-			body: [],
-			footer: [{
-				template: 'button',
-				data: {
-					text: 'Ajouter',
-					attrs: {
-						name: 'submit',
-						type: 'button'
-					}
-				}
-			}]
+			}
 		}));
 
 		// Définit les actions..

@@ -162,7 +162,7 @@ Table.prototype.update = function(data) {
 		$container.before($buttonGroup);
 		// Fin de code moche
 
-		$container.html('<div class="alert alert-info" role="alert">Vide</div>')
+		$container.html('<div class="alert alert-warning" role="alert">Vide</div>')
 		$container.show();
 	} else {
 		this.grid.load({
