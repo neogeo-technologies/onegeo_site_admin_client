@@ -82,17 +82,23 @@
 	</template>
 
 	<!-- Template pour le contenu de la fenêtre "modal" -->
-	<template id="base_modal_content">
-		<div class="modal-header">
-			<button type="button" name="close" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title">{%= heading.title.text %}</h4>
-		</div>
-		<div class="modal-body">
-			<form onsubmit="{%=form.onsubmit || 'return false;' %}">
-				{% for (const entry of form.elements) { %}
-				{%= templator(entry.template, entry.data) %}
-				{% }; %}
-			</form>
+	<template id="modal">
+		<div class="modal fade" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" name="close" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">{%= heading.title.text %}</h4>
+					</div>
+					<div class="modal-body">
+						<form onsubmit="{%=form.onsubmit || 'return false;' %}">
+							{% for (const entry of form.elements) { %}
+							{%= templator(entry.template, entry.data) %}
+							{% }; %}
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
 	</template>
 
@@ -106,12 +112,6 @@
 
 	<!-- Corps de la page -->
 	<body>
-		<div class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-				</div>
-			</div>
-		</div>
 		<div class="page-header">
 			<div class="container">
 				<div class="row">
@@ -181,10 +181,6 @@ $(function() {
 	let onegeoClient = new OnegeoClient('/query?path=');  // TODO -> Déplacer le path dans un fichier de configuration
 
 
-	// Définition de la fenêtre "modal"
-	let $modal = $('.modal[role="dialog"]').modal({'backdrop': 'static', 'show': false});
-
-
 	let onXhrFailure = function(cb) {
 		if (this.status === 401) {
 			openModalSignIn(cb);
@@ -194,11 +190,21 @@ $(function() {
 		};
 	};
 
+	let getModal = function() {
+		return $('.modal')
+			.modal({
+				'backdrop': 'static',
+				'show': false
+			})
+			.on('hidden.bs.modal', function() {
+				$(this).remove();
+			});
+	};
 
 	let openModalSignIn = function(callback) {
 
 		// Construit la fenêtre "modal"..
-		$modal.find('.modal-content').html(templator('base_modal_content', {
+		$('body').prepend(templator('modal', {
 			heading: {
 				title: {
 					text: 'Connectez-vous'
@@ -236,6 +242,8 @@ $(function() {
 			}
 		}));
 
+		let $modal = getModal();
+
 		// Définit les actions..
 		$modal.find('button[name="submit"]').click(function(e) {
 			const $username = $modal.find('input[name=username]');
@@ -267,7 +275,7 @@ $(function() {
 	let openModalSignOut = function(callback) {
 
 		// Construit la fenêtre "modal"..
-		$modal.find('.modal-content').html(templator('base_modal_content', {
+		$('body').prepend(templator('modal', {
 			heading: {
 				title: {
 					text: 'Fermer la session'
@@ -292,6 +300,8 @@ $(function() {
 			}
 		}));
 
+		let $modal = getModal();
+
 		// Définit les actions..
 		$modal.find('button[name=submit]').click(function(e) {
 			onegeoClient.disconnect(function() {
@@ -308,7 +318,7 @@ $(function() {
 	let openModalAddSource = function(callback, uri_options, type_options) {
 
 		// Construit la fenêtre "modal"..
-		$modal.find('.modal-content').html(templator('base_modal_content', {
+		$('body').prepend(templator('modal', {
 			heading: {
 				title: {
 					text: 'Ajouter une nouvelle source de données'
@@ -365,6 +375,8 @@ $(function() {
 			}
 		}));
 
+		let $modal = getModal();
+
 		// Définit les actions..
 		const $name = $modal.find('input[name=name]');
 		const $uri = $modal.find('input[name=uri]');
@@ -381,13 +393,19 @@ $(function() {
 	let openModalSource = function(grid, callback) {
 
 		// Construit la fenêtre "modal"..
-		$modal.find('.modal-content').html(templator('base_modal_content', {
+		$('body').prepend(templator('modal', {
 			heading: {
 				title: {
 					text: 'Source : ' + grid.getRowValues(grid.lastSelectedRowIndex)['name']
 				}
 			}
 		}));
+
+		let $modal = $('.modal')
+			.modal({'backdrop': 'static', 'show': false})
+			.on('hidden.bs.modal', function() {
+				$(this).remove();
+			});
 
 		// Définit les actions..
 		$('#button[name="close"]').click(function(e) {
