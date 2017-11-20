@@ -70,7 +70,7 @@ div.page-header .login button:focus {
     color: #fff;
 }
 
-div.page-header .username {
+div.page-header .identity {
     right: 49px;
     vertical-align: middle;
     position: absolute;
