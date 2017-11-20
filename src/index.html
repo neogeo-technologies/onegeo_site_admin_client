@@ -187,7 +187,7 @@ $(function() {return (function(cb) {
 	};
 	xhr.send(null);
 })(function(settings) {
-	const onegeoClient = new OnegeoClient(settings.path);
+	const onegeoClient = new OnegeoClient((settings.url || window.location.origin) + settings.path);
 
 	const onXhrFailure = function(cb) {
 		if (this.status === 401) {

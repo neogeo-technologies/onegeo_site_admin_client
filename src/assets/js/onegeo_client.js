@@ -167,7 +167,7 @@ OnegeoClient.prototype.__request = function(obj) {
 	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + obj.path : obj.path, true);
 
 	this.xhr.onload = function(evt) {
-		if (this.status == 200) {
+		if (this.readyState == 4 && this.status == 200) {
 			typeof obj.successful === 'function' && obj.successful.call(this);
 		} else {
 			typeof obj.failure === 'function' && obj.failure.call(this);
