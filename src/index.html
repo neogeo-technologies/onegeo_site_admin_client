@@ -17,35 +17,32 @@
 		<script src="assets/js/editablegrid_utils.js"></script>
 		<script src="assets/js/onegeo_client.js"></script>
 		<script>
-		// Simple JavaScript Templating
-		// John Resig - https://johnresig.com/ - MIT Licensed
 		(function() {
-			var cache = {};
-			this.templator = function templator(str, data) {
-			// Figure out if we're getting a template, or if we need to
-			// load the template - and be sure to cache the result.
-			var fn = !/\W/.test(str) ?
-				cache[str] = cache[str] ||
-				templator(document.getElementById(str).innerHTML) :
-				// Generate a reusable function that will serve as a template
-				// generator (and which will be cached).
-				new Function("obj",
-					"var _p=[],print=function(){_p.push.apply(_p,arguments);};" +
-					// Introduce the data as local variables using with(){}
-					"with(obj){_p.push('" +
-					// Convert the template into pure JavaScript
-					str
-						.replace(/[\r\t\n]/g, " ")
-						.split("{%").join("\t")
-						.replace(/((^|%})[^\t]*)'/g, "$1\r")
-						.replace(/\t=(.*?)%}/g, "',$1,'")
-						.split("\t").join("');")
-						.split("%}").join("_p.push('")
-						.split("\r").join("\\'")
-						+ "');}return _p.join('');");
+			const cache = {};
+			this.templator = function _templator(str, data) {
+				// Figure out if we're getting a template, or if we need to
+				// load the template - and be sure to cache the result.
+				const fn = !/\W/.test(str) ?
+					cache[str] = cache[str] || _templator(document.getElementById(str).innerHTML) :
+					new Function('obj',
+						"const _p = [];" +
+						"const print = function() {" +
+						"    _p.push.apply(_p, arguments);" +
+						"};" +
+						"with (obj) {" +
+						"    _p.push('" +
+							str
+								.replace(/[\r\t\n]/g, ' ')
+								.split('{%').join('\t')
+								.replace(/((^|%})[^\t]*)'/g, '$1\r')
+								.replace(/\t=(.*?)%}/g, "',$1,'")
+								.split('\t').join("');")
+								.split('%}').join("_p.push('")
+								.split('\r').join("\\'") + "');" +
+						"}" +
+						"return _p.join('');");
 
-					// Provide some basic currying to the user
-					return data ? fn( data ) : fn;
+				return data ? fn(data) : fn;
 			};
 		})();
 		</script>
