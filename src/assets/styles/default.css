@@ -24,6 +24,10 @@ blue {
     margin-bottom: 10px;
 }
 
+.buttons-on-the-right-side > .btn:not(:first-child) {
+    margin-left: 5px;
+}
+
 a:hover,
 a:focus {
     color: inherit;
@@ -145,18 +149,14 @@ table th.boolean {
     text-align: center;
 }
 
-div.modal-dialog {
-    width: 444px;
-}
-
 .btn-default {
-    background: linear-gradient(#eee, #ddd);
+    background-color: transparent;
     border-color: #ccc;
     color: #666;
 }
 
 .btn-default:hover {
-    background: linear-gradient(#ddd, #ccc);
+    background-color: transparent;
     border-color: #bbb;
     color: #333;
 }

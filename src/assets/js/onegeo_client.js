@@ -1,45 +1,5 @@
 // Onegeo' pure JS client
 
-function SearchProfile(obj) {
-	this.location = obj.location;
-	this.name = obj.name;
-	this.indices = obj.indices;
-	this.extended = obj.extended;
-	this.serviceUrl = obj.location + '/search?';
-};
-
-SearchProfile.prototype.constructor = SearchProfile;
-
-function IndexProfile(obj) {
-	this.location = obj.location;
-	this.name = obj.name;
-	this.columns = obj.columns;
-	this.reindexFrequency = obj.reindex_frequency || 'monthly';
-	this.lastModification = undefined;
-	this._resourceLocation = obj.resource;
-};
-
-IndexProfile.prototype.constructor = IndexProfile;
-
-function Resource(obj) {
-	this.location = obj.location;
-	this.name = obj.name;
-	this.columns = obj.columns;
-	this.index = obj.index;
-};
-
-Resource.prototype.constructor = Resource;
-
-function Source(obj) {
-	this.location = obj.location;
-	this.uri = obj.uri;
-	this.name = obj.name;
-	this.mode = obj.mode;
-	this.resources = undefined;
-};
-
-Source.prototype.constructor = Source;
-
 function OnegeoClient(baseUrl) {
 
 	if (window.XMLHttpRequest) {
@@ -49,67 +9,51 @@ function OnegeoClient(baseUrl) {
 	this.baseUrl = baseUrl || null;
 	this.basicAuth = null;
 
-	this.api = {
-		get: {
-			sources: {
-				parse: function(data) {
-					const arr = [];
-					for (const obj of data) {
-						arr.push(new Source(obj));
-					};
-					return arr;
-				}
-			},
-			resources: {
-				parse: function(data) {
-					const arr = [];
-					for (const obj of data) {
-						arr.push(new Resource(obj));
-					};
-					return arr;
-				}
-			},
-			indices: {
-				parse: function(data) {
-					const arr = [];
-					for (const obj of data) {
-						arr.push(new IndexProfile(obj));
-					};
-					return arr;
-				}
-			},
-			profiles: {
-				parse: function(data) {
-					const arr = [];
-					for (const obj of data) {
-						arr.push(new SearchProfile(obj));
-					};
-					return arr;
-				}
-			}
-		},
-		post: {
-			sources: {
-				dumps: function(data) {
-					const arr = [];
-					for (const obj of data) {
-						arr.push(new Source(obj));
-					};
-					return arr;
-				}
-			},
-		},
-		put: {},
-		delete: {}
-	};
-
 	this.action = {
-		get: function(action, obj) {
+		get: function(path, obj) {
 			return this.__request({
 				method: 'GET',
-				path: '/' + action,
+				path: path,
 				successful: function() {
-					return typeof obj.successful === 'function' && obj.successful.call(this.xhr, eval('this.api.get.' + action + '.parse(JSON.parse(this.xhr.responseText))'));
+					return typeof obj.successful === 'function' && obj.successful.call(this.xhr, JSON.parse(this.xhr.responseText));
+				}.bind(this),
+				failure: obj.failure,
+				before: obj.before,
+				lastly: obj.lastly
+			});
+		}.bind(this),
+		post: function(path, obj) {
+			return this.__request({
+				method: 'POST',
+				data: JSON.stringify(obj.data),
+				path: path,
+				successful: function() {
+					return typeof obj.successful === 'function' && obj.successful.call(this.xhr);
+				}.bind(this),
+				failure: obj.failure,
+				before: obj.before,
+				lastly: obj.lastly
+			});
+		}.bind(this),
+		put: function(path, obj) {
+			return this.__request({
+				method: 'PUT',
+				data: JSON.stringify(obj.data),
+				path: path,
+				successful: function() {
+					return typeof obj.successful === 'function' && obj.successful.call(this.xhr);
+				}.bind(this),
+				failure: obj.failure,
+				before: obj.before,
+				lastly: obj.lastly
+			});
+		}.bind(this),
+		delete: function(path, obj) {
+			return this.__request({
+				method: 'DELETE',
+				path: path,
+				successful: function() {
+					return typeof obj.successful === 'function' && obj.successful.call(this.xhr);
 				}.bind(this),
 				failure: obj.failure,
 				before: obj.before,
@@ -123,7 +67,7 @@ OnegeoClient.prototype.constructor = OnegeoClient;
 
 OnegeoClient.prototype.connect = function(user, pwd, cb) {
 	this.basicAuth = 'Basic ' + btoa(user + ':' + pwd);
-	this.action.get('sources', {
+	this.action.get('/sources', {
 		successful: function() {
 			this.logged = true;
 		}.bind(this),
@@ -167,7 +111,11 @@ OnegeoClient.prototype.__request = function(obj) {
 	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + obj.path : obj.path, true);
 
 	this.xhr.onload = function(evt) {
-		if (this.readyState == 4 && this.status == 200) {
+		if (this.status == 200) {  // Done
+			typeof obj.successful === 'function' && obj.successful.call(this);
+		} else if (this.status == 201) {  // Created
+			typeof obj.successful === 'function' && obj.successful.call(this, this.getResponseHeader('Location'));
+		} else if (this.status == 204) {  // No content
 			typeof obj.successful === 'function' && obj.successful.call(this);
 		} else {
 			typeof obj.failure === 'function' && obj.failure.call(this);
@@ -182,6 +130,7 @@ OnegeoClient.prototype.__request = function(obj) {
 		typeof obj.lastly === 'function' && obj.lastly.call(this);
 	};
 
+	this.xhr.setRequestHeader('Content-Type', 'application/json');
 	this.xhr.setRequestHeader('Authorization', this.basicAuth);
 	this.xhr.send(obj.data);
 };

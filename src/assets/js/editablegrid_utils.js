@@ -129,14 +129,18 @@ function Table(containerId, containerName, metadata, buttons, options) {
 			$(pRow).removeClass('selected');
 			if (pRowIdx != nRowIdx) {
 				$(nRow).addClass('selected');
-				that.buttons.$open && that.buttons.$open.removeClass('disabled').prop('disabled', false);
-				that.buttons.$remove && that.buttons.$remove.removeClass('disabled').prop('disabled', false);
+				for (const button in that.buttons.after) {
+					const $button = $(that.buttons.after[button]);
+					$button && $button.removeClass('disabled').prop('disabled', false);
+				};
 				if (typeof that.events.onRowUnselected === 'function') {
 					that.events.onRowUnselected.apply(this, arguments);
 				};
 			} else {
-				that.buttons.$open && that.buttons.$open.addClass('disabled').prop('disabled', true);
-				that.buttons.$remove && that.buttons.$remove.addClass('disabled').prop('disabled', true);
+				for (const button in that.buttons.after) {
+					const $button = $(that.buttons.after[button]);
+					$button && $button.addClass('disabled').prop('disabled', true);
+				};
 				if (typeof that.events.onRowUnselected === 'function') {
 					that.events.onRowSelected.apply(this, arguments);
 				};
@@ -169,19 +173,22 @@ Table.prototype.update = function(data) {
 			metadata: this.metadata,
 			data: data
 		});
-		this.grid.renderGrid(this.container.id, 'table table-striped table-bordered table-hover table-condensed');
+		this.grid.renderGrid(this.containerId, 'table table-striped table-bordered table-hover table-condensed');
 		this.grid.initializeGrid();
 		this.grid.refreshGrid();
 
 		// Début de code moche
 		$buttonGroup = $('<div class="buttons-on-the-right-side"/>');
 		for (const name in this.buttons.before) {
-			$buttonGroup.append(this.buttons.before[name]);
+			const $button = this.buttons.before[name];
+			$buttonGroup.append($button);
 		};
 		$container.before($buttonGroup);
+
 		$buttonGroup = $('<div class="buttons-on-the-right-side"/>');
 		for (const name in this.buttons.after) {
-			$buttonGroup.append(this.buttons.after[name]);
+			const $button = this.buttons.after[name].addClass('disabled').prop('disabled', true);
+			$buttonGroup.append($button);
 		};
 		$container.after($buttonGroup);
 		// Fin de code moche

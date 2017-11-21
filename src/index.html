@@ -62,7 +62,7 @@
 			{% if (attrs.label) { %}
 			<label for="{%='id_' + attrs.name %}">{%=attrs.label%}</label>
 			{% }; %}
-			<input id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" list="{%= attrs.datalist ? attrs.name : '' %}" type="{%= attrs.type %}" pattern="{%= attrs.pattern || '.*' %}" class="form-control" placeholder="{%= attrs.placeholder || '' %}"/>
+			<input id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" list="{%= attrs.datalist ? attrs.name : '' %}" type="{%= attrs.type %}" pattern="{%= attrs.pattern || '.*' %}" class="form-control" placeholder="{%= attrs.placeholder || '' %}" autocomplete="{%= attrs.autocomplete || 'on' %}"/>
 			{% if (attrs.datalist) { %}
 			<datalist id="{%= attrs.name %}">
 				{% for (const value of attrs.datalist.options) { %}
@@ -81,19 +81,24 @@
 	<!-- Template de la fenêtre "modal" -->
 	<template id="modal">
 		<div class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog" role="document">
+			<div class="modal-dialog {%= dialog.class || '' %}" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" name="close" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title">{%= heading.title.text %}</h4>
 					</div>
-					<div class="modal-body">
-						<form onsubmit="{%=form.onsubmit || 'return false;' %}">
-							{% for (const entry of form.elements) { %}
-							{%= templator(entry.template, entry.data) %}
+					<form onsubmit="{%=body.onsubmit || 'return false;' %}">
+						<div class="modal-body">
+							{% for (const entry of body.elements) { %}
+								{%= templator(entry.template, entry.data) %}
 							{% }; %}
-						</form>
-					</div>
+						</div>
+						<div class="modal-footer">
+							{% for (const entry of footer.elements) { %}
+								{%= templator(entry.template, entry.data) %}
+							{% }; %}
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -184,7 +189,8 @@ $(function() {return (function(cb) {
 	};
 	xhr.send(null);
 })(function(settings) {
-	const onegeoClient = new OnegeoClient((settings.url || window.location.origin) + settings.path);
+	const baseApiUrl = (settings.url || window.location.origin) + settings.path;
+	const onegeoClient = new OnegeoClient(baseApiUrl);
 
 	const onXhrFailure = function(cb) {
 		if (this.status === 401) {
@@ -210,12 +216,15 @@ $(function() {return (function(cb) {
 
 		// Construit la fenêtre "modal"..
 		$('body').prepend(templator('modal', {
+			dialog: {
+				class: 'modal-sm'
+			},
 			heading: {
 				title: {
 					text: 'Connectez-vous'
 				}
 			},
-			form: {
+			body: {
 				elements: [{
 					template: 'form_input',
 					data: {
@@ -234,7 +243,10 @@ $(function() {return (function(cb) {
 							placeholder: 'Mot de passe'
 						}
 					}
-				}, {
+				}]
+			},
+			footer: {
+				elements: [{
 					template: 'button',
 					data: {
 						text: 'Se connecter',
@@ -281,18 +293,24 @@ $(function() {return (function(cb) {
 
 		// Construit la fenêtre "modal"..
 		$('body').prepend(templator('modal', {
+			dialog: {
+				class: 'modal-sm'
+			},
 			heading: {
 				title: {
 					text: 'Fermer la session'
 				}
 			},
-			form: {
+			body: {
 				elements: [{
 					template: 'paragraph',
 					data: {
 						text: 'Vous êtes sur le point de vous déconnecter.'
 					}
-				}, {
+				}]
+			},
+			footer: {
+				elements: [{
 					template: 'button',
 					data: {
 						text: 'Se déconnecter',
@@ -324,12 +342,13 @@ $(function() {return (function(cb) {
 
 		// Construit la fenêtre "modal"..
 		$('body').prepend(templator('modal', {
+			dialog: {},
 			heading: {
 				title: {
 					text: 'Ajouter une nouvelle source de données'
 				}
 			},
-			form: {
+			body: {
 				elements: [{
 					template: 'form_input',
 					data: {
@@ -358,22 +377,26 @@ $(function() {return (function(cb) {
 					template: 'form_input',
 					data: {
 						attrs: {
-							name: 'type',
+							name: 'protocol',
 							type: 'text',
 							placeholder: 'Sélectionnez ou indiquez une valeur',
-							label: 'Protocol de la source de données',
+							label: 'Protocole de la source de données',
 							datalist: {
 								options: type_options
 							}
 						}
 					}
-				}, {
+				}]
+			},
+			footer: {
+				elements: [{
 					template: 'button',
 					data: {
 						text: 'Ajouter',
 						attrs: {
 							name: 'submit',
-							type: 'submit'
+							type: 'submit',
+							class: 'btn-default'
 						}
 					}
 				}]
@@ -385,66 +408,273 @@ $(function() {return (function(cb) {
 		// Définit les actions..
 		const $name = $modal.find('input[name=name]');
 		const $uri = $modal.find('input[name=uri]');
-		const $type = $modal.find('input[name=type]');
+		const $protocol = $modal.find('input[name=protocol]');
 		$modal.find('button[name=submit]').click(function(e) {
-			typeof callback === 'function' && callback();
+			typeof callback === 'function' && callback({
+				name: $name.val(),
+				uri: $uri.val(),
+				mode: $protocol.val() // Deprecated
+			});
 		});
 
 		// Puis ouvre la fenêtre "modal"..
 		$modal.modal('show');
 	};
 
-
-	const openModalSource = function(grid, callback) {
+	const openModalRemoveSource = function(value, callback) {
 
 		// Construit la fenêtre "modal"..
 		$('body').prepend(templator('modal', {
+			dialog: {},
 			heading: {
 				title: {
-					text: 'Source : ' + grid.getRowValues(grid.lastSelectedRowIndex)['name']
+					text: 'Êtes-vous absolument sûr ?'
 				}
+			},
+			body: {
+				elements: [{
+					template: 'paragraph',
+					data: {
+						text: "Cette action est irreversible et supprimera définitivement les contextes d'indexation et configurations associés à cette source."
+					}
+				}, {
+					template: 'paragraph',
+					data: {
+						text: "Pour confirmer, veuillez réécrire le nom de la source à supprimer."
+					}
+				}, {
+					template: 'form_input',
+					data: {
+						attrs: {
+							name: 'name',
+							type: 'text',
+							placeholder: 'Nom de la source de données à supprimer',
+							autocomplete: 'off'
+						}
+					}
+				}]
+			},
+			footer: {
+				elements: [{
+					template: 'button',
+					data: {
+						text: 'Oui, supprimer définitivement cette source de données',
+						attrs: {
+							name: 'submit',
+							type: 'submit',
+							class: 'btn-danger btn-block'
+						}
+					}
+				}]
 			}
 		}));
 
-		const $modal = $('.modal')
-			.modal({'backdrop': 'static', 'show': false})
-			.on('hidden.bs.modal', function() {
-				$(this).remove();
-			});
+		const $modal = getModal();
+		const $button = $modal.find('button[name=submit]').addClass('disabled').prop('disabled', true);
+
+		const $name = $modal.find('input[name=name]').on('input', function(e) {
+			e.preventDefault();
+			if ($(this).val() === value) {
+				$button.removeClass('disabled').prop('disabled', false);
+			} else {
+				$button.addClass('disabled').prop('disabled', true);
+			};
+		});
 
 		// Définit les actions..
-		$('#button[name="close"]').click(function(e) {
-			$modal.modal('hide');
+		$modal.find('button[name=submit]').click(function(e) {
+			if ($name.val() === value) {
+				typeof callback === 'function' && callback();
+			};
 		});
 
 		// Puis ouvre la fenêtre "modal"..
 		$modal.modal('show');
 	};
 
+
+	const openModalOpenSource = function(sourceName, data) {
+
+		// Construit la fenêtre "modal"..
+		$('body').prepend(templator('modal', {
+			dialog: {
+				class: 'modal-lg'
+			},
+			heading: {
+				title: {
+					text: 'Source de données : <strong>' + sourceName + '</strong>'
+				}
+			},
+			body: {
+				elements: [{
+					template: 'paragraph',
+					data: {
+						text: "Ressource(s) disponible(s)"
+					}
+				}, {
+					template: 'table_grid',
+					data: {
+						name: 'resources'
+					}
+				}]
+			},
+			footer: {
+				elements: [{
+					template: 'button',
+					data: {
+						text: 'Fermer',
+						attrs: {
+							name: 'close',
+							type: 'submit'
+						}
+					}
+				}]
+			}
+		}));
+
+		const arr = [];
+		for (let i = 0; i < data.length; i ++) {
+			arr.push({
+				id: i,
+				values: [
+					data[i].location,
+					data[i].name,
+					data[i].columns
+				]
+			});
+		};
+		table['resources'].update(arr);
+
+		const $modal = getModal();
+
+		// Définit les actions..
+		$('button[name="close"]').click(function(e) {
+			$modal.modal('hide');
+			e.stopPropagation();
+		});
+
+		// Puis ouvre la fenêtre "modal"..
+		$modal.modal('show');
+	};
+
+
+	const openModalOpenColumns = function(resourceName, data, callback) {
+
+		// Construit la fenêtre "modal"..
+		$('body').prepend(templator('modal', {
+			dialog: {
+				class: 'modal-lg'
+			},
+			heading: {
+				title: {
+					text: 'Ressource de données : <strong>' + resourceName + '</strong>'
+				}
+			},
+			body: {
+				elements: [{
+					template: 'paragraph',
+					data: {
+						text: 'Structure de la ressource de données'
+					}
+				}, {
+					template: 'table_grid',
+					data: {
+						name: 'columns'
+					}
+				}]
+			},
+			footer: {
+				elements: [{
+					template: 'button',
+					data: {
+						text: 'Revenir',
+						attrs: {
+							name: 'previous',
+							type: 'button'
+						}
+					}
+				}, {
+					template: 'button',
+					data: {
+						text: 'Fermer',
+						attrs: {
+							name: 'close',
+							type: 'button'
+						}
+					}
+				}]
+			}
+		}));
+
+		const arr = [];
+		for (let i = 0; i < data.length; i ++) {
+			arr.push({
+				id: i,
+				values: [
+					data[i].name,
+					data[i].type || 'N/A',
+					data[i].occurs ? '[' + data[i].occurs[0] + ', ' + data[i].occurs[1] + ']' : 'N/A'
+				]
+			});
+		};
+		table['columns'].update(arr);
+
+		const $modal = getModal();
+
+		// Définit les actions..
+		$('button[name=previous]').click(function(e) {
+			typeof callback === 'function' && callback.call($modal);
+			e.stopPropagation();
+		});
+
+		$('button[name="close"]').click(function(e) {
+			$modal.modal('hide');
+			e.stopPropagation();
+		});
+
+		// Puis ouvre la fenêtre "modal"..
+		$modal.modal('show');
+	};
+
+
 	// Définition des tableaux :
 	const table = {
+
 		// Tableau des sources de données :
 		'sources': new Table('table-sources', 'Sources', [{
-			name: 'name',
-			label: 'Nom',
+			name: 'location',
+			label: 'location',
 			editable: false,
 			datatype: 'string'
 		}, {
-			name: 'mode',
-			label: 'Type',
+			name: 'name',
+			label: 'name',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'protocol',
+			label: 'protocol',
 			editable: false,
 			datatype: 'string'
 		}, {
 			name: 'uri',
-			label: 'URI',
+			label: 'uri',
 			editable: false,
 			datatype: 'url'
 		}], {
 			'add': {
 				method: function() {
 					const grid = this.grid;
-					openModalAddSource(function() {
-						// TODO
+					openModalAddSource(function(data) {
+						onegeoClient.action.post('sources', {
+							data: data,
+							successful: function(location) {
+								console.log('New source created: ' + location);
+							},
+							failure: function() {
+								onXhrFailure.call(this);
+							}
+						})
 					}, [
 						// TODO
 					], [
@@ -462,7 +692,18 @@ $(function() {return (function(cb) {
 				})
 			},
 			'open': {
-				method: function() { console.log('open'); },
+				method: function() {
+					const grid = this.grid;
+					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+					onegeoClient.action.get(entry.location + '/resources', {
+						successful: function(data) {
+							openModalOpenSource(entry.name, data);
+						},
+						failure: function() {
+							onXhrFailure.call(this);
+						}
+					});
+				},
 				position: 'after',
 				html: templator('button', {
 					text: 'Ouvrir',
@@ -473,7 +714,20 @@ $(function() {return (function(cb) {
 				})
 			},
 			'remove': {
-				method: function() { console.log('remove'); },
+				method: function() {
+					const grid = this.grid;
+					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+					openModalRemoveSource(entry.name, function(data) {
+						onegeoClient.action.delete(entry.location, {
+							successful: function() {
+								console.log('Source deleted: ' + entry.location);
+							},
+							failure: function() {
+								onXhrFailure.call(this);
+							}
+						})
+					});
+				},
 				position: 'after',
 				html: templator('button', {
 					text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
@@ -485,6 +739,65 @@ $(function() {return (function(cb) {
 				})
 			}
 		}),
+
+		// Tableau des ressources :
+		'resources': new Table('table-resources', 'Resources', [{
+			name: 'location',
+			label: 'location',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'name',
+			label: 'name',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'columns',
+			label: '_HIDDEN',
+			editable: false,
+			datatype: 'object'
+		}], {
+			'open': {
+				method: function() {
+					$('.modal').modal('hide').on('hidden.bs.modal', function() {
+						const grid = this.grid;
+						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+						openModalOpenColumns(entry.name, entry.columns, function() {
+							this.modal('hide').on('hidden.bs.modal', function() {
+								// TODO
+							})
+						});
+					}.bind(this));
+				},
+				position: 'after',
+				html: templator('button', {
+					text: 'Ouvrir',
+					attrs: {
+						name: 'open',
+						type: 'button'
+					}
+				})
+			}
+		}),
+
+		// Tableau des propriétés de données :
+		'columns': new Table('table-columns', 'Columns', [{
+			name: 'name',
+			label: 'name',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'type',
+			label: 'type',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'occurs',
+			label: 'occurs',
+			editable: false,
+			datatype: 'string'
+		}]),
+
 		// Tableau des profils d'indexation :
 		'indices': new Table('table-indices', 'Indices', [{
 			name: 'name',
@@ -642,15 +955,20 @@ $(function() {return (function(cb) {
 				};
 
 				if (this.hash === '#sources') {
-					onegeoClient.action.get('sources', {
+					onegeoClient.action.get('/sources', {
 						successful: function(data) {
 							const name = this.hash.substr(1);
-							$('.tab-pane#' + name).html( templator('table_grid', {name: name}));
+							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
 							const arr = [];
 							for (let i = 0; i < data.length; i ++) {
 								arr.push({
 									id: i,
-									values: [data[i].name, data[i].mode, data[i].uri]
+									values: [
+										data[i].location,
+										data[i].name,
+										data[i].mode,  // deprecated
+										data[i].uri
+									]
 								});
 							};
 							table[name].update(arr);
@@ -658,7 +976,7 @@ $(function() {return (function(cb) {
 						failure: onFailure
 					});
 				} else if (this.hash === '#indices') {
-					onegeoClient.action.get('indices', {
+					onegeoClient.action.get('/indices', {
 						successful: function(data) {
 							const name = this.hash.substr(1);
 							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
@@ -674,7 +992,7 @@ $(function() {return (function(cb) {
 						failure: onFailure
 					});
 				} else if (this.hash === '#services') {
-					onegeoClient.action.get('profiles', {
+					onegeoClient.action.get('/profiles', {
 						successful: function(data) {
 							const name = this.hash.substr(1);
 							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
@@ -682,7 +1000,11 @@ $(function() {return (function(cb) {
 							for (let i = 0; i < data.length; i ++) {
 								arr.push({
 									id: i,
-									values: [data[i].name, data[i].serviceUrl, data[i].extended]
+									values: [
+										data[i].name,
+										data[i].serviceUrl,
+										data[i].extended
+									]
 								});
 							};
 							table[name].update(arr);
