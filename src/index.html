@@ -473,7 +473,7 @@ $(function() {return (function(cb) {
 		const $button = $modal.find('button[name=submit]').addClass('disabled').prop('disabled', true);
 
 		const $name = $modal.find('input[name=name]').on('input', function(e) {
-			e.preventDefault();
+			// e.preventDefault();
 			if ($(this).val() === value) {
 				$button.removeClass('disabled').prop('disabled', false);
 			} else {
@@ -623,13 +623,13 @@ $(function() {return (function(cb) {
 
 		// Définit les actions..
 		$('button[name=previous]').click(function(e) {
-			typeof callback === 'function' && callback.call($modal);
 			e.stopPropagation();
+			typeof callback === 'function' && callback.call($modal);
 		});
 
 		$('button[name="close"]').click(function(e) {
-			$modal.modal('hide');
 			e.stopPropagation();
+			$modal.modal('hide');
 		});
 
 		// Puis ouvre la fenêtre "modal"..
@@ -663,7 +663,9 @@ $(function() {return (function(cb) {
 			datatype: 'url'
 		}], {
 			'add': {
-				method: function() {
+				method: function(e) {
+					e.preventDefault();
+					e.stopPropagation();
 					const grid = this.grid;
 					openModalAddSource(function(data) {
 						onegeoClient.action.post('sources', {
@@ -692,7 +694,9 @@ $(function() {return (function(cb) {
 				})
 			},
 			'open': {
-				method: function() {
+				method: function(e) {
+					e.preventDefault();
+					e.stopPropagation();
 					const grid = this.grid;
 					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
 					onegeoClient.action.get(entry.location + '/resources', {
@@ -714,7 +718,9 @@ $(function() {return (function(cb) {
 				})
 			},
 			'remove': {
-				method: function() {
+				method: function(e) {
+					e.preventDefault();
+					e.stopPropagation();
 					const grid = this.grid;
 					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
 					openModalRemoveSource(entry.name, function(data) {
@@ -943,7 +949,7 @@ $(function() {return (function(cb) {
 	$('a[data-toggle="tab"]:not([href="' + HASH_TAB[0] + '"])')
 		.each(function(e) {
 			$(this).click(function(e) {
-				e.preventDefault();
+				// e.preventDefault();
 
 				const trigger = function() {
 					$(this).trigger('click');  // == $(this).click.call($(this));

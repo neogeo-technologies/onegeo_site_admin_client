@@ -81,7 +81,8 @@ EditableGrid.prototype.updatePaginator = function(grid) {
 
 // Table builder
 
-function Table(containerId, containerName, metadata, buttons, options) {
+var Table = function(containerId, containerName, metadata, buttons, options) {
+	
 	var that = this;
 
 	this.options = options || {};
@@ -95,14 +96,18 @@ function Table(containerId, containerName, metadata, buttons, options) {
 		onRowUnselected: function(row) {},
 	};
 
-	this.buttons = {before: {}, after: {}};
-	for (const name in buttons) {
-		this.buttons[buttons[name].position][name] = $(buttons[name].html).click(function(e) {
-			e.preventDefault();
-			buttons[name].method.apply(that, arguments);
-		});
+	this.method = {};
+
+	this.buttons = {
+		before: {}, 
+		after: {}
 	};
-	
+
+	for (const name in buttons) {
+		this.method[name] = buttons[name].method;
+		this.buttons[buttons[name].position][name] = $(buttons[name].html);
+	};
+
 	this.grid = new EditableGrid(containerName, {pageSize: this.options.pageSize || 10});
 
 	this.grid.initializeGrid = function() {
@@ -153,8 +158,18 @@ function Table(containerId, containerName, metadata, buttons, options) {
 Table.prototype.constructor = Table;
 
 Table.prototype.update = function(data) {
-
+	
 	const $container = $(document.getElementById(this.containerId));
+	
+	for (const position in this.buttons) {
+		for (const name in this.buttons[position]) {
+			$(this.buttons[position][name]).click(function(e) {
+				e.preventDefault();
+				console.log(0)
+				this.method[name].apply(this, arguments);
+			}.bind(this));
+		};
+	};
 
 	if (data.length < 1) {
 		
@@ -192,7 +207,6 @@ Table.prototype.update = function(data) {
 		};
 		$container.after($buttonGroup);
 		// Fin de code moche
-
 	};
 };
 
