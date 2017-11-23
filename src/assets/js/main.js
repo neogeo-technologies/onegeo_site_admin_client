@@ -54,7 +54,7 @@ function httpPut(data, onSuccess, onFailure, onDone, onAlways){
 
 
 function httpDelete(location, onSuccess, onFailure, onDone, onAlways){
-    $ajax(this.url + location, 'DELETE', null, onSuccess, onFailure, onDone, onAlways);
+    $ajax(this.url + '/' + location, 'DELETE', null, onSuccess, onFailure, onDone, onAlways);
 };
 
 
