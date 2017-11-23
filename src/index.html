@@ -355,10 +355,10 @@
                 <div class="col-md-offset-0 col-md-12">
                     <ul id="menu" class="nav nav-default" role="tablist">
                         <li role="presentation">
-                            <a href="#indices" aria-controls="indices" role="tab" data-toggle="tab">Profils d'indexation</a>
+                            <a href="#indexes" aria-controls="indexes" role="tab" data-toggle="tab">Profils d'indexation</a>
                         </li>
                         <li role="presentation">
-                            <a href="#profiles" aria-controls="profiles" role="tab" data-toggle="tab">Profils de recherche</a>
+                            <a href="#services" aria-controls="services" role="tab" data-toggle="tab">Profils de recherche</a>
                         </li>
                         <!-- <li role="presentation">
                             <a href="#analysis" aria-controls="analysis" role="tab" data-toggle="tab">Profils d'analyses</a>
@@ -374,7 +374,7 @@
                         <div class="tab-content">
 
                             <!-- PROFILS D'INDEXATION -->
-                            <div role="tabpanel" class="tab-pane fade in active" id="indices">
+                            <div role="tabpanel" class="tab-pane fade in active" id="indexes">
 
                                 <div id="sources-container">
                                     <h4>Source(s) de données</h4>
@@ -434,7 +434,7 @@
                             </div>
 
                             <!-- PROFILS DE RECHERCHE -->
-                            <div role="tabpanel" class="tab-pane fade" id="profiles">
+                            <div role="tabpanel" class="tab-pane fade" id="services">
 
                                 <div id="models-container">
                                     <h4>Profil(s) de recherche</h4>
@@ -914,7 +914,7 @@ function modelsParser(data){
             id: i,
             values: [
                 data[i].name,
-                API_BASE_URL + 'profiles/' + data[i].name + '/search?'
+                API_BASE_URL + 'services/' + data[i].name + '/search?'
             ]
         });
     };
@@ -2001,11 +2001,11 @@ function updateModelConfiguration(obj){
 
     Method.getContexts(
         function(res){
-            for (const context of obj.indices){
+            for (const context of obj.indexes){
                 $('<li/>').text(context).appendTo($chosenContexts);
             };
             for (const context of res) {
-                if (obj.indices.indexOf(context.name) == -1) {
+                if (obj.indexes.indexOf(context.name) == -1) {
                     $('<li/>').text(context.name).appendTo($choiceContexts);
                 };
             };
@@ -2036,10 +2036,10 @@ function updateModelConfiguration(obj){
 
 
 function loadTab(hash){
-    if (hash === '#indices') {
+    if (hash === '#indexes') {
         Method.getSources(updateSources, errorHandler, null, null);
     };
-    if (hash === '#profiles') {
+    if (hash === '#services') {
         Method.getModels(updateModels, errorHandler, null, null);
     };
     if (hash === '#analysis') {
@@ -2366,9 +2366,9 @@ var $updateModel = $('#update-model')
 
         const model = CURRENT_MODEL;
 
-        model.indices = [];
+        model.indexes = [];
         $('#chosen-contexts > li').each(function(m){
-            model.indices.push($(this).text());
+            model.indexes.push($(this).text());
         });
 
         try {
@@ -2718,7 +2718,7 @@ window.onhashchange = function(e){
 
 window.onload = function(e){
     const hash = window.location.hash;
-    const h = (HASH_MENU.indexOf(hash) === -1) ? '#indices' : hash;
+    const h = (HASH_MENU.indexOf(hash) === -1) ? '#indexes' : hash;
     $('#menu a[href="' + h + '"]').tab('show');
     moment.locale('fr');
     e.preventDefault();

@@ -85,7 +85,7 @@ var Method = {
         }, onFailure, onDone, onAlways);
     },
     getContexts: function(onSuccess, onFailure, onDone, onAlways){
-        $ajax(this.url + '/indices', 'GET', null, function(resp){
+        $ajax(this.url + '/indexes', 'GET', null, function(resp){
             const arr = [];
             for (const r of resp) {
                 arr.push(new Context(r.location, r.name, r.columns, r.resource, r.reindex_frequency));
@@ -118,13 +118,13 @@ var Method = {
         $ajax(this.url + '/tokenizers', 'GET', null, onSuccess, onFailure, onDone, onAlways);
     },
     getModels: function(onSuccess, onFailure, onDone, onAlways){
-        $ajax(this.url + '/profiles', 'GET', null, onSuccess, onFailure, onDone, onAlways);
+        $ajax(this.url + '/services', 'GET', null, onSuccess, onFailure, onDone, onAlways);
     },
     postSource: function(data, onSuccess, onFailure, onDone, onAlways){
         $ajax(this.url + '/sources', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
     },
     postContext: function(data, onSuccess, onFailure, onDone, onAlways){
-        $ajax(this.url + '/indices', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
+        $ajax(this.url + '/indexes', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
     },
     postAnalyzer: function(data, onSuccess, onFailure, onDone, onAlways){
         $ajax(this.url + '/analyzers', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
@@ -136,7 +136,7 @@ var Method = {
         $ajax(this.url + '/tokenizers', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
     },
     postModel: function(data, onSuccess, onFailure, onDone, onAlways){
-        $ajax(this.url + '/profiles', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
+        $ajax(this.url + '/services', 'POST', JSON.stringify(data), onSuccess, onFailure, onDone, onAlways);
     },
     getTask: function(location, onSuccess, onFailure, onDone, onAlways){
         $ajax(this.url + '/' + location, 'GET', null, onSuccess, onFailure, onDone, onAlways);
