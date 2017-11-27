@@ -808,6 +808,7 @@ $(function() {return (function(cb) {
 
 		const $name = $modal.find('input[name=name]');
 		const $source = $modal.find('select[name=source]');
+		const $resource = $modal.find('select[name=resource]');
 
 		// Définit les actions..
 		const $prev = $modal.find('button[name=prev]').click(function(e) {
@@ -815,16 +816,39 @@ $(function() {return (function(cb) {
 		});
 
 		const $next = $modal.find('button[name=next]').click(function(e) {
+
 			// WIP
-			// typeof getSources === 'function' && getSources(function(data) {
-			// 	for (const entry of data) {
-			// 		$source.append($('<option>', {
-			// 			value: entry.location,
-			// 			text: entry.name
-			// 		}));
-			// 	};
-			// });
+
+			/* TODO:
+			-> Récupérer l'identifiant de la slide correctement
+			-> Attention à l'asynchrone pour le chargement des options
+			-> Factoriser
+			*/
+
+			const slide_id = $carousel.find('.active').index() + 1;
+			if (slide_id === 1 ) {
+				typeof getSources === 'function' && getSources(function(data) {
+					$source.empty();
+					for (const entry of data) {
+						$source.append($('<option>', {
+							value: entry.location,
+							text: entry.name
+						}));
+					};
+				});
+			}
+			if (slide_id === 2 && $source.val()) {
+				typeof getSources === 'function' && getResource($source.val() + '/resources', function(data) {
+					for (const entry of data) {
+						$resource.append($('<option>', {
+							value: entry.location,
+							text: entry.name
+						}));
+					};
+				});
+			}
 			// WIP
+
 			$carousel.carousel('next');
 		});
 
