@@ -118,22 +118,23 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 
 		for (const column of this.columns) {
 			if (column.datatype == 'boolean') {
-				setCellRenderer(column.name, new CellRenderer({
+				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
 						cell.style.textAlign = 'center';
 						// cell.style.width = '32px';
-						cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '';
+						cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon"></span>';
 					}
 				}));
 			}
 		};
 
 		this.rowSelected = function(pRowIdx, nRowIdx) {
+			const active = 'active';
 			const pRow = this.getRow(pRowIdx);
 			const nRow = this.getRow(nRowIdx);
-			$(pRow).removeClass('selected');
+			$(pRow).removeClass(active);
 			if (pRowIdx != nRowIdx) {
-				$(nRow).addClass('selected');
+				$(nRow).addClass(active);
 				for (const button in that.buttons.after) {
 					const $button = $(that.buttons.after[button]);
 					$button && $button.removeClass('disabled').prop('disabled', false);
@@ -165,7 +166,6 @@ Table.prototype.update = function(data) {
 		for (const name in this.buttons[position]) {
 			$(this.buttons[position][name]).click(function(e) {
 				e.preventDefault();
-				console.log(0)
 				this.method[name].apply(this, arguments);
 			}.bind(this));
 		};
@@ -188,7 +188,7 @@ Table.prototype.update = function(data) {
 			metadata: this.metadata,
 			data: data
 		});
-		this.grid.renderGrid(this.containerId, 'table table-striped table-bordered table-hover table-condensed');
+		this.grid.renderGrid(this.containerId, 'table table-bordered table-hover table-condensed');
 		this.grid.initializeGrid();
 		this.grid.refreshGrid();
 

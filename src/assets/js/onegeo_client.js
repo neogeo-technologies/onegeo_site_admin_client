@@ -106,7 +106,7 @@ OnegeoClient.prototype.__request = function(obj) {
 	}
 	*/
 
-	// this.basicAuth = 'Basic ' + btoa('admin:passpass');  // ATTENTION !!!
+	this.basicAuth = 'Basic ' + btoa('admin:passpass');  // ATTENTION !!!
 
 	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + obj.path : obj.path, true);
 

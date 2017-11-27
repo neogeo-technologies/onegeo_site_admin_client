@@ -51,6 +51,13 @@
 		<link rel="stylesheet" href="assets/styles/default.css"/>
 	</head>
 
+	<!-- Sub-template -->
+	<template id="sub_template">
+		{% for (const entry of elements) { %}
+			{%= templator(entry.template, entry.data) %}
+		{% }; %}
+	</template>
+
 	<!-- Template d'un élément "button" -->
 	<template id="button">
 		<button type="{%= attrs.type %}" name="{%= attrs.name %}" class="btn {%= attrs.class || 'btn-default' %}">{%= text %}</button>
@@ -70,6 +77,20 @@
 				{% }; %}
 			</datalist>
 			{% }; %}
+		</div>
+	</template>
+
+	<!-- Template d'un élément "select" -->
+	<template id="form_select">
+		<div class="form-group">
+			{% if (attrs.label) { %}
+			<label for="{%='id_' + attrs.name %}">{%=attrs.label%}</label>
+			{% }; %}
+			<select id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" class="form-control">
+			{% for (const value of options) { %}
+				<option value="{%= value %}">{%= value %}</option>
+			{% }; %}
+			</select>
 		</div>
 	</template>
 
@@ -104,6 +125,25 @@
 		</div>
 	</template>
 
+	<!-- Template de la fenêtre "carousel" -->
+	<template id="carousel">
+		<div id="{%='id_' + name%}" name="{%=name%}" class="carousel slide" data-ride="carousel">
+			<ol class="carousel-indicators">
+			{% for (let i in slides) { %}
+				<li data-target="#carousel-example-generic" data-slide-to="{%=i%}" class="{%= i == 0 ? 'active' : '' %}"></li>
+			{% }; %}
+			</ol>
+			<div class="carousel-inner" role="listbox">
+			{% for (let i in slides) { %}
+				<div class="{%= i == 0 ? 'item active' : 'item' %}">
+					{%= templator(slides[i].template, slides[i].data) %}
+					<div class="carousel-caption"></div>
+				</div>
+			{% }; %}
+			</div>
+		</div>
+	</template>
+
 	<!-- Template du tableau "editablegrid" -->
 	<template id="table_grid">
 		<div id="table-{%= name %}" class="table-responsive"></div>
@@ -118,10 +158,10 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
-						<span class="title">Site d'administration de Onegeo</span>
+						<span id="site_title" class="title"></span>
 						<span name="identity" class="identity"></span>
 						<div class="btn-group login">
-							<button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<span class="glyphicon glyphicon-user"></span>
 							</button>
 						</div>
@@ -133,7 +173,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
-						<ul id="menu" class="nav nav-default" role="tablist">
+						<ul id="menu" class="nav nav-tabs" role="tablist">
 							<li role="presentation">
 								<a href="#home" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-home"></span></a>
 							</li>
@@ -141,7 +181,7 @@
 								<a href="#sources" aria-controls="sources" role="tab" data-toggle="tab">Sources de données</a>
 							</li>
 							<li role="presentation">
-								<a href="#indices" aria-controls="indices" role="tab" data-toggle="tab">Profils d'indexation</a>
+								<a href="#indexes" aria-controls="indexes" role="tab" data-toggle="tab">Profils d'indexation</a>
 							</li>
 							<li role="presentation">
 								<a href="#services" aria-controls="services" role="tab" data-toggle="tab">Profils de recherche</a>
@@ -160,7 +200,7 @@
 								<span>Page d'accueil</span>
 							</div>
 							<div id="sources" role="tabpanel" class="tab-pane fade in"></div>
-							<div id="indices" role="tabpanel" class="tab-pane fade in"></div>
+							<div id="indexes" role="tabpanel" class="tab-pane fade in"></div>
 							<div id="services" role="tabpanel" class="tab-pane fade in"></div>
 						</div>
 					</div>
@@ -189,6 +229,7 @@ $(function() {return (function(cb) {
 	};
 	xhr.send(null);
 })(function(settings) {
+	$('#site_title').text(settings.title || 'Site de gestion de services de recherches Onegeo')
 	const baseApiUrl = (settings.url || window.location.origin) + settings.path;
 	const onegeoClient = new OnegeoClient(baseApiUrl);
 
@@ -209,6 +250,15 @@ $(function() {return (function(cb) {
 			})
 			.on('hidden.bs.modal', function() {
 				$(this).remove();
+			});
+	};
+
+	const getCarousel = function() {
+		return $('.carousel')
+			.carousel({
+				interval: false,
+				wrap: false,
+				keyword: false
 			});
 	};
 
@@ -637,6 +687,213 @@ $(function() {return (function(cb) {
 	};
 
 
+	const openModalAddIndex = function(getSources, getResource, callback) {
+
+		$('body').prepend(templator('modal', {
+			dialog: {
+				class: 'modal-md'
+			},
+			heading: {
+				title: {
+					text: 'Créer un nouvel index de données'
+				}
+			},
+			body: {
+				elements: [{
+					template: 'carousel',
+					data: {
+						name: 'index-form',
+						slides: [{
+							template: 'sub_template',
+							data: {
+								elements: [{
+									template: 'paragraph',
+									data:{
+										text: '<strong>Etape 1</strong>'
+									}
+								}, {
+									template: 'form_input',
+									data: {
+										attrs: {
+											name: 'name',
+											type: 'text',
+											placeholder: '[a-z0-9_]{3,100}',
+											label: "Indiquez un nom pour ce nouvel index de données",
+											pattern: '[a-z0-9_]{3,100}'
+										}
+									}
+								}]
+							}
+						}, {
+							template: 'sub_template',
+							data: {
+								elements: [{
+									template: 'paragraph',
+									data:{
+										text: '<strong>Etape 2</strong>'
+									}
+								}, {
+									template: 'form_select',
+									data: {
+										attrs: {
+											name: 'source',
+											type: 'text',
+											label: 'Sélectionnez la source de données'
+										},
+										options: [] // Vide par défaut
+									}
+								}]
+							}
+						}, {
+							template: 'sub_template',
+							data: {
+								elements: [{
+									template: 'paragraph',
+									data:{
+										text: '<strong>Etape 3</strong>'
+									}
+								}, {
+									template: 'form_select',
+									data: {
+										attrs: {
+											name: 'resource',
+											type: 'text',
+											label: 'Sélectionnez la resource de données'
+										},
+										options: [] // Vide par défaut
+									}
+								}]
+							}
+						}]
+					}
+				}]
+			},
+			footer: {
+				elements: [{
+					template: 'button',
+					data: {
+						text: 'Précédent',
+						attrs: {
+							name: 'prev',
+							type: 'button',
+							class: 'btn-default'
+						}
+					}
+				}, {
+					template: 'button',
+					data: {
+						text: 'Suivant',
+						attrs: {
+							name: 'next',
+							type: 'button',
+							class: 'btn-primary'
+						}
+					}
+				}, {
+					template: 'button',
+					data: {
+						text: 'Créer',
+						attrs: {
+							name: 'submit',
+							type: 'submit',
+							class: 'btn-default'
+						}
+					}
+				}]
+			}
+		}));
+
+		const $modal = getModal();
+		const $carousel = getCarousel();
+
+		const $name = $modal.find('input[name=name]');
+		const $source = $modal.find('select[name=source]');
+
+		// Définit les actions..
+		const $prev = $modal.find('button[name=prev]').click(function(e) {
+			$carousel.carousel('prev');
+		});
+
+		const $next = $modal.find('button[name=next]').click(function(e) {
+			// WIP
+			// typeof getSources === 'function' && getSources(function(data) {
+			// 	for (const entry of data) {
+			// 		$source.append($('<option>', {
+			// 			value: entry.location,
+			// 			text: entry.name
+			// 		}));
+			// 	};
+			// });
+			// WIP
+			$carousel.carousel('next');
+		});
+
+		const $submit = $modal.find('button[name=submit]').click(function(e) {
+			// TODO
+		});
+
+		// Puis ouvre la fenêtre "modal"..
+		$modal.modal('show');
+	};
+
+
+	const openModalAddService = function(indexes, callback) {
+
+		// Construit la fenêtre "modal"..
+		$('body').prepend(templator('modal', {
+			dialog: {
+				class: 'modal-lg'
+			},
+			heading: {
+				title: {
+					text: 'Créer un nouveau service de recherche'
+				}
+			},
+			body: {
+				elements: [{
+					template: 'form_input',
+					data: {
+						attrs: {
+							name: 'name',
+							type: 'text',
+							placeholder: '[a-z0-9_]{3,100}',
+							label: 'Indiquez un nom pour ce nouveau service de recherche',
+							pattern: '[a-z0-9_]{3,100}'
+						}
+					}
+				}]
+			},
+			footer: {
+				elements: [{
+					template: 'button',
+					data: {
+						text: 'Créer',
+						attrs: {
+							name: 'submit',
+							type: 'submit',
+							class: 'btn-default'
+						}
+					}
+				}]
+			}
+		}));
+
+		const $modal = getModal();
+
+		// Définit les actions..
+		const $name = $modal.find('input[name=name]');
+
+		$modal.find('button[name=submit]').click(function(e) {
+			typeof callback === 'function' && callback({
+				name: $name.val()
+			});
+		});
+
+		// Puis ouvre la fenêtre "modal"..
+		$modal.modal('show');
+	};
+
+
 	// Définition des tableaux :
 	const table = {
 
@@ -805,7 +1062,7 @@ $(function() {return (function(cb) {
 		}]),
 
 		// Tableau des profils d'indexation :
-		'indices': new Table('table-indices', 'Indices', [{
+		'indexes': new Table('table-indexes', 'Indexes', [{
 			name: 'name',
 			label: 'Nom',
 			editable: false,
@@ -817,8 +1074,43 @@ $(function() {return (function(cb) {
 		// 	datatype: 'string'
 		}], {
 			'add': {
-				method: function() {
+				method: function(e) {
+					e.preventDefault();
+					e.stopPropagation();
 					const grid = this.grid;
+					openModalAddIndex(
+						function(callback) {
+							onegeoClient.action.get('/sources', {
+								successful: function(data) {
+									typeof callback === 'function' && callback(data);
+								},
+								failure: function() {
+									onXhrFailure.call(this);
+								}
+							})
+						},
+						function(resourceLocation, callback) {
+							onegeoClient.action.get(resourceLocation, {
+								successful: function(data) {
+									typeof callback === 'function' && callback(data);
+								},
+								failure: function() {
+									onXhrFailure.call(this);
+								}
+							})
+						},
+						function(data) {
+							onegeoClient.action.post('indexes', {
+								data: data,
+								successful: function(location) {
+									console.log('New index created: ' + location);
+								},
+								failure: function() {
+									onXhrFailure.call(this);
+								}
+							})
+						}
+					);
 				},
 				position: 'before',
 				html: templator('button', {
@@ -876,8 +1168,28 @@ $(function() {return (function(cb) {
 			datatype: 'boolean'
 		}], {
 			'add': {
-				method: function() {
+				method: function(e) {
+					e.preventDefault();
+					e.stopPropagation();
 					const grid = this.grid;
+					onegeoClient.action.get('/indexes', {
+						successful: function(indexes) {
+							openModalAddService(indexes, function(data) {
+								onegeoClient.action.post('services', {
+									data: data,
+									successful: function(location) {
+										console.log('New index created: ' + location);
+									},
+									failure: function() {
+										onXhrFailure.call(this);
+									}
+								})
+							});
+						},
+						failure: function() {
+							onXhrFailure.call(this);
+						}
+					});
 				},
 				position: 'before',
 				html: templator('button', {
@@ -981,8 +1293,8 @@ $(function() {return (function(cb) {
 						}.bind(this),
 						failure: onFailure
 					});
-				} else if (this.hash === '#indices') {
-					onegeoClient.action.get('/indices', {
+				} else if (this.hash === '#indexes') {
+					onegeoClient.action.get('/indexes', {
 						successful: function(data) {
 							const name = this.hash.substr(1);
 							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
@@ -998,7 +1310,7 @@ $(function() {return (function(cb) {
 						failure: onFailure
 					});
 				} else if (this.hash === '#services') {
-					onegeoClient.action.get('/profiles', {
+					onegeoClient.action.get('/services', {
 						successful: function(data) {
 							const name = this.hash.substr(1);
 							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
