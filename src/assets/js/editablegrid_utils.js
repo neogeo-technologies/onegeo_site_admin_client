@@ -122,7 +122,14 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 					render: function(cell, value) {
 						cell.style.textAlign = 'center';
 						// cell.style.width = '32px';
-						cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon"></span>';
+						cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-minus"></span>';
+					}
+				}));
+			}
+			if (column.datatype == 'url') {
+				this.setCellRenderer(column.name, new CellRenderer({
+					render: function(cell, value) {
+						cell.innerHTML = value + ' <a href="' + value + '"><span class="glyphicon glyphicon-link"></span></a>';
 					}
 				}));
 			}

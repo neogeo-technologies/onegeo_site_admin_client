@@ -94,9 +94,29 @@
 		</div>
 	</template>
 
+	<!-- Template d'un élément "multiselect" -->
+	<!-- TODO Faire un multiselect cool -->
+	<template id="form_multiselect">
+		<div class="form-group">
+			{% if (attrs.label) { %}
+			<label for="{%='id_' + attrs.name %}">{%=attrs.label%}</label>
+			{% }; %}
+			<select multiple id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" class="form-control">
+			{% for (const value of options) { %}
+				<option value="{%= value %}">{%= value %}</option>
+			{% }; %}
+			</select>
+		</div>
+	</template>
+
 	<!-- Template d'un élément "p" -->
 	<template id="paragraph">
 		<p>{%= text %}</p>
+	</template>
+
+	<!-- Template d'un élément "span" -->
+	<template id="span">
+		<span class="{%= attrs.class || '' %}">{%= text %}</span>
 	</template>
 
 	<!-- Template de la fenêtre "modal" -->
@@ -127,17 +147,11 @@
 
 	<!-- Template de la fenêtre "carousel" -->
 	<template id="carousel">
-		<div id="{%='id_' + name%}" name="{%=name%}" class="carousel slide" data-ride="carousel">
-			<ol class="carousel-indicators">
-			{% for (let i in slides) { %}
-				<li data-target="#carousel-example-generic" data-slide-to="{%=i%}" class="{%= i == 0 ? 'active' : '' %}"></li>
-			{% }; %}
-			</ol>
+		<div id="{%= 'id_' + name %}" name="{%= name %}" class="carousel slide" data-ride="carousel">
 			<div class="carousel-inner" role="listbox">
 			{% for (let i in slides) { %}
 				<div class="{%= i == 0 ? 'item active' : 'item' %}">
 					{%= templator(slides[i].template, slides[i].data) %}
-					<div class="carousel-caption"></div>
 				</div>
 			{% }; %}
 			</div>
@@ -211,7 +225,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12" style="text-align: center;">
-						<p>© 2017 Neogeo-Technologies</p>
+						<p>© 2017 <a href='http://www.neogeo.fr' target="blank">Neogeo-Technologies</p>
 					</div>
 				</div>
 			</div>
@@ -229,6 +243,7 @@ $(function() {return (function(cb) {
 	};
 	xhr.send(null);
 })(function(settings) {
+
 	$('#site_title').text(settings.title || 'Site de gestion de services de recherches Onegeo')
 	const baseApiUrl = (settings.url || window.location.origin) + settings.path;
 	const onegeoClient = new OnegeoClient(baseApiUrl);
@@ -240,6 +255,14 @@ $(function() {return (function(cb) {
 			// TODO
 			alert(this.status + ' - ' + this.statusText);
 		};
+	};
+
+	const disabledButton = function($button) {
+		$button.addClass('disabled').prop('disabled', true);
+	};
+
+	const enabledButton = function($button) {
+		$button.removeClass('disabled').prop('disabled', false);
 	};
 
 	const getModal = function() {
@@ -388,7 +411,11 @@ $(function() {return (function(cb) {
 	};
 
 
-	const openModalAddSource = function(callback, uri_options, type_options) {
+	/*
+	Fenêtre « modal » pour l'ajout d'une source de données.
+
+	*/
+	const openModalAddSource = function(getURICallback, getProtocolCallback, postSourceCallback) {
 
 		// Construit la fenêtre "modal"..
 		$('body').prepend(templator('modal', {
@@ -400,41 +427,79 @@ $(function() {return (function(cb) {
 			},
 			body: {
 				elements: [{
-					template: 'form_input',
+					template: 'carousel',
 					data: {
-						attrs: {
-							name: 'name',
-							type: 'text',
-							placeholder: '[a-z0-9_]{3,100}',
-							label: 'Nom de la source de données',
-							pattern: '[a-z0-9_]{3,100}'
-						}
-					}
-				}, {
-					template: 'form_input',
-					data: {
-						attrs: {
-							name: 'uri',
-							type: 'text',
-							placeholder: 'Sélectionnez ou indiquez une valeur',
-							label: 'URI de la source de données',
-							datalist: {
-								options: uri_options
+						name: 'source-form',
+						slides: [{
+							template: 'sub_template',
+							data: {
+								elements: [{
+									template: 'span',
+									data:{
+										text: '<h3>Étape 1</h3>',
+										attrs: {}
+									}
+								}, {
+									template: 'form_input',
+									data: {
+										attrs: {
+											name: 'name',
+											type: 'text',
+											placeholder: '[a-z0-9_]{3,100}',
+											label: 'Nom de la source de données',
+											pattern: '[a-z0-9_]{3,100}',
+											autocomplete: 'off'
+										}
+									}
+								}]
 							}
-						}
-					}
-				}, {
-					template: 'form_input',
-					data: {
-						attrs: {
-							name: 'protocol',
-							type: 'text',
-							placeholder: 'Sélectionnez ou indiquez une valeur',
-							label: 'Protocole de la source de données',
-							datalist: {
-								options: type_options
+						}, {
+							template: 'sub_template',
+							data: {
+								elements: [{
+									template: 'span',
+									data:{
+										text: '<h3>Étape 2</h3>',
+										attrs: {}
+									}
+								}, {
+									template: 'form_input',
+									data: {
+										attrs: {
+											name: 'uri',
+											type: 'text',
+											placeholder: 'Sélectionnez ou indiquez une valeur',
+											label: 'Indiquez l\'URI de la source de données',
+											autocomplete: 'off',
+											datalist: {
+												options: []
+											}
+										}
+									}
+								}]
 							}
-						}
+						}, {
+							template: 'sub_template',
+							data: {
+								elements: [{
+									template: 'span',
+									data:{
+										text: '<h3>Étape 3</h3>',
+										attrs: {}
+									}
+								}, {
+									template: 'form_select',
+									data: {
+										attrs: {
+											name: 'protocol',
+											type: 'text',
+											label: 'Sélectionnez le protocole de connexion à la source de données',
+										},
+										options: [] // Vide par défaut
+									}
+								}]
+							}
+						}]
 					}
 				}]
 			},
@@ -442,11 +507,20 @@ $(function() {return (function(cb) {
 				elements: [{
 					template: 'button',
 					data: {
-						text: 'Ajouter',
+						text: 'Étape suivante',
+						attrs: {
+							name: 'next',
+							type: 'button'
+						}
+					}
+				}, {
+					template: 'button',
+					data: {
+						text: 'Créer',
 						attrs: {
 							name: 'submit',
 							type: 'submit',
-							class: 'btn-default'
+							class: 'btn-primary'
 						}
 					}
 				}]
@@ -454,24 +528,87 @@ $(function() {return (function(cb) {
 		}));
 
 		const $modal = getModal();
+		const $carousel = getCarousel();
 
 		// Définit les actions..
-		const $name = $modal.find('input[name=name]');
-		const $uri = $modal.find('input[name=uri]');
-		const $protocol = $modal.find('input[name=protocol]');
+		const $name = $modal.find('input[name=name]').on('input', function() {
+			let m;
+			const regex = /^[a-z0-9_]{3,100}$/g;
+			((m = regex.exec($(this).val())) !== null) ? enabledButton($next) : disabledButton($next);
+		});
+
+		const $uri = $modal.find('input[name=uri]').on('input', function() {
+			$(this).val().length > 0 ? enabledButton($next) : disabledButton($next);
+		})
+
+		const $protocol = $modal.find('select[name=protocol]').on('change', function(e) {
+			enabledButton($submit);
+		});
+
 		$modal.find('button[name=submit]').click(function(e) {
-			typeof callback === 'function' && callback({
+			typeof postSourceCallback === 'function' && postSourceCallback({
 				name: $name.val(),
 				uri: $uri.val(),
 				mode: $protocol.val() // Deprecated
 			});
 		});
 
+		const $next = $modal.find('button[name=next]').click(function(e) {
+			e.stopPropagation();
+			$carousel.on('slide.bs.carousel', function(e) {
+				disabledButton($next);
+				const i = $carousel.find('.active').index() + 1;
+				if (i === 1) {
+					typeof getURICallback === 'function' && getURICallback(function(data) {
+						const $datalist = $uri.siblings('datalist#' + $uri.attr('name')).empty();
+						for (const entry of data) {
+							$datalist.append($('<option>', {
+								value: entry,
+								text: entry
+							}));
+						};
+					});
+				};
+				if (i === 2) {
+					$next.hide();
+					$submit.show();
+					typeof getProtocolCallback === 'function' && getProtocolCallback(function(data) {
+						$protocol.empty().append($('<option>', {
+							value: null,
+							text: 'Choisissez un protocole',
+							disabled: true,
+							selected: true
+						}));
+						for (const key in data) {
+							$protocol.append($('<option>', {
+								value: key,
+								text: data[key]
+							}));
+						};
+					});
+				}
+			}).carousel(this.name);
+		});
+
+		const $submit = $modal.find('button[name=submit]').hide().click(function(e) {
+			typeof callback === 'function' && callback({
+				// TODO
+			});
+		});
+
+		disabledButton($next);
+		disabledButton($submit);
+
 		// Puis ouvre la fenêtre "modal"..
 		$modal.modal('show');
 	};
 
-	const openModalRemoveSource = function(value, callback) {
+
+	/*
+	Fenêtre « modal » pour la suppression d'une source de données.
+
+	*/
+	const openModalRemoveGeneric = function(value, deleteCallback) {
 
 		// Construit la fenêtre "modal"..
 		$('body').prepend(templator('modal', {
@@ -485,12 +622,12 @@ $(function() {return (function(cb) {
 				elements: [{
 					template: 'paragraph',
 					data: {
-						text: "Cette action est irreversible et supprimera définitivement les contextes d'indexation et configurations associés à cette source."
+						text: 'Cette action est irreversible et supprimera définitivement la « chose ».'
 					}
 				}, {
 					template: 'paragraph',
 					data: {
-						text: "Pour confirmer, veuillez réécrire le nom de la source à supprimer."
+						text: 'Pour confirmer, veuillez réécrire le nom de la « chose » à supprimer.'
 					}
 				}, {
 					template: 'form_input',
@@ -498,7 +635,7 @@ $(function() {return (function(cb) {
 						attrs: {
 							name: 'name',
 							type: 'text',
-							placeholder: 'Nom de la source de données à supprimer',
+							placeholder: 'Nom de la « chose » à supprimer',
 							autocomplete: 'off'
 						}
 					}
@@ -508,7 +645,7 @@ $(function() {return (function(cb) {
 				elements: [{
 					template: 'button',
 					data: {
-						text: 'Oui, supprimer définitivement cette source de données',
+						text: 'Oui, supprimer définitivement la « chose »',
 						attrs: {
 							name: 'submit',
 							type: 'submit',
@@ -534,7 +671,7 @@ $(function() {return (function(cb) {
 		// Définit les actions..
 		$modal.find('button[name=submit]').click(function(e) {
 			if ($name.val() === value) {
-				typeof callback === 'function' && callback();
+				typeof deleteCallback === 'function' && deleteCallback();
 			};
 		});
 
@@ -543,6 +680,10 @@ $(function() {return (function(cb) {
 	};
 
 
+	/*
+	Fenêtre « modal » pour la prévisualisation d'une source de données
+
+	*/
 	const openModalOpenSource = function(sourceName, data) {
 
 		// Construit la fenêtre "modal"..
@@ -608,6 +749,10 @@ $(function() {return (function(cb) {
 	};
 
 
+	/*
+	Fenêtre « modal » pour la visualisation d'une resource de données.
+
+	*/
 	const openModalOpenColumns = function(resourceName, data, callback) {
 
 		// Construit la fenêtre "modal"..
@@ -687,7 +832,11 @@ $(function() {return (function(cb) {
 	};
 
 
-	const openModalAddIndex = function(getSources, getResource, callback) {
+	/*
+	Fenêtre « modal » pour la création d'un modèle d'indexation.
+
+	*/
+	const openModalAddIndex = function(getSourcesCallback, getResourceCallback, postIndexCallback) {
 
 		$('body').prepend(templator('modal', {
 			dialog: {
@@ -707,9 +856,10 @@ $(function() {return (function(cb) {
 							template: 'sub_template',
 							data: {
 								elements: [{
-									template: 'paragraph',
+									template: 'span',
 									data:{
-										text: '<strong>Etape 1</strong>'
+										text: '<h3>Étape 1</h3>',
+										attrs: {}
 									}
 								}, {
 									template: 'form_input',
@@ -718,8 +868,9 @@ $(function() {return (function(cb) {
 											name: 'name',
 											type: 'text',
 											placeholder: '[a-z0-9_]{3,100}',
-											label: "Indiquez un nom pour ce nouvel index de données",
-											pattern: '[a-z0-9_]{3,100}'
+											label: 'Indiquez un nom pour ce nouvel index de données',
+											pattern: '[a-z0-9_]{3,100}',
+											autocomplete: 'off'
 										}
 									}
 								}]
@@ -728,9 +879,10 @@ $(function() {return (function(cb) {
 							template: 'sub_template',
 							data: {
 								elements: [{
-									template: 'paragraph',
+									template: 'span',
 									data:{
-										text: '<strong>Etape 2</strong>'
+										text: '<h3>Étape 2</h3>',
+										attrs: {}
 									}
 								}, {
 									template: 'form_select',
@@ -740,7 +892,12 @@ $(function() {return (function(cb) {
 											type: 'text',
 											label: 'Sélectionnez la source de données'
 										},
-										options: [] // Vide par défaut
+										options: []
+									}
+								}, {
+									template: 'paragraph',
+									data:{
+										text: 'Si la source de données n\'est pas dans la liste, vous pouvez l\'<a href="#source">ajouter ici</a>'
 									}
 								}]
 							}
@@ -748,9 +905,10 @@ $(function() {return (function(cb) {
 							template: 'sub_template',
 							data: {
 								elements: [{
-									template: 'paragraph',
+									template: 'span',
 									data:{
-										text: '<strong>Etape 3</strong>'
+										text: '<h3>Étape 3</h3>',
+										attrs: {}
 									}
 								}, {
 									template: 'form_select',
@@ -772,21 +930,192 @@ $(function() {return (function(cb) {
 				elements: [{
 					template: 'button',
 					data: {
-						text: 'Précédent',
+						text: 'Étape suivante',
 						attrs: {
-							name: 'prev',
-							type: 'button',
-							class: 'btn-default'
+							name: 'next',
+							type: 'button'
 						}
 					}
 				}, {
 					template: 'button',
 					data: {
-						text: 'Suivant',
+						text: 'Créer',
+						attrs: {
+							name: 'submit',
+							type: 'submit',
+							class: 'btn-primary'
+						}
+					}
+				}]
+			}
+		}));
+
+		const $modal = getModal();
+		const $carousel = getCarousel();
+
+		// Définit les actions..
+		const $name = $modal.find('input[name=name]').on('input', function() {
+			let m;
+			const regex = /^[a-z0-9_]{3,100}$/g;
+			((m = regex.exec($(this).val())) !== null) ? enabledButton($next) : disabledButton($next);
+		});
+
+		const $source = $modal.find('select[name=source]').on('change', function(e) {
+			enabledButton($next);
+		});
+
+		const $resource = $modal.find('select[name=resource]').on('change', function(e) {
+			enabledButton($submit);
+		});
+
+		const $next = $modal.find('button[name=next]').click(function(e) {
+			e.stopPropagation();
+			$carousel.on('slide.bs.carousel', function(e) {
+				disabledButton($next);
+				const i = $carousel.find('.active').index() + 1;
+				if (i === 1) {
+					typeof getSourcesCallback === 'function' && getSourcesCallback(function(data) {
+						$source.empty().append($('<option>', {
+							value: null,
+							text: 'Choisissez une source de données',
+							disabled: true,
+							selected: true
+						}));
+						for (const entry of data) {
+							$source.append($('<option>', {
+								value: entry.location,
+								text: entry.name
+							}));
+						};
+					});
+				};
+				if (i === 2 && $source.val()) {
+					$next.hide();
+					$submit.show();
+					typeof getSourcesCallback === 'function' && getResourceCallback($source.val() + '/resources', function(data) {
+						$resource.empty().append($('<option>', {
+							value: null,
+							text: 'Choisissez une resource',
+							disabled: true,
+							selected: true
+						}));
+						for (const entry of data) {
+							$resource.append($('<option>', {
+								value: entry.location,
+								text: entry.name
+							}));
+						};
+					});
+				}
+			}).carousel(this.name);
+		});
+
+		const $submit = $modal.find('button[name=submit]').hide().click(function(e) {
+			typeof postIndexCallback === 'function' && postIndexCallback({
+				name: $name.val(),
+				resource: $resource.val()
+			}, function(location) {
+				$modal.modal('hide').on('hidden.bs.modal', function(location) {
+					getIndexes('indexes');
+				});
+			});
+		});
+
+		disabledButton($next);
+		disabledButton($submit);
+
+		// Puis ouvre la fenêtre "modal"..
+		$modal.modal('show');
+	};
+
+
+	/*
+	Fenêtre « modal » pour la création d'un modèle de recherche.
+
+	*/
+	const openModalAddService = function(getIndexesCallback, postServiceCallback) {
+
+		// Construit la fenêtre "modal"..
+		$('body').prepend(templator('modal', {
+			dialog: {
+				class: 'modal-md'
+			},
+			heading: {
+				title: {
+					text: 'Créer un nouveau service de recherche'
+				}
+			},
+			body: {
+				elements: [{
+					template: 'carousel',
+					data: {
+						name: 'index-form',
+						slides: [{
+							template: 'sub_template',
+							data: {
+								elements: [{
+									template: 'span',
+									data:{
+										text: '<h3>Étape 1</h3>',
+										attrs: {}
+									}
+								}, {
+									template: 'form_input',
+									data: {
+										attrs: {
+											name: 'name',
+											type: 'text',
+											placeholder: '[a-z0-9_]{3,100}',
+											label: 'Indiquez un nom pour ce nouveau service de recherche',
+											pattern: '[a-z0-9_]{3,100}',
+											autocomplete: 'off'
+										}
+									}
+								}]
+							}
+						}, {
+							template: 'sub_template',
+							data: {
+								elements: [{
+									template: 'span',
+									data:{
+										text: '<h3>Étape 2</h3>',
+										attrs: {}
+									}
+								}, {
+									template: 'paragraph',
+									data:{
+										text: 'Un service de recherche doit pointer sur au moins un profil d\'indexation.'
+									}
+								}, {
+									template: 'form_multiselect',
+									data: {
+										attrs: {
+											name: 'indexes',
+											type: 'text',
+											label: 'Choisissez les profils d\'indexation à rattacher',
+										},
+										options: [] // Vide par défaut
+									}
+								}, {
+									template: 'paragraph',
+									data:{
+										text: 'Ou bien valider directement la création du profil, vous avez la toujours possiblité de le configurer plus tard.'
+									}
+								}]
+							}
+						}]
+					}
+				}]
+			},
+			footer: {
+				elements: [{
+					template: 'button',
+					data: {
+						text: 'Étape suivante',
 						attrs: {
 							name: 'next',
-							type: 'button',
-							class: 'btn-primary'
+							type: 'button'
 						}
 					}
 				}, {
@@ -806,112 +1135,48 @@ $(function() {return (function(cb) {
 		const $modal = getModal();
 		const $carousel = getCarousel();
 
-		const $name = $modal.find('input[name=name]');
-		const $source = $modal.find('select[name=source]');
-		const $resource = $modal.find('select[name=resource]');
-
 		// Définit les actions..
-		const $prev = $modal.find('button[name=prev]').click(function(e) {
-			$carousel.carousel('prev');
+		const $name = $modal.find('input[name=name]').on('input', function() {
+			let m;
+			const regex = /^[a-z0-9_]{3,100}$/g;
+			((m = regex.exec($(this).val())) !== null) ? enabledButton($next) : disabledButton($next);
+		});
+
+		const $indexes = $modal.find('select[name=indexes]').on('change', function(e) {
+			// enabledButton($submit);
 		});
 
 		const $next = $modal.find('button[name=next]').click(function(e) {
-
-			// WIP
-
-			/* TODO:
-			-> Récupérer l'identifiant de la slide correctement
-			-> Attention à l'asynchrone pour le chargement des options
-			-> Factoriser
-			*/
-
-			const slide_id = $carousel.find('.active').index() + 1;
-			if (slide_id === 1 ) {
-				typeof getSources === 'function' && getSources(function(data) {
-					$source.empty();
-					for (const entry of data) {
-						$source.append($('<option>', {
-							value: entry.location,
-							text: entry.name
-						}));
-					};
-				});
-			}
-			if (slide_id === 2 && $source.val()) {
-				typeof getSources === 'function' && getResource($source.val() + '/resources', function(data) {
-					for (const entry of data) {
-						$resource.append($('<option>', {
-							value: entry.location,
-							text: entry.name
-						}));
-					};
-				});
-			}
-			// WIP
-
-			$carousel.carousel('next');
+			e.stopPropagation();
+			$carousel.on('slide.bs.carousel', function(e) {
+				disabledButton($next);
+				const i = $carousel.find('.active').index() + 1;
+				if (i === 1) {
+					$next.hide();
+					$submit.show();
+					enabledButton($submit);
+					typeof getIndexesCallback === 'function' && getIndexesCallback(function(data) {
+						$indexes.empty();
+						for (const entry of data) {
+							$indexes.append($('<option>', {
+								value: entry.location,
+								text: entry.name
+							}));
+						};
+					});
+				};
+			}).carousel(this.name);
 		});
 
-		const $submit = $modal.find('button[name=submit]').click(function(e) {
-			// TODO
-		});
-
-		// Puis ouvre la fenêtre "modal"..
-		$modal.modal('show');
-	};
-
-
-	const openModalAddService = function(indexes, callback) {
-
-		// Construit la fenêtre "modal"..
-		$('body').prepend(templator('modal', {
-			dialog: {
-				class: 'modal-lg'
-			},
-			heading: {
-				title: {
-					text: 'Créer un nouveau service de recherche'
-				}
-			},
-			body: {
-				elements: [{
-					template: 'form_input',
-					data: {
-						attrs: {
-							name: 'name',
-							type: 'text',
-							placeholder: '[a-z0-9_]{3,100}',
-							label: 'Indiquez un nom pour ce nouveau service de recherche',
-							pattern: '[a-z0-9_]{3,100}'
-						}
-					}
-				}]
-			},
-			footer: {
-				elements: [{
-					template: 'button',
-					data: {
-						text: 'Créer',
-						attrs: {
-							name: 'submit',
-							type: 'submit',
-							class: 'btn-default'
-						}
-					}
-				}]
-			}
-		}));
-
-		const $modal = getModal();
-
-		// Définit les actions..
-		const $name = $modal.find('input[name=name]');
-
-		$modal.find('button[name=submit]').click(function(e) {
-			typeof callback === 'function' && callback({
-				name: $name.val()
+		const $submit = $modal.find('button[name=submit]').hide().click(function(e) {
+			typeof postServiceCallback === 'function' && postServiceCallback({
+				name: $name.val(),
+				indexes: $indexes.val()
 			});
 		});
+
+		disabledButton($next);
+		disabledButton($submit);
 
 		// Puis ouvre la fenêtre "modal"..
 		$modal.modal('show');
@@ -948,21 +1213,39 @@ $(function() {return (function(cb) {
 					e.preventDefault();
 					e.stopPropagation();
 					const grid = this.grid;
-					openModalAddSource(function(data) {
-						onegeoClient.action.post('sources', {
-							data: data,
-							successful: function(location) {
-								console.log('New source created: ' + location);
-							},
-							failure: function() {
-								onXhrFailure.call(this);
-							}
-						})
-					}, [
-						// TODO
-					], [
-						// TODO
-					]);
+					openModalAddSource(
+						function(callback) {
+							onegeoClient.action.get('/sources_directories', {
+								successful: function(data) {
+									typeof callback === 'function' && callback(data);
+								},
+								failure: function() {
+									onXhrFailure.call(this);
+								}
+							})
+						},
+						function(callback) {
+							onegeoClient.action.get('/supported_modes', {
+								successful: function(data) {
+									typeof callback === 'function' && callback(data);
+								},
+								failure: function() {
+									onXhrFailure.call(this);
+								}
+							})
+						},
+						function(data) {
+							onegeoClient.action.post('/sources', {
+								data: data,
+								successful: function(location) {
+									console.log('New source created: ' + location);
+								},
+								failure: function() {
+									onXhrFailure.call(this);
+								}
+							})
+						}
+					);
 				},
 				position: 'before',
 				html: templator('button', {
@@ -991,7 +1274,7 @@ $(function() {return (function(cb) {
 				},
 				position: 'after',
 				html: templator('button', {
-					text: 'Ouvrir',
+					text: 'Voir les ressources <span class="glyphicon glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
 					attrs: {
 						name: 'open',
 						type: 'button'
@@ -1004,7 +1287,7 @@ $(function() {return (function(cb) {
 					e.stopPropagation();
 					const grid = this.grid;
 					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-					openModalRemoveSource(entry.name, function(data) {
+					openModalRemoveGeneric(entry.name, function(data) {
 						onegeoClient.action.delete(entry.location, {
 							successful: function() {
 								console.log('Source deleted: ' + entry.location);
@@ -1087,15 +1370,20 @@ $(function() {return (function(cb) {
 
 		// Tableau des profils d'indexation :
 		'indexes': new Table('table-indexes', 'Indexes', [{
+			name: 'location',
+			label: 'location',
+			editable: false,
+			datatype: 'string'
+		}, {
 			name: 'name',
 			label: 'Nom',
 			editable: false,
 			datatype: 'string'
-		// }, {
-		// 	name: 'resource',
-		// 	label: 'Ressource associée',
-		// 	editable: false,
-		// 	datatype: 'string'
+		}, {
+			name: 'resource_location',
+			label: 'resource_location',
+			editable: false,
+			datatype: 'string'
 		}], {
 			'add': {
 				method: function(e) {
@@ -1123,8 +1411,111 @@ $(function() {return (function(cb) {
 								}
 							})
 						},
+						function(data, callback) {
+							onegeoClient.action.post('/indexes', {
+								data: data,
+								successful: function(location) {
+									console.log('New index created: ' + location);
+									typeof callback === 'function' && callback(data);
+								},
+								failure: function() {
+									onXhrFailure.call(this);
+								}
+							})
+						}
+					);
+				},
+				position: 'before',
+				html: templator('button', {
+					text: 'Nouveau',
+					attrs: {
+						name: 'add',
+						type: 'button',
+						class: 'btn-primary'
+					}
+				})
+			},
+			'open': {
+				method: function() {
+					const grid = this.grid;
+				},
+				position: 'after',
+				html: templator('button', {
+					text: 'Configurer <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>',
+					attrs: {
+						name: 'open',
+						type: 'button'
+					}
+				})
+			},
+			'remove': {
+				method: function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+					const grid = this.grid;
+					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+					openModalRemoveGeneric(entry.name, function(data) {
+						onegeoClient.action.delete(entry.location, {
+							successful: function() {
+								console.log('Index deleted: ' + entry.location);
+							},
+							failure: function() {
+								onXhrFailure.call(this);
+							}
+						})
+					});
+				},
+				position: 'after',
+				html: templator('button', {
+					text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
+					attrs: {
+						name: 'remove',
+						type: 'button',
+						class: 'btn-danger'
+					}
+				})
+			}
+		}),
+		// Tableau des profils de recherche :
+		'services': new Table('table-services', 'Services', [{
+			name: 'location',
+			label: 'location',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'name',
+			label: 'Nom',
+			editable: false,
+			datatype: 'string'
+		}, {
+			name: 'service_url',
+			label: 'URL du service',
+			editable: false,
+			datatype: 'url'
+		}, {
+			name: 'extended',
+			label: 'Extension',
+			editable: false,
+			datatype: 'boolean'
+		}], {
+			'add': {
+				method: function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+					const grid = this.grid;
+					openModalAddService(
+						function(callback) {
+							onegeoClient.action.get('/indexes', {
+								successful: function(data) {
+									typeof callback === 'function' && callback(data);
+								},
+								failure: function() {
+									onXhrFailure.call(this);
+								}
+							})
+						},
 						function(data) {
-							onegeoClient.action.post('indexes', {
+							onegeoClient.action.post('/services', {
 								data: data,
 								successful: function(location) {
 									console.log('New index created: ' + location);
@@ -1152,7 +1543,7 @@ $(function() {return (function(cb) {
 				},
 				position: 'after',
 				html: templator('button', {
-					text: 'Ouvrir',
+					text: 'Configurer <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>',
 					attrs: {
 						name: 'open',
 						type: 'button'
@@ -1160,87 +1551,21 @@ $(function() {return (function(cb) {
 				})
 			},
 			'remove': {
-				method: function() {
-					const grid = this.grid;
-				},
-				position: 'after',
-				html: templator('button', {
-					text: 'Supprimer <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',
-					attrs: {
-						name: 'remove',
-						type: 'button',
-						class: 'btn-danger'
-					}
-				})
-			}
-		}),
-		// Tableau des profils de recherche :
-		'services': new Table('table-services', 'Services', [{
-			name: 'name',
-			label: 'Nom',
-			editable: false,
-			datatype: 'string'
-		}, {
-			name: 'service_url',
-			label: 'URL du service',
-			editable: false,
-			datatype: 'url'
-		}, {
-			name: 'extended',
-			label: 'Extension',
-			editable: false,
-			datatype: 'boolean'
-		}], {
-			'add': {
 				method: function(e) {
 					e.preventDefault();
 					e.stopPropagation();
 					const grid = this.grid;
-					onegeoClient.action.get('/indexes', {
-						successful: function(indexes) {
-							openModalAddService(indexes, function(data) {
-								onegeoClient.action.post('services', {
-									data: data,
-									successful: function(location) {
-										console.log('New index created: ' + location);
-									},
-									failure: function() {
-										onXhrFailure.call(this);
-									}
-								})
-							});
-						},
-						failure: function() {
-							onXhrFailure.call(this);
-						}
+					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+					openModalRemoveGeneric(entry.name, function(data) {
+						onegeoClient.action.delete(entry.location, {
+							successful: function() {
+								console.log('Service deleted: ' + entry.location);
+							},
+							failure: function() {
+								onXhrFailure.call(this);
+							}
+						})
 					});
-				},
-				position: 'before',
-				html: templator('button', {
-					text: 'Nouveau',
-					attrs: {
-						name: 'add',
-						type: 'button',
-						class: 'btn-primary'
-					}
-				})
-			},
-			'open': {
-				method: function() {
-					const grid = this.grid;
-				},
-				position: 'after',
-				html: templator('button', {
-					text: 'Ouvrir',
-					attrs: {
-						name: 'open',
-						type: 'button'
-					}
-				})
-			},
-			'remove': {
-				method: function() {
-					const grid = this.grid;
 				},
 				position: 'after',
 				html: templator('button', {
@@ -1267,6 +1592,65 @@ $(function() {return (function(cb) {
 			};
 		});
 
+	// TODO: Déplacer vers onegeo_client.js
+	const getSources = function(onSuccessCallback, onFailureCallback) {
+		onegeoClient.action.get('/sources', {
+			successful: onSuccessCallback,
+			failure: onFailureCallback
+		});
+	};
+
+	// TODO: Déplacer vers onegeo_client.js
+	const getIndexes = function(onSuccessCallback, onFailureCallback) {
+		onegeoClient.action.get('/indexes', {
+			successful: onSuccessCallback,
+			failure: onFailureCallback
+		});
+	};
+
+	// TODO: Déplacer vers onegeo_client.js
+	const getServices = function(onSuccessCallback, onFailureCallback) {
+		onegeoClient.action.get('/services', {
+			successful: onSuccessCallback,
+			failure: onFailureCallback
+		});
+	};
+
+	const loadTable = function(tabName, data) {
+		$('.tab-pane#' + tabName).html(templator('table_grid', {name: tabName}));
+		return table[tabName].update(data);
+	};
+
+	const parseData = function(data, attrs) {
+		const arr = [];
+		for (let i = 0; i < data.length; i ++) {
+			const values = [];
+			for (const attr of attrs) {
+				values.push(data[i][attr]);
+			};
+			arr.push({id: i, values: values});
+		};
+		return arr;
+	};
+
+	const loadSources = function(e, tabName) {
+		return function(data) {
+			return loadTable(tabName, parseData(data, ['location', 'name', 'mode', 'uri']));
+		};
+	};
+
+	const loadIndexes = function(e, tabName) {
+		return function(data) {
+			return loadTable(tabName, parseData(data, ['location', 'name', 'resource']));
+		};
+	};
+
+	const loadServices = function(e, tabName) {
+		return function(data) {
+			return loadTable(tabName, parseData(data, ['location', 'name', 'service_url', 'extended']));
+		};
+	};
+
 
 	const HASH_TAB = [];
 
@@ -1288,7 +1672,7 @@ $(function() {return (function(cb) {
 				// e.preventDefault();
 
 				const trigger = function() {
-					$(this).trigger('click');  // == $(this).click.call($(this));
+					$(this).trigger('click');  // $(this).click.call($(this));
 				}.bind(this);
 
 				const onFailure = function() {
@@ -1297,62 +1681,57 @@ $(function() {return (function(cb) {
 				};
 
 				if (this.hash === '#sources') {
-					onegeoClient.action.get('/sources', {
-						successful: function(data) {
-							const name = this.hash.substr(1);
-							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
-							const arr = [];
-							for (let i = 0; i < data.length; i ++) {
-								arr.push({
-									id: i,
-									values: [
-										data[i].location,
-										data[i].name,
-										data[i].mode,  // deprecated
-										data[i].uri
-									]
-								});
-							};
-							table[name].update(arr);
-						}.bind(this),
-						failure: onFailure
-					});
+					getSources(loadSources.apply(this, [arguments, this.hash.substr(1)]), onFailure);
 				} else if (this.hash === '#indexes') {
-					onegeoClient.action.get('/indexes', {
-						successful: function(data) {
-							const name = this.hash.substr(1);
-							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
-							const arr = [];
-							for (let i = 0; i < data.length; i ++) {
-								arr.push({
-									id: i,
-									values: [data[i].name]
-								});
-							};
-							table[name].update(arr);
-						}.bind(this),
-						failure: onFailure
-					});
+					getSources(function(data) {
+						if (data.length > 0) {
+							getIndexes(loadIndexes.apply(this, [arguments, this.hash.substr(1)]), onFailure);
+						} else {
+							$('body').prepend(templator('modal', {
+								dialog: {
+									class: 'modal-md'
+								},
+								heading: {
+									title: {
+										text: 'Information'
+									}
+								},
+								body: {
+									elements: [{
+										template: 'paragraph',
+										data: {
+											text: 'Vous devriez commencer par ajouter une source de données.'
+										}
+									}]
+								},
+								footer: {
+									elements: [{
+										template: 'button',
+										data: {
+											text: 'Fermer',
+											attrs: {
+												name: 'close',
+												type: 'button'
+											}
+										}
+									}]
+								}
+							}));
+
+							const $modal = getModal();
+
+							$modal.find('button[name=close]').click(function(e) {
+								$modal.on('hidden.bs.modal', function() {
+									$('a[href="#sources"]').tab('show');
+								}).modal('hide');
+							});
+
+							// Puis ouvre la fenêtre "modal"..
+							$modal.modal('show');
+						};
+					}.bind(this), onFailure);
 				} else if (this.hash === '#services') {
-					onegeoClient.action.get('/services', {
-						successful: function(data) {
-							const name = this.hash.substr(1);
-							$('.tab-pane#' + name).html(templator('table_grid', {name: name}));
-							const arr = [];
-							for (let i = 0; i < data.length; i ++) {
-								arr.push({
-									id: i,
-									values: [
-										data[i].name,
-										data[i].serviceUrl,
-										data[i].extended
-									]
-								});
-							};
-							table[name].update(arr);
-						}.bind(this),
-						failure: onFailure
-					});
+					getServices(loadServices.apply(this, [arguments, this.hash.substr(1)]), onFailure);
 				} else {
 					e.stopPropagation();
 				};
