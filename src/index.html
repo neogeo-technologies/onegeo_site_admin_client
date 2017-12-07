@@ -296,14 +296,6 @@ $(function() {return (function(cb) {
 			});
 	};
 
-	const buildTemplate = function(type, name) {
-		const templator = getTemplator(type, name);
-		if (type == 'modal') {
-			$('body').prepend(templator);
-			return getModal();
-		};
-	};
-
 	const modal_SignIn = function(callback) {
 		const _calleeName = arguments.callee.name.split('_');
 		$('body').prepend(templator(_calleeName[0], getTemplate(_calleeName[0], _calleeName[1])));
