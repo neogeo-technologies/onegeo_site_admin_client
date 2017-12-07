@@ -84,9 +84,18 @@ EditableGrid.prototype.updatePaginator = function(grid) {
 var Table = function(containerId, containerName, metadata, buttons, options) {
 	
 	var that = this;
+	this.tableClasses = 'table table-bordered table-condensed';
 
-	this.options = options || {};
+	this.options = {
+		selectable: true
+	};
 
+	if (options && options.selectable == false) {
+		this.options.selectable = false;
+	} else {
+		this.tableClasses += ' table-hover'; 
+	};
+	
 	this.metadata = metadata;
 	
 	this.containerId = containerId;
@@ -100,11 +109,12 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 
 	this.buttons = {
 		before: {}, 
-		after: {}
+		after: {},
+		inner: {}  // Bof
 	};
 
 	for (const name in buttons) {
-		this.method[name] = buttons[name].method;
+		this.method[name] = buttons[name].method || function(e) {};
 		this.buttons[buttons[name].position][name] = $(buttons[name].html);
 	};
 
@@ -117,48 +127,60 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 		};
 
 		for (const column of this.columns) {
-			if (column.datatype == 'boolean') {
+			if (column.datatype == 'boolean' && !column.editable) {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
 						cell.style.textAlign = 'center';
-						// cell.style.width = '32px';
 						cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-minus"></span>';
 					}
 				}));
-			}
+			};
 			if (column.datatype == 'url') {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
 						cell.innerHTML = value + ' <a href="' + value + '"><span class="glyphicon glyphicon-link"></span></a>';
 					}
 				}));
-			}
-		};
-
-		this.rowSelected = function(pRowIdx, nRowIdx) {
-			const active = 'active';
-			const pRow = this.getRow(pRowIdx);
-			const nRow = this.getRow(nRowIdx);
-			$(pRow).removeClass(active);
-			if (pRowIdx != nRowIdx) {
-				$(nRow).addClass(active);
-				for (const button in that.buttons.after) {
-					const $button = $(that.buttons.after[button]);
-					$button && $button.removeClass('disabled').prop('disabled', false);
-				};
-				if (typeof that.events.onRowUnselected === 'function') {
-					that.events.onRowUnselected.apply(this, arguments);
-				};
-			} else {
-				for (const button in that.buttons.after) {
-					const $button = $(that.buttons.after[button]);
-					$button && $button.addClass('disabled').prop('disabled', true);
-				};
-				if (typeof that.events.onRowUnselected === 'function') {
-					that.events.onRowSelected.apply(this, arguments);
-				};
 			};
-		}.bind(this);
+			if (column.datatype == 'html') {
+				this.setCellRenderer(column.name, new CellRenderer({
+					render: function(cell, value) {
+						if (value) {
+							cell.innerHTML = value;
+							$(cell).find('button[name=' + column.name + ']').click(function(e) {
+								return that.method[column.name].apply(that, [e, cell.rowIndex]);
+							});
+						};
+					}
+				}));
+			};
+		};
+		if (that.options.selectable) {
+			this.rowSelected = function(pRowIdx, nRowIdx) {
+				const active = 'active';
+				const pRow = this.getRow(pRowIdx);
+				const nRow = this.getRow(nRowIdx);
+				$(pRow).removeClass(active);
+				if (pRowIdx != nRowIdx) {
+					$(nRow).addClass(active);
+					for (const button in that.buttons.after) {
+						const $button = $(that.buttons.after[button]);
+						$button && $button.removeClass('disabled').prop('disabled', false);
+					};
+					if (typeof that.events.onRowUnselected === 'function') {
+						that.events.onRowUnselected.apply(this, arguments);
+					};
+				} else {
+					for (const button in that.buttons.after) {
+						const $button = $(that.buttons.after[button]);
+						$button && $button.addClass('disabled').prop('disabled', true);
+					};
+					if (typeof that.events.onRowUnselected === 'function') {
+						that.events.onRowSelected.apply(this, arguments);
+					};
+				};
+			}.bind(this);
+		};
 
 	};
 };
@@ -188,14 +210,14 @@ Table.prototype.update = function(data) {
 		$container.before($buttonGroup);
 		// Fin de code moche
 
-		$container.html('<div class="alert alert-warning" role="alert">Vide</div>')
+		$container.html('<div class="alert alert-warning" role="alert">Vide</div>');
 		$container.show();
 	} else {
 		this.grid.load({
 			metadata: this.metadata,
 			data: data
 		});
-		this.grid.renderGrid(this.containerId, 'table table-bordered table-hover table-condensed');
+		this.grid.renderGrid(this.containerId, this.tableClasses);
 		this.grid.initializeGrid();
 		this.grid.refreshGrid();
 

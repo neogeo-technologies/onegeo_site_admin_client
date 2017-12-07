@@ -1,5 +1,716 @@
 {
 	"url": "http://127.0.0.1",
 	"path": "/api",
-	"title": "Title"
+	"title": "Title",
+	"template":
+	{
+		"modal":
+		{
+			"SignIn":
+			{
+				"dialog":
+				{
+					"class": "modal-sm"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Connectez-vous"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "form_input",
+						"data":
+						{
+							"attrs":
+							{
+								"name": "username",
+								"type": "text",
+								"placeholder": "Utilisateur"
+							}
+						}
+					},
+					{
+						"template": "form_input",
+						"data":
+						{
+							"attrs":
+							{
+								"name": "password",
+								"type": "password",
+								"placeholder": "Mot de passe"
+							}
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Se connecter",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "submit"
+							}
+						}
+					}]
+				}
+			},
+			"SignOut":
+			{
+				"dialog":
+				{
+					"class": "modal-sm"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Fermer la session"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "paragraph",
+						"data":
+						{
+							"text": "Vous êtes sur le point de vous déconnecter."
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Se déconnecter",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "button"
+							}
+						}
+					}]
+				}
+			},
+			"Delete":
+			{
+				"dialog":
+				{},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Êtes-vous absolument sûr ?"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "paragraph",
+						"data":
+						{
+							"text": "Cette action est irreversible et supprimera définitivement l'élément."
+						}
+					},
+					{
+						"template": "paragraph",
+						"data":
+						{
+							"text": "Pour confirmer, veuillez réécrire le nom de l'élément à supprimer."
+						}
+					},
+					{
+						"template": "form_input",
+						"data":
+						{
+							"attrs":
+							{
+								"name": "name",
+								"type": "text",
+								"placeholder": "Nom de l'élément à supprimer",
+								"autocomplete": "off"
+							}
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Oui, supprimer définitivement l'élément",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "submit",
+								"class": "btn-danger btn-block"
+							}
+						}
+					}]
+				}
+			},
+			"AddSource":
+			{
+				"dialog":
+				{
+					"class": "modal-md"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Ajouter une nouvelle source de données"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "carousel",
+						"data":
+						{
+							"name": "source-form",
+							"slides": [
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 1</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "form_input",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "name",
+												"type": "text",
+												"placeholder": "[a-z0-9_]{3,100}",
+												"label": "Nom de la source de données",
+												"pattern": "[a-z0-9_]{3,100}",
+												"autocomplete": "off"
+											}
+										}
+									}]
+								}
+							},
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 2</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "form_input",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "uri",
+												"type": "text",
+												"placeholder": "Sélectionnez ou indiquez une valeur",
+												"label": "Indiquez l'URI de la source de données",
+												"autocomplete": "off",
+												"datalist":
+												{
+													"options": []
+												}
+											}
+										}
+									}]
+								}
+							},
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 3</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "form_select",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "protocol",
+												"type": "text",
+												"label": "Sélectionnez le protocole de connexion à la source de données"
+											},
+											"options": []
+										}
+									}]
+								}
+							}]
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Étape suivante",
+							"attrs":
+							{
+								"name": "next",
+								"type": "button"
+							}
+						}
+					},
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Créer",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "submit",
+								"class": "btn-primary"
+							}
+						}
+					}]
+				}
+			},
+			"CreateIndex":
+			{
+				"dialog":
+				{
+					"class": "modal-md"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Créer un nouvel index de données"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "carousel",
+						"data":
+						{
+							"name": "index-form",
+							"slides": [
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 1</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "form_input",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "name",
+												"type": "text",
+												"placeholder": "[a-z0-9_]{3,100}",
+												"label": "Indiquez un nom pour ce nouvel index de données",
+												"pattern": "[a-z0-9_]{3,100}",
+												"autocomplete": "off"
+											}
+										}
+									}]
+								}
+							},
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 2</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "form_select",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "source",
+												"type": "text",
+												"label": "Sélectionnez la source de données"
+											},
+											"options": []
+										}
+									},
+									{
+										"template": "paragraph",
+										"data":
+										{
+											"text": "Si la source de données n'est pas dans la liste, vous pouvez l'<a href=\"#source\">ajouter ici</a>"
+										}
+									}]
+								}
+							},
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 3</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "form_select",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "resource",
+												"type": "text",
+												"label": "Sélectionnez la resource de données"
+											},
+											"options": []
+										}
+									}]
+								}
+							}]
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Étape suivante",
+							"attrs":
+							{
+								"name": "next",
+								"type": "button"
+							}
+						}
+					},
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Créer",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "submit",
+								"class": "btn-primary"
+							}
+						}
+					}]
+				}
+			},
+			"UpdateIndex":
+			{
+				"dialog":
+				{
+					"class": "modal-lg"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Configuration du profil d'indexation"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "carousel",
+						"data":
+						{
+							"name": "index-form",
+							"slides": [
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "form_input",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "name",
+												"type": "text",
+												"placeholder": "[a-z0-9_]{3,100}",
+												"label": "Nom",
+												"pattern": "[a-z0-9_]{3,100}",
+												"autocomplete": "off"
+											}
+										}
+									},
+									{
+										"template": "form_select",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "reindex-frequency",
+												"type": "text",
+												"label": "Fréquence de réindexation automatique"
+											},
+											"options": [
+											{
+												"value": "monthly",
+												"text": "Tous les mois"
+											},
+											{
+												"value": "weekly",
+												"text": "Toutes les semaines"
+											},
+											{
+												"value": "daily",
+												"text": "Tous les jours"
+											}]
+										}
+									},
+									{
+										"template": "label",
+										"data":
+										{
+											"text": "Attributs"
+										}
+									},
+									{
+										"template": "table_grid",
+										"data":
+										{
+											"name": "index-columns"
+										}
+									}]
+								}
+							}]
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Annuler",
+							"attrs":
+							{
+								"name": "cancel",
+								"type": "button",
+								"class": "btn-default"
+							}
+						}
+					},
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Enregistrer",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "button",
+								"class": "btn-default"
+							}
+						}
+					}]
+				}
+			},
+			"CreateService":
+			{
+				"dialog":
+				{
+					"class": "modal-md"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Créer un nouveau service de recherche"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "carousel",
+						"data":
+						{
+							"name": "index-form",
+							"slides": [
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 1</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "form_input",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "name",
+												"type": "text",
+												"placeholder": "[a-z0-9_]{3,100}",
+												"label": "Indiquez un nom pour ce nouveau service de recherche",
+												"pattern": "[a-z0-9_]{3,100}",
+												"autocomplete": "off"
+											}
+										}
+									}]
+								}
+							},
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 2</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "paragraph",
+										"data":
+										{
+											"text": "Un service de recherche doit pointer sur au moins un profil d'indexation."
+										}
+									},
+									{
+										"template": "form_multiselect",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "indexes",
+												"type": "text",
+												"label": "Choisissez les profils d'indexation à rattacher"
+											},
+											"options": []
+										}
+									},
+									{
+										"template": "paragraph",
+										"data":
+										{
+											"text": "Ou bien valider directement la création du profil, vous avez la toujours possiblité de le configurer plus tard."
+										}
+									}]
+								}
+							}]
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Étape suivante",
+							"attrs":
+							{
+								"name": "next",
+								"type": "button"
+							}
+						}
+					},
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Créer",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "submit",
+								"class": "btn-default"
+							}
+						}
+					}]
+				}
+			}
+		}
+	}
 }
