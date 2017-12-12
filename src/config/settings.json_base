@@ -536,7 +536,7 @@
 										"template": "label",
 										"data":
 										{
-											"text": "Attributs"
+											"text": "Paramètres d'indexation des attributs"
 										}
 									},
 									{

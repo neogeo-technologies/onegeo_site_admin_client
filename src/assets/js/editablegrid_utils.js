@@ -87,13 +87,23 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 	this.tableClasses = 'table table-bordered table-condensed';
 
 	this.options = {
-		selectable: true
+		selectable: true,
+		pageSize: 10,
+		onChange: function(rowIndex, columnIndex, oldValue, newValue, row) {}
 	};
 
-	if (options && options.selectable == false) {
-		this.options.selectable = false;
-	} else {
-		this.tableClasses += ' table-hover'; 
+	if (options) {
+		if (options.selectable == false) {
+			this.options.selectable = false;
+		} else {
+			this.tableClasses += ' table-hover'; 
+		};
+		if (options.pageSize && typeof options.pageSize == 'number') {
+			this.options.pageSize = options.pageSize;
+		};
+		if (options.onChange && typeof options.onChange == 'function') {
+			this.options.onChange = options.onChange;
+		};
 	};
 	
 	this.metadata = metadata;
@@ -118,12 +128,16 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 		this.buttons[buttons[name].position][name] = $(buttons[name].html);
 	};
 
-	this.grid = new EditableGrid(containerName, {pageSize: this.options.pageSize || 10});
+	this.grid = new EditableGrid(containerName, {pageSize: this.options.pageSize});
 
 	this.grid.initializeGrid = function() {
 
 		this.tableRendered = function() {
 			this.updatePaginator(this);
+		};
+
+		this.modelChanged = function(rowIndex, columnIndex, oldValue, newValue, row) {
+			return that.options.onChange.call(that, rowIndex, columnIndex, oldValue, newValue, row);
 		};
 
 		for (const column of this.columns) {
@@ -147,7 +161,8 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 					render: function(cell, value) {
 						if (value) {
 							cell.innerHTML = value;
-							$(cell).find('button[name=' + column.name + ']').click(function(e) {
+							// 
+							$button = $(cell).find('button[name=' + column.name + ']').click(function(e) {
 								return that.method[column.name].apply(that, [e, cell.rowIndex]);
 							});
 						};

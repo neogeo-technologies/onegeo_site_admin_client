@@ -18,15 +18,27 @@
 		<script src="assets/js/onegeo_client.js"></script>
 		<script>
 		(function() {
-			const _cache = {};
+			this.clone = function _itself(obj) {
+				if (null == obj || 'object' != typeof obj) return obj;
+				var copy = obj.constructor();
+				for (var attr in obj) {
+					if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+				};
+				return copy;
+			};
+		})();
+		</script>
+		<script>
+		(function() {
+			var _cache = {};
 			this.templator = function _itself(str, data) {
-				let _fun;
+				var _fun;
 				// Figure out if we're getting a template, or if we need to
 				// load the template - and be sure to cache the result.
 				if (/\W/.test(str)) {
-					const js =
-						"const _p = []; " +
-						// "const print = function() { _p.push.apply(_p, arguments); }; " +
+					var js =
+						"var _p = []; " +
+						// "var print = function() { _p.push.apply(_p, arguments); }; " +
 						"with (obj) { _p.push('" +
 						str
 							.replace(/[\r\t\n]/g, ' ')
@@ -282,6 +294,10 @@ $(function() {return (function(cb) {
 				'backdrop': 'static',
 				'show': false
 			})
+			.on('shown.bs.modal', function() {
+				height = $(this).find('.modal-body').innerHeight();
+				$(this).find('.modal-body').css('height', height + 'px');
+			})
 			.on('hidden.bs.modal', function() {
 				$(this).remove();
 			});
@@ -482,7 +498,7 @@ $(function() {return (function(cb) {
 				elements: [{
 					template: 'paragraph',
 					data: {
-						text: "Ressource(s) disponible(s)"
+						text: 'Ressource(s) disponible(s)'
 					}
 				}, {
 					template: 'table_grid',
@@ -704,79 +720,100 @@ $(function() {return (function(cb) {
 
 	*/
 	const modal_UpdateIndex = function(data, putIndexCallback) {
-		const _calleeName = arguments.callee.name.split('_');
+		const updated = clone(data);
+
+		const updateColumn = function(columnName, attribute, value) {
+			for (let i = 0; i < updated.columns.length ; i ++) {
+				if (updated.columns[i].name == columnName) {
+					updated.columns[i][attribute] = value;
+				};
+			};
+		};
+
+		const getColumn = function(columnName) {
+			for (const column of updated.columns) {
+				if (columnName == column.name) {
+					return column;
+				};
+			};
+		};
 
 		const _generateTemplate = function(data) {
-
 			const template = {
-				template: 'sub_template',
-				data: {
-					elements: [{
-						template: 'form_input',
-						data: {
-							attrs: {
-								name: 'name',
-								type: 'text',
-								value: data.name,
-								label: 'Nom de l\'attribut',
-								autocomplete: 'off',
-								disabled: true
-							}
-						}
-					}, {
-						template: 'form_input',
-						data: {
-							attrs: {
-								name: 'alias',
-								type: 'text',
-								value: data.alias || null,
-								label: 'Alias de l\'attribut',
-								placeholder: 'Indiquez un nouvel alias',
-								autocomplete: 'off'
-							}
-						}
-					}, {
-						template: 'form_select',
-						data: {
-							attrs: {
-								name: 'type',
-								type: 'text',
-								label: 'Type',
-							},
-							options: [
-								{value: 'text', text: 'Texte'},
-								{value: 'keyword', text: 'Texte non-analysé'},
-								{value: 'date', text: 'Date'},
-								{value: 'pdf', text: 'Document PDF'}
-							]
-						}
-					}]
-				}
+				elements: [{
+					template: 'span',
+					data: {
+						text: '<h3>' + data.name + '</h3>',
+						attrs: {}
+					}
+				}, {
+					template: 'span',
+					data: {
+						text: '<strong>Alias</strong> : ' + (data.alias || 'N/A') + '<br/>',
+						attrs: {}
+					}
+				}, {
+					template: 'span',
+					data: {
+						text: '<strong>Type</strong> : ' + data.type + '<hr/>',
+						attrs: {}
+					}
+				}]
 			};
-
+			if (data.type == 'text') {
+				template.elements.push({
+					template: 'form_select',
+					data: {
+						attrs: {
+							name: 'analyzer',
+							type: 'text',
+							label: 'Analyseur utilisé lors de l\'indexation des données'
+						},
+						options: [
+							{
+								value: '',
+								text: 'Utiliser l\'analyseur par défaut'
+							}
+						]
+					}
+				});
+				template.elements.push({
+					template: 'form_select',
+					data: {
+						attrs: {
+							name: 'search_analyzer',
+							type: 'text',
+							label: 'Analyseur utilisé lors d\'une recherche'
+						},
+						options: [
+							{
+								value: '',
+								text: 'Utiliser l\'analyseur pour l\'indexation des données (valeur par défaut)'
+							}
+						]
+					}
+				});
+			};
 			if (data.type == 'date') {
-				template.data.elements.push({
+				template.elements.push({
 					template: 'form_input',
 					data: {
 						attrs: {
 							name: 'pattern',
 							type: 'text',
-							value: data.pattern || null,
+							value: data.pattern,
 							label: 'Motif',
 							placeholder: 'Par défaut : « epoch_millis »',
 							autocomplete: 'off'
 						}
 					}
 				});
-			}
-
+			};
 			return template;
 		};
 
+		const _calleeName = arguments.callee.name.split('_');
 		const template = getTemplate(_calleeName[0], _calleeName[1])
-		for (const column of data.columns) {
-			template.body.elements[0].data.slides.push(_generateTemplate(column));
-		};
 		$('body').prepend(templator(_calleeName[0], template));
 
 		const $modal = getModal();
@@ -789,10 +826,10 @@ $(function() {return (function(cb) {
 				values: [
 					data.columns[i].rejected ? false : true,
 					data.columns[i].name,
-					data.columns[i].alias || '-',
-					data.columns[i].type || '-',
+					data.columns[i].alias,
+					data.columns[i].type,
 					templator('button', {
-						text: '<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+						text: 'Configuration avancée <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
 						attrs: {name: 'edit', type: 'button', class: 'btn-xs'}
 					})
 				]
@@ -802,22 +839,31 @@ $(function() {return (function(cb) {
 
 		const $cancel = $modal.find('button[name=cancel]');
 		const $submit = $modal.find('button[name=submit]');
-		disabledButton($submit);
+		// disabledButton($submit);
 
 		// Définit les actions..
 
-		table['index-columns'].method.edit = function(e, rowId) {
-			const grid = this.grid;
-			$carousel.carousel(rowId + 1);
+		table['index-columns'].options.onChange = function(rowIndex, columnIndex, oldValue, newValue, row) {
+			updateColumn(this.grid.getValueAt(rowIndex, this.grid.getColumnIndex('name')), this.grid.getColumnName(columnIndex), newValue);
+		};
+
+		table['index-columns'].method.edit = function(e, rowIndex) {
+			const columnName = this.grid.getValueAt(rowIndex, this.grid.getColumnIndex('name'));
+			$('.carousel-inner').find('.item').last().empty().append(templator('sub_template', _generateTemplate(getColumn(columnName))));
+			$carousel.carousel(1);
 			$cancel.click(function(e) {
-				// TODO: Réinitialiser les champs
 				$carousel.carousel(0);
 			});
-
+			$submit.click(function(e) {
+				$('.carousel-inner').find('.item').last().find('input,select').each(function() {
+					updateColumn(columnName, this.name, this.value);
+				})
+				$carousel.carousel(0);
+			});
 		};
 
 		const $reindexFrequency = $modal.find('select[name="reindex-frequency"]').on('change', function(e) {
-			// TODO
+			updated.reindex_frequency = this.value;
 		});
 
 		// Puis ouvre la fenêtre "modal"..
@@ -1099,7 +1145,7 @@ $(function() {return (function(cb) {
 			}
 		}, {
 			name: 'edit',
-			label: '<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
+			label: 'Configuration avancée <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>',
 			editable: false,
 			datatype: 'html'
 		}], {
