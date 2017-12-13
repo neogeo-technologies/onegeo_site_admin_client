@@ -134,16 +134,3 @@ OnegeoClient.prototype.__request = function(obj) {
 	this.xhr.setRequestHeader('Authorization', this.basicAuth);
 	this.xhr.send(obj.data);
 };
-
-
-OnegeoClient.prototype.getSources = function(onSuccessCallback, onFailureCallback) {
-	this.action.get('/sources', {successful: onSuccessCallback, failure: onFailureCallback});
-};
-
-OnegeoClient.prototype.getIndexes = function(onSuccessCallback, onFailureCallback) {
-	this.action.get('/indexes', {successful: onSuccessCallback, failure: onFailureCallback});
-};
-
-OnegeoClient.prototype.getServices = function(onSuccessCallback, onFailureCallback) {
-	this.action.get('/services', {successful: onSuccessCallback, failure: onFailureCallback});
-};

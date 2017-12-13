@@ -84,7 +84,7 @@
 			{% if (attrs.datalist) { %}
 			<datalist id="{%= attrs.name %}">
 				{% for (const option of attrs.datalist.options) { %}
-				<option value="{%= option.value %}">{%= option.text %}</option>
+				<option value="{%= option.value %}" {%= option.selected %}>{%= option.text %}</option>
 				{% }; %}
 			</datalist>
 			{% }; %}
@@ -99,7 +99,7 @@
 			{% }; %}
 			<select id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" class="form-control">
 			{% for (const option of options) { %}
-				<option value="{%= option.value %}">{%= option.text %}</option>
+				<option value="{%= option.value %}" {%= option.selected %}>{%= option.text %}</option>
 			{% }; %}
 			</select>
 		</div>
@@ -113,9 +113,18 @@
 			{% }; %}
 			<select multiple id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" class="form-control">
 			{% for (const option of options) { %}
-				<option value="{%= option.value %}">{%= option.value %}</option>
+				<option value="{%= option.value %}" {%= option.selected %}>{%= option.value %}</option>
 			{% }; %}
 			</select>
+		</div>
+	</template>
+
+	<!-- Template d'un élément "checkbox" -->
+	<template id="form_checkbox">
+		<div class="form-group">
+			<label>
+				<input id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" type="checkbox" {%= attrs.checked %}> {%= attrs.label %}
+			</label>
 		</div>
 	</template>
 
@@ -267,8 +276,10 @@ $(function() {return (function(cb) {
 		if (this.status === 401) {
 			modal_SignIn(cb);
 		} else {
-			// TODO
-			alert(this.status + ' - ' + this.statusText);
+			const message = this.status + ' - ' + this.statusText;
+			$('.modal').modal('hide').on('hidden.bs.modal', function() {
+				modal_Error(message, function() {/* Rien à faire */});
+			});
 		};
 	};
 
@@ -295,8 +306,7 @@ $(function() {return (function(cb) {
 				'show': false
 			})
 			.on('shown.bs.modal', function() {
-				height = $(this).find('.modal-body').innerHeight();
-				$(this).find('.modal-body').css('height', height + 'px');
+				$(this).find('.modal-body').css('min-height', $(this).find('.modal-body').innerHeight() + 'px');
 			})
 			.on('hidden.bs.modal', function() {
 				$(this).remove();
@@ -304,12 +314,23 @@ $(function() {return (function(cb) {
 	};
 
 	const getCarousel = function() {
-		return $('.carousel')
-			.carousel({
-				interval: false,
-				wrap: false,
-				keyword: false
-			});
+		return $('.carousel').carousel({interval: false, wrap: false, keyword: false});
+	};
+
+	const modal_Error = function(message, callback) {
+		const _calleeName = arguments.callee.name.split('_');
+		$('body').prepend(templator(_calleeName[0], getTemplate(_calleeName[0], _calleeName[1])));
+		const $modal = getModal();
+
+		$('p').text(message);
+
+		$modal.find('button[name="close"]').click(function(e) {
+			$modal.on('hide.bs.modal', function() {
+				typeof callback === 'function' && callback();
+			}).modal('hide');
+		});
+
+		$modal.modal('show');
 	};
 
 	const modal_SignIn = function(callback) {
@@ -738,7 +759,7 @@ $(function() {return (function(cb) {
 			};
 		};
 
-		const _generateTemplate = function(data) {
+		const generateTemplate = function(data) {
 			const template = {
 				elements: [{
 					template: 'span',
@@ -749,7 +770,7 @@ $(function() {return (function(cb) {
 				}, {
 					template: 'span',
 					data: {
-						text: '<strong>Alias</strong> : ' + (data.alias || 'N/A') + '<br/>',
+						text: '<strong>Alias</strong> : ' + (data.alias || '<em>aucun</em>') + '<br/>',
 						attrs: {}
 					}
 				}, {
@@ -761,6 +782,16 @@ $(function() {return (function(cb) {
 				}]
 			};
 			if (data.type == 'text') {
+				template.elements.push({
+					template: 'form_checkbox',
+					data: {
+						attrs: {
+							name: 'searchable',
+							label: 'Analyser',
+							checked: data.searchable ? 'checked' : ''
+						}
+					}
+				});
 				template.elements.push({
 					template: 'form_select',
 					data: {
@@ -835,13 +866,42 @@ $(function() {return (function(cb) {
 				]
 			});
 		};
+
 		table['index-columns'].update(arr);
 
-		const $cancel = $modal.find('button[name=cancel]');
-		const $submit = $modal.find('button[name=submit]');
-		// disabledButton($submit);
+		const toSecondSlide = function() {
+			$carousel.carousel(1);
+		};
 
-		// Définit les actions..
+		const toFirstSlide = function() {
+			$carousel.carousel(0);
+		};
+
+		const close = function(e) {
+			$modal.modal('hide');
+		};
+
+		const save = function(e) {
+			typeof putIndexCallback === 'function' && putIndexCallback(updated, function(location) {
+				$modal.modal('hide').on('hidden.bs.modal', function(location) {
+					onegeoClient.getIndexes('indexes');
+				});
+			});
+		};
+
+		const $submit = $modal.find('button[name=submit]').click(save);
+		const $cancel = $modal.find('button[name=cancel]').click(close);
+
+		$carousel.on('slid.bs.carousel', function(e) {
+			const i = $carousel.find('.active').index();
+			if (i === 0) {
+				$submit.unbind('click').click(save);
+				$cancel.unbind('click').click(close);
+			};
+			if (i === 1) {
+				$cancel.unbind('click').click(toFirstSlide);
+			};
+		});
 
 		table['index-columns'].options.onChange = function(rowIndex, columnIndex, oldValue, newValue, row) {
 			updateColumn(this.grid.getValueAt(rowIndex, this.grid.getColumnIndex('name')), this.grid.getColumnName(columnIndex), newValue);
@@ -849,20 +909,19 @@ $(function() {return (function(cb) {
 
 		table['index-columns'].method.edit = function(e, rowIndex) {
 			const columnName = this.grid.getValueAt(rowIndex, this.grid.getColumnIndex('name'));
-			$('.carousel-inner').find('.item').last().empty().append(templator('sub_template', _generateTemplate(getColumn(columnName))));
-			$carousel.carousel(1);
-			$cancel.click(function(e) {
-				$carousel.carousel(0);
-			});
-			$submit.click(function(e) {
+			$('.carousel-inner').find('.item').last().empty().append(templator('sub_template', generateTemplate(getColumn(columnName))));
+			toSecondSlide();
+			$submit.unbind('click').click(function(e) {
 				$('.carousel-inner').find('.item').last().find('input,select').each(function() {
-					updateColumn(columnName, this.name, this.value);
-				})
-				$carousel.carousel(0);
+					updateColumn(columnName, this.name, this.type == 'checkbox' ? this.checked : this.value);
+				});
+				toFirstSlide();
 			});
 		};
 
-		const $reindexFrequency = $modal.find('select[name="reindex-frequency"]').on('change', function(e) {
+		$modal.find('input[name="name"]').val(data.name).prop('disabled', 'disabled');
+		$modal.find('input[name="location"]').val(data.location).prop('disabled', 'disabled');
+		$modal.find('select[name="reindex-frequency"]').on('change', function(e) {
 			updated.reindex_frequency = this.value;
 		});
 
@@ -1230,9 +1289,22 @@ $(function() {return (function(cb) {
 					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
 					onegeoClient.action.get(entry.location, {
 						successful: function(data) {
-							modal_UpdateIndex(data, undefined);
+							modal_UpdateIndex(data, function(data, callback) {
+								onegeoClient.action.put(entry.location, {
+									data: data,
+									successful: function(location) {
+										console.log('Index updated: ' + location);
+										typeof callback === 'function' && callback(data);
+									},
+									failure: function() {
+										onXhrFailure.call(this);
+									}
+								})
+							});
 						},
-						failure : undefined
+						failure : function() {
+							onXhrFailure.call(this);
+						}
 					})
 				},
 				position: 'after',
@@ -1468,57 +1540,69 @@ $(function() {return (function(cb) {
 				};
 
 				if (this.hash === '#sources') {
-					onegeoClient.getSources(loadSources.apply(this, [arguments, this.hash.substr(1)]), onFailure);
+					onegeoClient.action.get('/sources', {
+						successful: loadSources.apply(this, [arguments, this.hash.substr(1)]),
+						failure: onFailure
+					});
 				} else if (this.hash === '#indexes') {
-					onegeoClient.getSources(function(data) {
-						if (data.length > 0) {
-							onegeoClient.getIndexes(loadIndexes.apply(this, [arguments, this.hash.substr(1)]), onFailure);
-						} else {
-							$('body').prepend(templator('modal', {
-								dialog: {
-									class: 'modal-md'
-								},
-								heading: {
-									title: {
-										text: 'Information'
-									}
-								},
-								body: {
-									elements: [{
-										template: 'paragraph',
-										data: {
-											text: 'Vous devriez commencer par ajouter une source de données.'
+					onegeoClient.action.get('/sources', {
+						successful: function(data) {
+							if (data.length > 0) {
+								onegeoClient.action.get('/indexes', {
+									successful: loadIndexes.apply(this, [arguments, this.hash.substr(1)]),
+									failure: onFailure
+								});
+							} else {
+								$('body').prepend(templator('modal', {
+									dialog: {
+										class: 'modal-md'
+									},
+									heading: {
+										title: {
+											text: 'Information'
 										}
-									}]
-								},
-								footer: {
-									elements: [{
-										template: 'button',
-										data: {
-											text: 'Fermer',
-											attrs: {
-												name: 'close',
-												type: 'button'
+									},
+									body: {
+										elements: [{
+											template: 'paragraph',
+											data: {
+												text: 'Vous devriez commencer par ajouter une source de données.'
 											}
-										}
-									}]
-								}
-							}));
+										}]
+									},
+									footer: {
+										elements: [{
+											template: 'button',
+											data: {
+												text: 'Fermer',
+												attrs: {
+													name: 'close',
+													type: 'button'
+												}
+											}
+										}]
+									}
+								}));
 
-							const $modal = getModal();
+								const $modal = getModal();
 
-							$modal.find('button[name=close]').click(function(e) {
-								$modal.on('hidden.bs.modal', function() {
-									$('a[href="#sources"]').tab('show');
-								}).modal('hide');
-							});
+								$modal.find('button[name=close]').click(function(e) {
+									$modal.on('hidden.bs.modal', function() {
+										$('a[href="#sources"]').tab('show');
+									}).modal('hide');
+								});
 
-							// Puis ouvre la fenêtre "modal"..
-							$modal.modal('show');
-						};
-					}.bind(this), onFailure);
+								// Puis ouvre la fenêtre "modal"..
+								$modal.modal('show');
+							};
+						}.bind(this),
+						failure: onFailure
+					});
 				} else if (this.hash === '#services') {
-					onegeoClient.getServices(loadServices.apply(this, [arguments, this.hash.substr(1)]), onFailure);
+					onegeoClient.action.get('/services', {
+						successful: loadServices.apply(this, [arguments, this.hash.substr(1)]),
+						failure: onFailure
+					});
 				} else {
 					e.stopPropagation();
 				};

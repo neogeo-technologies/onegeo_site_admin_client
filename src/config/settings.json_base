@@ -508,6 +508,19 @@
 										}
 									},
 									{
+										"template": "form_input",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "location",
+												"type": "text",
+												"label": "Location",
+												"autocomplete": "off"
+											}
+										}
+									},
+									{
 										"template": "form_select",
 										"data":
 										{
@@ -571,7 +584,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Enregistrer",
+							"text": "Sauvegarder les modifications",
 							"attrs":
 							{
 								"name": "submit",
