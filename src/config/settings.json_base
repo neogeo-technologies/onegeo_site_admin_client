@@ -314,6 +314,102 @@
 					}]
 				}
 			},
+			"OpenSource":
+			{
+				"dialog":
+				{
+					"class": "modal-lg"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Aperçu de la source de données"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "carousel",
+						"data":
+						{
+							"name": "index-form",
+							"slides": [
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "label",
+										"data":
+										{
+											"text": "Liste des ressources disponibles"
+										}
+									},
+									{
+										"template": "table_grid",
+										"data":
+										{
+											"name": "resources"
+										}
+									}]
+								}
+							},
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"elements": [
+									{
+										"template": "label",
+										"data":
+										{
+											"text": "Structure attributaire de la ressource"
+										}
+									},
+									{
+										"template": "table_grid",
+										"data":
+										{
+											"name": "columns"
+										}
+									}]
+								}
+							}]
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Revenir",
+							"attrs":
+							{
+								"name": "previous",
+								"type": "button"
+							}
+						}
+					},
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Fermer",
+							"attrs":
+							{
+								"name": "close",
+								"type": "button"
+							}
+						}
+					}]
+				}
+			}
 			"CreateIndex":
 			{
 				"dialog":

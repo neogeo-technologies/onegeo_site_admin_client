@@ -133,6 +133,7 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 	this.grid.initializeGrid = function() {
 
 		this.tableRendered = function() {
+			this.rowSelected(-1, -1);
 			this.updatePaginator(this);
 		};
 
