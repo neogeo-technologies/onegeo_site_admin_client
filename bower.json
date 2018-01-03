@@ -1,9 +1,10 @@
 {
-	"name": "onegeo_site_admin_client",
-	"dependencies": {
-		"bootstrap": "^4.0.0-beta.2",
-		"editablegrid": "https://github.com/webismymind/editablegrid.git",
-		"jquery": "^3.1.1",
-		"moment": "^2.18.1"
-	}
+  "name": "onegeo_site_admin_client",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "editablegrid": "https://github.com/webismymind/editablegrid.git",
+    "jquery": "^3.1.1",
+    "moment": "^2.18.1",
+    "less": "^2.7.3"
+  }
 }

@@ -1,11 +1,52 @@
 {
 	"url": "http://127.0.0.1",
 	"path": "/api",
-	"title": "Title",
+	"title": "Administration des profils Onegeo",
 	"template":
 	{
 		"modal":
 		{
+			"Error":
+			{
+				"dialog":
+				{
+					"class": "modal-md modal-warning"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "<span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> Une erreur est survenue"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "paragraph",
+						"data":
+						{
+							"text": null
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Fermer",
+							"attrs":
+							{
+								"name": "close",
+								"type": "submit"
+							}
+						}
+					}]
+				}
+			},
 			"SignIn":
 			{
 				"dialog":
@@ -191,6 +232,7 @@
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
 										"template": "span",
@@ -222,6 +264,7 @@
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
 										"template": "span",
@@ -256,6 +299,7 @@
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
 										"template": "span",
@@ -276,7 +320,13 @@
 												"type": "text",
 												"label": "Sélectionnez le protocole de connexion à la source de données"
 											},
-											"options": []
+											"options": [
+											{
+												"value": null,
+												"text": "Choisissez un protocole",
+												"disabled": true,
+												"selected": true
+											}]
 										}
 									}]
 								}
@@ -331,49 +381,177 @@
 				{
 					"elements": [
 					{
-						"template": "carousel",
+						"template": "form_tablist",
 						"data":
 						{
-							"name": "index-form",
-							"slides": [
+							"tabs": [
 							{
+								"active": true,
+								"id": "glob",
+								"label": "Configuration générale",
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
-									{
-										"template": "label",
-										"data":
 										{
-											"text": "Liste des ressources disponibles"
-										}
-									},
-									{
-										"template": "table_grid",
-										"data":
+											"template": "form_input",
+											"data":
+											{
+												"attrs":
+												{
+													"name": "location",
+													"type": "text",
+													"label": "<em>Location</em>",
+													"autocomplete": "off",
+													"disabled": true
+												}
+											}
+										},
 										{
-											"name": "resources"
+											"template": "form_input",
+											"data":
+											{
+												"attrs":
+												{
+													"name": "name",
+													"type": "text",
+													"label": "Nom",
+													"autocomplete": "off",
+													"disabled": true
+												}
+											}
+										},
+										{
+											"template": "form_input",
+											"data":
+											{
+												"attrs":
+												{
+													"name": "mode",
+													"type": "text",
+													"label": "Protocole",
+													"autocomplete": "off",
+													"disabled": true
+												}
+											}
+										},
+										{
+											"template": "form_input",
+											"data":
+											{
+												"attrs":
+												{
+													"name": "uri",
+													"type": "text",
+													"label": "URI",
+													"autocomplete": "off",
+													"disabled": true
+												}
+											}
 										}
-									}]
+									]
 								}
 							},
 							{
+								"active": false,
+								"id": "plus",
+								"label": "Ressources disponibles",
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
-										"template": "label",
+										"template": "carousel",
 										"data":
 										{
-											"text": "Structure attributaire de la ressource"
-										}
-									},
-									{
-										"template": "table_grid",
-										"data":
-										{
-											"name": "columns"
+											"name": "index-form",
+											"slides": [
+											{
+												"template": "sub_template",
+												"data":
+												{
+													"attrs": {},
+													"elements": [
+													{
+														"template": "label",
+														"data":
+														{
+															"text": "Liste des ressources disponibles"
+														}
+													},
+													{
+														"template": "table_grid",
+														"data":
+														{
+															"name": "resources"
+														}
+													}]
+												}
+											},
+											{
+												"template": "sub_template",
+												"data":
+												{
+													"attrs": {},
+													"elements": [
+													{
+														"template": "form_input",
+														"data":
+														{
+															"attrs":
+															{
+																"name": "entry-location",
+																"type": "text",
+																"label": "<em>Location</em>",
+																"autocomplete": "off",
+																"disabled": true
+															}
+														}
+													},
+													{
+														"template": "form_input",
+														"data":
+														{
+															"attrs":
+															{
+																"name": "entry-name",
+																"type": "text",
+																"label": "Nom",
+																"autocomplete": "off",
+																"disabled": true
+															}
+														}
+													},
+													{
+														"template": "label",
+														"data":
+														{
+															"text": "Structure attributaire de la ressource"
+														}
+													},
+													{
+														"template": "table_grid",
+														"data":
+														{
+															"name": "columns"
+														}
+													},
+													{
+														"template": "button",
+														"data":
+														{
+															"text": "<span class=\"glyphicon glyphicon-arrow-left\" aria-hidden=\"true\"></span> Revenir à la liste des ressources",
+															"attrs":
+															{
+																"name": "previous",
+																"type": "button"
+															}
+														}
+													}]
+												}
+											}]
 										}
 									}]
 								}
@@ -388,18 +566,6 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Revenir",
-							"attrs":
-							{
-								"name": "previous",
-								"type": "button"
-							}
-						}
-					},
-					{
-						"template": "button",
-						"data":
-						{
 							"text": "Fermer",
 							"attrs":
 							{
@@ -409,7 +575,7 @@
 						}
 					}]
 				}
-			}
+			},
 			"CreateIndex":
 			{
 				"dialog":
@@ -436,6 +602,7 @@
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
 										"template": "span",
@@ -467,6 +634,7 @@
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
 										"template": "span",
@@ -487,7 +655,12 @@
 												"type": "text",
 												"label": "Sélectionnez la source de données"
 											},
-											"options": []
+											"options": [{
+												"value": null,
+												"text": "Choisissez une source de données",
+												"disabled": true,
+												"selected": true
+											}]
 										}
 									},
 									{
@@ -503,6 +676,7 @@
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
 										"template": "span",
@@ -523,7 +697,13 @@
 												"type": "text",
 												"label": "Sélectionnez la resource de données"
 											},
-											"options": []
+											"options": [
+											{
+												"value": null,
+												"text": "Choisissez une ressource",
+												"disabled": true,
+												"selected": true
+											}]
 										}
 									}]
 								}
@@ -578,83 +758,123 @@
 				{
 					"elements": [
 					{
-						"template": "carousel",
+						"template": "form_tablist",
 						"data":
 						{
-							"name": "index-form",
-							"slides": [
+							"tabs": [
 							{
+								"active": true,
+								"id": "glob",
+								"label": "Configuration générale",
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
+									"elements": [
+										{
+											"template": "form_input",
+											"data":
+											{
+												"attrs":
+												{
+													"name": "location",
+													"type": "text",
+													"label": "<em>Location</em>",
+													"autocomplete": "off",
+													"disabled": true
+												}
+											}
+										},
+										{
+											"template": "form_input",
+											"data":
+											{
+												"attrs":
+												{
+													"name": "name",
+													"type": "text",
+													"label": "Nom",
+													"autocomplete": "off",
+													"disabled": true
+												}
+											}
+										},
+										{
+											"template": "form_select",
+											"data":
+											{
+												"attrs":
+												{
+													"name": "reindex-frequency",
+													"type": "text",
+													"label": "Fréquence de réindexation automatique"
+												},
+												"options": [
+												{
+													"value": "monthly",
+													"text": "Tous les mois"
+												},
+												{
+													"value": "weekly",
+													"text": "Toutes les semaines"
+												},
+												{
+													"value": "daily",
+													"text": "Tous les jours"
+												}]
+											}
+										}
+									]
+								}
+							},
+							{
+								"active": false,
+								"id": "plus",
+								"label": "Configuration des attributs",
+								"template": "sub_template",
+								"data":
+								{
+									"attrs": {},
 									"elements": [
 									{
-										"template": "form_input",
+										"template": "carousel",
 										"data":
 										{
-											"attrs":
+											"name": "index-form",
+											"slides": [
 											{
-												"name": "name",
-												"type": "text",
-												"placeholder": "[a-z0-9_]{3,100}",
-												"label": "Nom",
-												"pattern": "[a-z0-9_]{3,100}",
-												"autocomplete": "off"
-											}
-										}
-									},
-									{
-										"template": "form_input",
-										"data":
-										{
-											"attrs":
-											{
-												"name": "location",
-												"type": "text",
-												"label": "Location",
-												"autocomplete": "off"
-											}
-										}
-									},
-									{
-										"template": "form_select",
-										"data":
-										{
-											"attrs":
-											{
-												"name": "reindex-frequency",
-												"type": "text",
-												"label": "Fréquence de réindexation automatique"
-											},
-											"options": [
-											{
-												"value": "monthly",
-												"text": "Tous les mois"
+												"template": "sub_template",
+												"data":
+												{
+													"attrs": {},
+													"elements": [
+													{
+														"template": "label",
+														"data":
+														{
+															"text": "Paramètres d'indexation des attributs"
+														}
+													},
+													{
+														"template": "table_grid",
+														"data":
+														{
+															"name": "index-columns"
+														}
+													}]
+												}
 											},
 											{
-												"value": "weekly",
-												"text": "Toutes les semaines"
-											},
-											{
-												"value": "daily",
-												"text": "Tous les jours"
+												"template": "sub_template",
+												"data":
+												{
+													"attrs": {},
+													"elements": []
+												}
 											}]
 										}
-									},
-									{
-										"template": "label",
-										"data":
-										{
-											"text": "Paramètres d'indexation des attributs"
-										}
-									},
-									{
-										"template": "table_grid",
-										"data":
-										{
-											"name": "index-columns"
-										}
-									}]
+									}
+									]
 								}
 							}]
 						}
@@ -717,6 +937,7 @@
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
 										"template": "span",
@@ -748,6 +969,7 @@
 								"template": "sub_template",
 								"data":
 								{
+									"attrs": {},
 									"elements": [
 									{
 										"template": "span",
@@ -773,7 +995,7 @@
 											{
 												"name": "indexes",
 												"type": "text",
-												"label": "Choisissez les profils d'indexation à rattacher"
+												"label": "Choisissez les profils d'indexation à rattacher au profil de recherche"
 											},
 											"options": []
 										}
@@ -814,6 +1036,151 @@
 							{
 								"name": "submit",
 								"type": "submit",
+								"class": "btn-default"
+							}
+						}
+					}]
+				}
+			},
+			"UpdateService":
+			{
+				"dialog":
+				{
+					"class": "modal-lg"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Configuration du profil de recherche"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "form_tablist",
+						"data":
+						{
+							"tabs": [
+							{
+								"id": "glob",
+								"label": "Configuration générale",
+								"active": true,
+								"template": "sub_template",
+								"data":
+								{
+									"attrs": {},
+									"elements": [
+									{
+										"template": "form_input",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "location",
+												"type": "text",
+												"label": "<em>Location</em>",
+												"autocomplete": "off",
+												"disabled": true
+											}
+										}
+									},
+									{
+										"template": "form_input",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "name",
+												"type": "text",
+												"label": "Nom",
+												"autocomplete": "off",
+												"disabled": true
+											}
+										}
+									},
+									{
+										"template": "form_multiselect",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "indexes",
+												"type": "text",
+												"label": "Choisissez les profils d'indexation à rattacher au profil de recherche"
+											},
+											"options": []
+										}
+									}]
+								}
+							},
+							{
+								"active": false,
+								"id": "plus",
+								"label": "Paramètres de requête",
+								"template": "sub_template",
+								"data":
+								{
+									"attrs": {},
+									"elements": [
+									{
+										"template": "form_textarea",
+										"data":
+										{
+											"attrs":
+											{
+												"name": "query-dsl",
+												"class": "code",
+												"rows": "24",
+												"label": "Définition du modèle de requête"
+											}
+										}
+									},
+									{
+										"template": "label",
+										"data":
+										{
+											"text": "Liste des paramètres de la chaîne de recherche"
+										}
+									},
+									{
+										"template": "table_grid",
+										"data":
+										{
+											"name": "qs-params"
+										}
+									}]
+								}
+							}]
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Annuler",
+							"attrs":
+							{
+								"name": "cancel",
+								"type": "button",
+								"class": "btn-default"
+							}
+						}
+					},
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Sauvegarder les modifications",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "button",
 								"class": "btn-default"
 							}
 						}

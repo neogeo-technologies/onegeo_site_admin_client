@@ -1,3 +1,16 @@
+textarea.code {
+	border-radius: 0;
+	border: 1px solid #ccc;
+	box-shadow: none;
+	font-family: "Andale Mono", monospace !important;
+	font-color: #333333;
+	resize: vertical;
+	-webkit-tab-size: 4;
+	   -moz-tab-size: 4;
+	     -o-tab-size: 4;
+	        tab-size: 4;
+}
+
 .page-header .title {
 	font-size: 2.666em;
 	font-weight: 400;
@@ -23,8 +36,8 @@
 	font-size: 1.5em;
 	width: 2em;
 	height: 2em;
-	border-radius: 9999px;
 	padding: 0;
+	border-radius: 9999px;
 }
 
 .main-container {
@@ -40,4 +53,22 @@
 
 .buttons-on-the-right-side>.btn:not(:first-child) {
 	margin-left: 5px;
+}
+
+.buttons-on-the-left-side {
+	text-align: left;
+	margin-bottom: 10px;
+}
+
+.buttons-on-the-left-side>.btn:not(:last-child) {
+	margin-right: 5px;
+}
+
+.modal-header>button.close {
+	font-size: 100%;
+}
+
+.modal-body .block-info {
+	margin: 15px -15px;
+	padding: 15px;
 }
