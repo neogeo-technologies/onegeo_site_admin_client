@@ -340,7 +340,8 @@ $(function() {
 			if (this.status === 401) {
 				modal_SignIn(callback);
 			} else {
-				const message = '[' + this.status + '] ' + this.statusText;
+				const responseJSON = JSON.parse(this.responseText);
+				const message = (responseJSON && responseJSON.error) ? responseJSON.error : '[' + this.status + '] ' + this.statusText;
 				if ($('.modal').is(':visible')) {
 					$('.modal').on('hidden.bs.modal', modal_Error.apply(window, [message, callback])).modal('hide');
 				} else {
@@ -469,7 +470,11 @@ $(function() {
 				if ($name.val() === value) {
 					typeof deleteCallback === 'function' && deleteCallback(function(location) {
 						$modal.on('hide.bs.modal', function(e) {
-							// TODO
+							const key = location.split('/')[1];
+							onegeoClient.action.get('/' + key, {
+								successful: load[key].apply(null, arguments),
+								failure: onXhrFailure.call(this)
+							});
 						}).modal('hide');
 					});
 				};
@@ -510,7 +515,7 @@ $(function() {
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/sources', {
-							successful: loadSources.apply(null, arguments),
+							successful: load['sources'].apply(null, arguments),
 							failure: onXhrFailure.call(this)
 						});
 					}).modal('hide');
@@ -697,7 +702,7 @@ $(function() {
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/indexes', {
-							successful: loadIndexes.apply(null, arguments),
+							successful: load['indexes'].apply(null, arguments),
 							failure: onXhrFailure.call(this)
 						});
 					}).modal('hide');
@@ -929,7 +934,7 @@ $(function() {
 				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/indexes', {
-							successful: loadIndexes.apply(null, arguments),
+							successful: load['indexes'].apply(null, arguments),
 							failure: onXhrFailure.call(this)
 						});
 					}).modal('hide');
@@ -1035,7 +1040,7 @@ $(function() {
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/services', {
-							successful: loadServices.apply(null, arguments),
+							successful: load['services'].apply(null, arguments),
 							failure: onXhrFailure.call(this)
 						});
 					}).modal('hide');
@@ -1062,17 +1067,12 @@ $(function() {
 				$modal.find('input[name="' + key + '"]').val(data[key]);
 			};
 
-			const selectedIndexes = [];
-			for (const index of data.indexes) {
-				selectedIndexes.append(index.location);
-			};
-
 			const $indexes = $modal.find('select[name="indexes"]');
 			for (const index of indexes) {
 				$indexes.append($('<option>', {
 					value: index.location,
 					text: index.name,
-					selected: (selectedIndexes.indexOf(index.location) > -1) ? true : false
+					selected: (data.indexes.indexOf(index.name) > -1) ? true : false
 				}));
 			};
 
@@ -1100,7 +1100,7 @@ $(function() {
 				typeof putServiceCallback === 'function' && putServiceCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/services', {
-							successful: loadServices.apply(null, arguments),
+							successful: load['services'].apply(null, arguments),
 							failure: onXhrFailure.call(this)
 						});
 					}).modal('hide');
@@ -1537,12 +1537,13 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						onegeoClient.action.get('/' + entry.location, {
+						onegeoClient.action.get(entry.location, {
 							successful: function(data) {
 								onegeoClient.action.get('/indexes', {
 									successful: function(indexes) {
-										modal_UpdateService(data, indexes, function(callback) {
+										modal_UpdateService(data, indexes, function(data, callback) {
 											onegeoClient.action.put(entry.location, {
+												data: data,
 												successful: function() {
 													console.log('Service updated: ' + entry.location);
 													typeof callback === 'function' && callback(data);
@@ -1578,11 +1579,11 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						modal_Delete(entry.name, function(data, callback) {
+						modal_Delete(entry.name, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
 									console.log('Service deleted: ' + entry.location);
-									typeof callback === 'function' && callback(data);
+									typeof callback === 'function' && callback(entry.location);
 								},
 								failure: function() {
 									onXhrFailure.call(this);
@@ -1651,38 +1652,37 @@ $(function() {
 			return arr;
 		};
 
-		const loadSources = function() {
-			return function(data) {
-				return loadTable('sources', parseData(data, [
-					'location',
-					'name',
-					'mode',
-					'uri'
-				]));
-			};
+		const load = {
+			'sources': function() {
+				return function(data) {
+					return loadTable('sources', parseData(data, [
+						'location',
+						'name',
+						'mode',
+						'uri'
+					]));
+				};
+			},
+			'indexes': function() {
+				return function(data) {
+					return loadTable('indexes', parseData(data, [
+						'location',
+						'name',
+						'resource'
+					]));
+				};
+			},
+			'services': function() {
+				return function(data) {
+					return loadTable('services', parseData(data, [
+						'location',
+						'name',
+						'service_url',
+						'extended'
+					]));
+				};
+			}
 		};
-
-		const loadIndexes = function() {
-			return function(data) {
-				return loadTable('indexes', parseData(data, [
-					'location',
-					'name',
-					'resource'
-				]));
-			};
-		};
-
-		const loadServices = function() {
-			return function(data) {
-				return loadTable('services', parseData(data, [
-					'location',
-					'name',
-					'service_url',
-					'extended'
-				]));
-			};
-		};
-
 
 		const HASH_TAB = [];
 
@@ -1714,7 +1714,7 @@ $(function() {
 
 					if (this.hash === '#sources') {
 						onegeoClient.action.get('/sources', {
-							successful: loadSources.apply(null, arguments),
+							successful: load['sources'].apply(null, arguments),
 							failure: onFailure
 						});
 					} else if (this.hash === '#indexes') {
@@ -1722,7 +1722,7 @@ $(function() {
 							successful: function(data) {
 								if (data.length > 0) {
 									onegeoClient.action.get('/indexes', {
-										successful: loadIndexes.apply(null, arguments),
+										successful: load['indexes'].apply(null, arguments),
 										failure: onFailure
 									});
 								} else {
@@ -1772,7 +1772,7 @@ $(function() {
 						});
 					} else if (this.hash === '#services') {
 						onegeoClient.action.get('/services', {
-							successful: loadServices.apply(null, arguments),
+							successful: load['services'].apply(null, arguments),
 							failure: onFailure
 						});
 					} else {
