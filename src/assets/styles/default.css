@@ -16,28 +16,10 @@ textarea.code {
 	font-weight: 400;
 }
 
-.page-header .identity {
-	font-size: 1.3em;
-	right: 59px;
-	vertical-align: middle;
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-}
-
 .page-header .login {
-	right: 15px;
+	top: 0;
+	right: 0;
 	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-}
-
-.page-header .login button {
-	font-size: 1.5em;
-	width: 2em;
-	height: 2em;
-	padding: 0;
-	border-radius: 9999px;
 }
 
 .main-container {

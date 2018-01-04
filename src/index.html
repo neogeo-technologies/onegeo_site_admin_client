@@ -253,14 +253,18 @@
 
 	<!-- Corps de la page -->
 	<body>
+		<!-- <nav class="navbar navbar-default">
+			<div class="container-fluid">
+			</div>
+		</nav> -->
 		<div class="page-header banner">
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
 						<span id="site_title" class="title"></span>
-						<span name="identity" class="identity"></span>
-						<div class="btn-group login">
-							<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<div class="login">
+							<button type="button" class="btn btn-default login">
+								<span name="identity" class="identity"></span>
 								<span class="glyphicon glyphicon-user"></span>
 							</button>
 						</div>
@@ -473,7 +477,9 @@ $(function() {
 							const key = location.split('/')[1];
 							onegeoClient.action.get('/' + key, {
 								successful: load[key].apply(null, arguments),
-								failure: onXhrFailure.call(this)
+								failure: function() {
+									onXhrFailure.call(this);
+								}
 							});
 						}).modal('hide');
 					});
@@ -516,7 +522,9 @@ $(function() {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/sources', {
 							successful: load['sources'].apply(null, arguments),
-							failure: onXhrFailure.call(this)
+							failure: function() {
+								onXhrFailure.call(this);
+							}
 						});
 					}).modal('hide');
 				});
@@ -703,7 +711,9 @@ $(function() {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/indexes', {
 							successful: load['indexes'].apply(null, arguments),
-							failure: onXhrFailure.call(this)
+							failure: function() {
+								onXhrFailure.call(this);
+							}
 						});
 					}).modal('hide');
 				});
@@ -935,7 +945,9 @@ $(function() {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/indexes', {
 							successful: load['indexes'].apply(null, arguments),
-							failure: onXhrFailure.call(this)
+							failure: function() {
+								onXhrFailure.call(this);
+							}
 						});
 					}).modal('hide');
 				});
@@ -1041,7 +1053,9 @@ $(function() {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/services', {
 							successful: load['services'].apply(null, arguments),
-							failure: onXhrFailure.call(this)
+							failure: function() {
+								onXhrFailure.call(this);
+							}
 						});
 					}).modal('hide');
 				});
@@ -1101,7 +1115,9 @@ $(function() {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/services', {
 							successful: load['services'].apply(null, arguments),
-							failure: onXhrFailure.call(this)
+							failure: function() {
+								onXhrFailure.call(this);
+							}
 						});
 					}).modal('hide');
 				});
@@ -1170,7 +1186,14 @@ $(function() {
 										typeof callback === 'function' && callback(location);
 									},
 									failure: function() {
-										onXhrFailure.call(this);
+										onXhrFailure.call(this, function() {
+											onegeoClient.action.get('/sources', {
+												successful: load['sources'].apply(null, arguments),
+												failure: function() {
+													onXhrFailure.call(this);
+												}
+											});
+										})
 									}
 								})
 							}
@@ -1231,7 +1254,14 @@ $(function() {
 									console.log('Source deleted: ' + entry.location);
 								},
 								failure: function() {
-									onXhrFailure.call(this);
+									onXhrFailure.call(this, function() {
+										onegeoClient.action.get('/sources', {
+											successful: load['sources'].apply(null, arguments),
+											failure: function() {
+												onXhrFailure.call(this);
+											}
+										});
+									})
 								}
 							})
 						});
@@ -1391,7 +1421,14 @@ $(function() {
 										typeof callback === 'function' && callback(data);
 									},
 									failure: function() {
-										onXhrFailure.call(this);
+										onXhrFailure.call(this, function() {
+											onegeoClient.action.get('/indexes', {
+												successful: load['indexes'].apply(null, arguments),
+												failure: function() {
+													onXhrFailure.call(this);
+												}
+											});
+										})
 									}
 								})
 							}
@@ -1421,7 +1458,14 @@ $(function() {
 											typeof callback === 'function' && callback(data);
 										},
 										failure: function() {
-											onXhrFailure.call(this);
+											onXhrFailure.call(this, function() {
+												onegeoClient.action.get('/indexes', {
+													successful: load['indexes'].apply(null, arguments),
+													failure: function() {
+														onXhrFailure.call(this);
+													}
+												});
+											})
 										}
 									})
 								});
@@ -1453,7 +1497,14 @@ $(function() {
 									typeof callback === 'function' && callback(data);
 								},
 								failure: function() {
-									onXhrFailure.call(this);
+									onXhrFailure.call(this, function() {
+										onegeoClient.action.get('/indexes', {
+											successful: load['indexes'].apply(null, arguments),
+											failure: function() {
+												onXhrFailure.call(this);
+											}
+										});
+									})
 								}
 							})
 						});
@@ -1515,7 +1566,14 @@ $(function() {
 										console.log('New index created: ' + location);
 									},
 									failure: function() {
-										onXhrFailure.call(this);
+										onXhrFailure.call(this, function() {
+											onegeoClient.action.get('/services', {
+												successful: load['services'].apply(null, arguments),
+												failure: function() {
+													onXhrFailure.call(this);
+												}
+											});
+										})
 									}
 								})
 							}
@@ -1549,7 +1607,14 @@ $(function() {
 													typeof callback === 'function' && callback(data);
 												},
 												failure: function() {
-													onXhrFailure.call(this);
+													onXhrFailure.call(this, function() {
+														onegeoClient.action.get('/services', {
+															successful: load['services'].apply(null, arguments),
+															failure: function() {
+																onXhrFailure.call(this);
+															}
+														});
+													})
 												}
 											})
 										});
@@ -1586,7 +1651,14 @@ $(function() {
 									typeof callback === 'function' && callback(entry.location);
 								},
 								failure: function() {
-									onXhrFailure.call(this);
+									onXhrFailure.call(this, function() {
+										onegeoClient.action.get('/services', {
+											successful: load['services'].apply(null, arguments),
+											failure: function() {
+												onXhrFailure.call(this);
+											}
+										});
+									})
 								}
 							})
 						});
@@ -1655,31 +1727,17 @@ $(function() {
 		const load = {
 			'sources': function() {
 				return function(data) {
-					return loadTable('sources', parseData(data, [
-						'location',
-						'name',
-						'mode',
-						'uri'
-					]));
+					return loadTable('sources', parseData(data, ['location', 'name', 'mode', 'uri']));
 				};
 			},
 			'indexes': function() {
 				return function(data) {
-					return loadTable('indexes', parseData(data, [
-						'location',
-						'name',
-						'resource'
-					]));
+					return loadTable('indexes', parseData(data, ['location', 'name', 'resource']));
 				};
 			},
 			'services': function() {
 				return function(data) {
-					return loadTable('services', parseData(data, [
-						'location',
-						'name',
-						'service_url',
-						'extended'
-					]));
+					return loadTable('services', parseData(data, ['location', 'name', 'service_url', 'extended']));
 				};
 			}
 		};
@@ -1698,88 +1756,92 @@ $(function() {
 			.on('shown.bs.tab', function(e) {/* Rien à faire */});
 
 
-		$('a[data-toggle="tab"]:not([href="' + HASH_TAB[0] + '"])')
-			.each(function(e) {
-				$(this).click(function(e) {
-					// e.preventDefault();
+		$('a[data-toggle="tab"]:not([href="' + HASH_TAB[0] + '"])').each(function(e) {
+			$(this).click(function(e) {
+				// e.preventDefault();
 
-					const trigger = function() {
-						$(this).trigger('click');  // $(this).click.call($(this));
-					}.bind(this);
+				const trigger = function() {
+					$(this).trigger('click');  // $(this).click.call($(this));
+				}.bind(this);
 
-					const onFailure = function() {
-						e.stopPropagation();
-						onXhrFailure.call(this, trigger);
-					};
+				const onFailure = function() {
+					e.stopPropagation();
+					onXhrFailure.call(this, trigger);
+				};
 
-					if (this.hash === '#sources') {
-						onegeoClient.action.get('/sources', {
-							successful: load['sources'].apply(null, arguments),
-							failure: onFailure
-						});
-					} else if (this.hash === '#indexes') {
-						onegeoClient.action.get('/sources', {
-							successful: function(data) {
-								if (data.length > 0) {
-									onegeoClient.action.get('/indexes', {
-										successful: load['indexes'].apply(null, arguments),
-										failure: onFailure
-									});
-								} else {
-									$('body').prepend(templator('modal', {
-										dialog: {
-											class: 'modal-md'
-										},
-										heading: {
-											title: {
-												text: 'Information'
-											}
-										},
-										body: {
-											elements: [{
-												template: 'paragraph',
-												data: {
-													text: 'Vous devriez commencer par ajouter une source de données.'
-												}
-											}]
-										},
-										footer: {
-											elements: [{
-												template: 'button',
-												data: {
-													text: 'Fermer',
-													attrs: {
-														name: 'close',
-														type: 'button'
-													}
-												}
-											}]
+				if (this.hash === '#sources') {
+					onegeoClient.action.get('/sources', {
+						successful: load['sources'].apply(null, arguments),
+						failure: onFailure
+					});
+				} else if (this.hash === '#indexes') {
+					onegeoClient.action.get('/sources', {
+						successful: function(data) {
+							if (data.length > 0) {
+								onegeoClient.action.get('/indexes', {
+									successful: load['indexes'].apply(null, arguments),
+									failure: onFailure
+								});
+							} else {
+								$('body').prepend(templator('modal', {
+									dialog: {
+										class: 'modal-md'
+									},
+									heading: {
+										title: {
+											text: 'Information'
 										}
-									}));
+									},
+									body: {
+										elements: [{
+											template: 'paragraph',
+											data: {
+												text: 'Vous devriez commencer par ajouter une source de données.'
+											}
+										}]
+									},
+									footer: {
+										elements: [{
+											template: 'button',
+											data: {
+												text: 'Fermer',
+												attrs: {
+													name: 'close',
+													type: 'button'
+												}
+											}
+										}]
+									}
+								}));
 
-									const $modal = getModal();
+								const $modal = getModal();
 
-									$modal.find('button[name="close]"').click(function(e) {
-										$modal.on('hidden.bs.modal', function() {
-											$('a[href="#sources"]').tab('show');
-										}).modal('hide');
-									});
+								$modal.find('button[name="close"]').click(function(e) {
+									$modal.on('hidden.bs.modal', function() {
+										$('a[href="#sources"]').tab('show');
+									}).modal('hide');
+								});
 
-									$modal.modal('show');
-								};
-							}.bind(this),
-							failure: onFailure
-						});
-					} else if (this.hash === '#services') {
-						onegeoClient.action.get('/services', {
-							successful: load['services'].apply(null, arguments),
-							failure: onFailure
-						});
-					} else {
-						e.stopPropagation();
-					};
-				});
+								$modal.modal('show');
+							};
+						}.bind(this),
+						failure: onFailure
+					});
+				} else if (this.hash === '#services') {
+					onegeoClient.action.get('/services', {
+						successful: load['services'].apply(null, arguments),
+						failure: onFailure
+					});
+				} else {
+					e.stopPropagation();
+				};
 			});
+		});
+
+		$(window).bind('hashchange', function(e) {
+			const hash = window.location.hash;
+			HASH_TAB.indexOf(hash) > -1 && $('a[href="' + hash + '"]').tab('show');
+		});
 
 		const title = settings.title || 'Site de gestion de services de recherches Onegeo';
 		$('#site_title').text(title);
