@@ -253,25 +253,21 @@
 
 	<!-- Corps de la page -->
 	<body>
-		<!-- <nav class="navbar navbar-default">
-			<div class="container-fluid">
-			</div>
-		</nav> -->
-		<div class="page-header banner">
+		<nav class="navbar navbar-default">
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
-						<span id="site_title" class="title"></span>
-						<div class="login">
-							<button type="button" class="btn btn-default login">
-								<span name="identity" class="identity"></span>
+						<a id="site_title" class="navbar-brand" href="#home"></a>
+						<div class="navbar-right">
+							<label name="identity"></label>
+							<button type="button" class="btn btn-default navbar-btn login">
 								<span class="glyphicon glyphicon-user"></span>
 							</button>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</nav>
 		<div class="menu-container">
 			<div class="container">
 				<div class="row">
@@ -300,7 +296,7 @@
 					<div class="col-md-12">
 						<div class="tab-content">
 							<div id="home" role="tabpanel" class="tab-pane fade in">
-								<span>Page d'accueil</span>
+								<span>Bienvenu sur la page d'accueil</span>
 							</div>
 							<div id="sources" role="tabpanel" class="tab-pane fade in"></div>
 							<div id="indexes" role="tabpanel" class="tab-pane fade in"></div>
@@ -314,7 +310,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12" style="text-align: center;">
-						<p>© 2017 <a href='http://www.neogeo.fr' target="blank">Neogeo-Technologies</p>
+						<p>© <span name="current-year"></span> <a href='http://www.neogeo.fr' target="blank">Neogeo-Technologies</p>
 					</div>
 				</div>
 			</div>
@@ -418,7 +414,7 @@ $(function() {
 				if ($username.val() && $password.val()) {
 					onegeoClient.connect($username.val(), $password.val(), function(isLogged) {
 						if (isLogged) {
-							$('[name="identity"]').text($username.val());
+							$('label[name="identity"]').text($username.val());
 							$modal.modal('hide');
 							typeof callback === 'function' && callback();
 						} else {
@@ -446,7 +442,7 @@ $(function() {
 
 			$modal.find('button[name="submit"]').click(function(e) {
 				onegeoClient.disconnect(function() {
-					$('[name="identity"]').empty();
+					$('label[name="identity"]').empty();
 					typeof callback === 'function' && callback();
 				});
 			});
@@ -476,7 +472,7 @@ $(function() {
 						$modal.on('hide.bs.modal', function(e) {
 							const key = location.split('/')[1];
 							onegeoClient.action.get('/' + key, {
-								successful: load[key].apply(null, arguments),
+								successful: load[key].apply(window, arguments),
 								failure: function() {
 									onXhrFailure.call(this);
 								}
@@ -521,7 +517,7 @@ $(function() {
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/sources', {
-							successful: load['sources'].apply(null, arguments),
+							successful: load['sources'].apply(window, arguments),
 							failure: function() {
 								onXhrFailure.call(this);
 							}
@@ -710,7 +706,7 @@ $(function() {
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/indexes', {
-							successful: load['indexes'].apply(null, arguments),
+							successful: load['indexes'].apply(window, arguments),
 							failure: function() {
 								onXhrFailure.call(this);
 							}
@@ -944,7 +940,7 @@ $(function() {
 				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/indexes', {
-							successful: load['indexes'].apply(null, arguments),
+							successful: load['indexes'].apply(window, arguments),
 							failure: function() {
 								onXhrFailure.call(this);
 							}
@@ -1052,7 +1048,7 @@ $(function() {
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/services', {
-							successful: load['services'].apply(null, arguments),
+							successful: load['services'].apply(window, arguments),
 							failure: function() {
 								onXhrFailure.call(this);
 							}
@@ -1114,7 +1110,7 @@ $(function() {
 				typeof putServiceCallback === 'function' && putServiceCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						onegeoClient.action.get('/services', {
-							successful: load['services'].apply(null, arguments),
+							successful: load['services'].apply(window, arguments),
 							failure: function() {
 								onXhrFailure.call(this);
 							}
@@ -1188,7 +1184,7 @@ $(function() {
 									failure: function() {
 										onXhrFailure.call(this, function() {
 											onegeoClient.action.get('/sources', {
-												successful: load['sources'].apply(null, arguments),
+												successful: load['sources'].apply(window, arguments),
 												failure: function() {
 													onXhrFailure.call(this);
 												}
@@ -1256,7 +1252,7 @@ $(function() {
 								failure: function() {
 									onXhrFailure.call(this, function() {
 										onegeoClient.action.get('/sources', {
-											successful: load['sources'].apply(null, arguments),
+											successful: load['sources'].apply(window, arguments),
 											failure: function() {
 												onXhrFailure.call(this);
 											}
@@ -1423,7 +1419,7 @@ $(function() {
 									failure: function() {
 										onXhrFailure.call(this, function() {
 											onegeoClient.action.get('/indexes', {
-												successful: load['indexes'].apply(null, arguments),
+												successful: load['indexes'].apply(window, arguments),
 												failure: function() {
 													onXhrFailure.call(this);
 												}
@@ -1460,7 +1456,7 @@ $(function() {
 										failure: function() {
 											onXhrFailure.call(this, function() {
 												onegeoClient.action.get('/indexes', {
-													successful: load['indexes'].apply(null, arguments),
+													successful: load['indexes'].apply(window, arguments),
 													failure: function() {
 														onXhrFailure.call(this);
 													}
@@ -1499,7 +1495,7 @@ $(function() {
 								failure: function() {
 									onXhrFailure.call(this, function() {
 										onegeoClient.action.get('/indexes', {
-											successful: load['indexes'].apply(null, arguments),
+											successful: load['indexes'].apply(window, arguments),
 											failure: function() {
 												onXhrFailure.call(this);
 											}
@@ -1568,7 +1564,7 @@ $(function() {
 									failure: function() {
 										onXhrFailure.call(this, function() {
 											onegeoClient.action.get('/services', {
-												successful: load['services'].apply(null, arguments),
+												successful: load['services'].apply(window, arguments),
 												failure: function() {
 													onXhrFailure.call(this);
 												}
@@ -1609,7 +1605,7 @@ $(function() {
 												failure: function() {
 													onXhrFailure.call(this, function() {
 														onegeoClient.action.get('/services', {
-															successful: load['services'].apply(null, arguments),
+															successful: load['services'].apply(window, arguments),
 															failure: function() {
 																onXhrFailure.call(this);
 															}
@@ -1653,7 +1649,7 @@ $(function() {
 								failure: function() {
 									onXhrFailure.call(this, function() {
 										onegeoClient.action.get('/services', {
-											successful: load['services'].apply(null, arguments),
+											successful: load['services'].apply(window, arguments),
 											failure: function() {
 												onXhrFailure.call(this);
 											}
@@ -1696,7 +1692,7 @@ $(function() {
 		};
 
 
-		$('.login button')
+		$('button.login')
 			.click(function() {
 				if (onegeoClient.logged) {
 					modal_SignOut(function() {
@@ -1771,7 +1767,7 @@ $(function() {
 
 				if (this.hash === '#sources') {
 					onegeoClient.action.get('/sources', {
-						successful: load['sources'].apply(null, arguments),
+						successful: load['sources'].apply(window, arguments),
 						failure: onFailure
 					});
 				} else if (this.hash === '#indexes') {
@@ -1779,7 +1775,7 @@ $(function() {
 						successful: function(data) {
 							if (data.length > 0) {
 								onegeoClient.action.get('/indexes', {
-									successful: load['indexes'].apply(null, arguments),
+									successful: load['indexes'].apply(window, arguments),
 									failure: onFailure
 								});
 							} else {
@@ -1829,7 +1825,7 @@ $(function() {
 					});
 				} else if (this.hash === '#services') {
 					onegeoClient.action.get('/services', {
-						successful: load['services'].apply(null, arguments),
+						successful: load['services'].apply(window, arguments),
 						failure: onFailure
 					});
 				} else {
@@ -1846,6 +1842,8 @@ $(function() {
 		const title = settings.title || 'Site de gestion de services de recherches Onegeo';
 		$('#site_title').text(title);
 		$('head>title').text(title);
+
+		$('[name="current-year"]').text((new Date()).getFullYear());
 
 		$('a[href="' + HASH_TAB[0] + '"]').tab('show');
 	});

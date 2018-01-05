@@ -11,17 +11,6 @@ textarea.code {
 	        tab-size: 4;
 }
 
-.page-header .title {
-	font-size: 2.666em;
-	font-weight: 400;
-}
-
-.page-header .login {
-	top: 0;
-	right: 0;
-	position: absolute;
-}
-
 .main-container {
 	margin-top: -1px;
 	padding-top: 60px;
@@ -48,9 +37,4 @@ textarea.code {
 
 .modal-header>button.close {
 	font-size: 100%;
-}
-
-.modal-body .block-info {
-	margin: 15px -15px;
-	padding: 15px;
 }
