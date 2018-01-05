@@ -1122,6 +1122,37 @@ $(function() {
 			$modal.modal('show');
 		};
 
+		const load = {
+			'sources': function() {
+				return function(data) {
+					return loadTable('sources', parseData(data, ['location', 'name', 'mode', 'uri']));
+				};
+			},
+			'indexes': function() {
+				return function(data) {
+					return loadTable('indexes', parseData(data, ['location', 'name', 'resource']));
+				};
+			},
+			'services': function() {
+				return function(data) {
+					return loadTable('services', parseData(data, ['location', 'name', 'service_url', 'extended']));
+				};
+			}
+		};
+
+		const GET = function(key, options) {
+			const opts = options ? options : {};
+			const onSuccess = (typeof opts.successful == 'function') ? opts.successful : load[key].apply(window, arguments);
+			const onFailure = (typeof opts.failure == 'function') ? opts.failure : function() {
+				onXhrFailure.call(this);
+			};
+			return function() {
+				onegeoClient.action.get('/' + key, {
+					successful: onSuccess,
+					failure: onFailure
+				});
+			};
+		};
 
 		// Définition des tableaux :
 		const table = {
@@ -1182,14 +1213,7 @@ $(function() {
 										typeof callback === 'function' && callback(location);
 									},
 									failure: function() {
-										onXhrFailure.call(this, function() {
-											onegeoClient.action.get('/sources', {
-												successful: load['sources'].apply(window, arguments),
-												failure: function() {
-													onXhrFailure.call(this);
-												}
-											});
-										})
+										onXhrFailure.call(this, GET.call(this, 'sources'));
 									}
 								})
 							}
@@ -1250,14 +1274,7 @@ $(function() {
 									console.log('Source deleted: ' + entry.location);
 								},
 								failure: function() {
-									onXhrFailure.call(this, function() {
-										onegeoClient.action.get('/sources', {
-											successful: load['sources'].apply(window, arguments),
-											failure: function() {
-												onXhrFailure.call(this);
-											}
-										});
-									})
+									onXhrFailure.call(this, GET.call(this, 'sources'));
 								}
 							})
 						});
@@ -1417,14 +1434,7 @@ $(function() {
 										typeof callback === 'function' && callback(data);
 									},
 									failure: function() {
-										onXhrFailure.call(this, function() {
-											onegeoClient.action.get('/indexes', {
-												successful: load['indexes'].apply(window, arguments),
-												failure: function() {
-													onXhrFailure.call(this);
-												}
-											});
-										})
+										onXhrFailure.call(this, GET.call(this, 'indexes'));
 									}
 								})
 							}
@@ -1454,14 +1464,7 @@ $(function() {
 											typeof callback === 'function' && callback(data);
 										},
 										failure: function() {
-											onXhrFailure.call(this, function() {
-												onegeoClient.action.get('/indexes', {
-													successful: load['indexes'].apply(window, arguments),
-													failure: function() {
-														onXhrFailure.call(this);
-													}
-												});
-											})
+											onXhrFailure.call(this, GET.call(this, 'indexes'));
 										}
 									})
 								});
@@ -1493,14 +1496,7 @@ $(function() {
 									typeof callback === 'function' && callback(data);
 								},
 								failure: function() {
-									onXhrFailure.call(this, function() {
-										onegeoClient.action.get('/indexes', {
-											successful: load['indexes'].apply(window, arguments),
-											failure: function() {
-												onXhrFailure.call(this);
-											}
-										});
-									})
+									onXhrFailure.call(this, GET.call(this, 'indexes'));
 								}
 							})
 						});
@@ -1562,14 +1558,7 @@ $(function() {
 										console.log('New index created: ' + location);
 									},
 									failure: function() {
-										onXhrFailure.call(this, function() {
-											onegeoClient.action.get('/services', {
-												successful: load['services'].apply(window, arguments),
-												failure: function() {
-													onXhrFailure.call(this);
-												}
-											});
-										})
+										onXhrFailure.call(this, GET.call(this, 'services'));
 									}
 								})
 							}
@@ -1603,14 +1592,7 @@ $(function() {
 													typeof callback === 'function' && callback(data);
 												},
 												failure: function() {
-													onXhrFailure.call(this, function() {
-														onegeoClient.action.get('/services', {
-															successful: load['services'].apply(window, arguments),
-															failure: function() {
-																onXhrFailure.call(this);
-															}
-														});
-													})
+													onXhrFailure.call(this, GET.call(this, 'services'));
 												}
 											})
 										});
@@ -1647,14 +1629,7 @@ $(function() {
 									typeof callback === 'function' && callback(entry.location);
 								},
 								failure: function() {
-									onXhrFailure.call(this, function() {
-										onegeoClient.action.get('/services', {
-											successful: load['services'].apply(window, arguments),
-											failure: function() {
-												onXhrFailure.call(this);
-											}
-										});
-									})
+									onXhrFailure.call(this, GET.call(this, 'services'));
 								}
 							})
 						});
@@ -1720,24 +1695,6 @@ $(function() {
 			return arr;
 		};
 
-		const load = {
-			'sources': function() {
-				return function(data) {
-					return loadTable('sources', parseData(data, ['location', 'name', 'mode', 'uri']));
-				};
-			},
-			'indexes': function() {
-				return function(data) {
-					return loadTable('indexes', parseData(data, ['location', 'name', 'resource']));
-				};
-			},
-			'services': function() {
-				return function(data) {
-					return loadTable('services', parseData(data, ['location', 'name', 'service_url', 'extended']));
-				};
-			}
-		};
-
 		const HASH_TAB = [];
 
 
@@ -1754,80 +1711,16 @@ $(function() {
 
 		$('a[data-toggle="tab"]:not([href="' + HASH_TAB[0] + '"])').each(function(e) {
 			$(this).click(function(e) {
-				// e.preventDefault();
-
-				const trigger = function() {
-					$(this).trigger('click');  // $(this).click.call($(this));
-				}.bind(this);
-
-				const onFailure = function() {
-					e.stopPropagation();
-					onXhrFailure.call(this, trigger);
-				};
-
-				if (this.hash === '#sources') {
-					onegeoClient.action.get('/sources', {
-						successful: load['sources'].apply(window, arguments),
-						failure: onFailure
-					});
-				} else if (this.hash === '#indexes') {
-					onegeoClient.action.get('/sources', {
-						successful: function(data) {
-							if (data.length > 0) {
-								onegeoClient.action.get('/indexes', {
-									successful: load['indexes'].apply(window, arguments),
-									failure: onFailure
-								});
-							} else {
-								$('body').prepend(templator('modal', {
-									dialog: {
-										class: 'modal-md'
-									},
-									heading: {
-										title: {
-											text: 'Information'
-										}
-									},
-									body: {
-										elements: [{
-											template: 'paragraph',
-											data: {
-												text: 'Vous devriez commencer par ajouter une source de données.'
-											}
-										}]
-									},
-									footer: {
-										elements: [{
-											template: 'button',
-											data: {
-												text: 'Fermer',
-												attrs: {
-													name: 'close',
-													type: 'button'
-												}
-											}
-										}]
-									}
-								}));
-
-								const $modal = getModal();
-
-								$modal.find('button[name="close"]').click(function(e) {
-									$modal.on('hidden.bs.modal', function() {
-										$('a[href="#sources"]').tab('show');
-									}).modal('hide');
-								});
-
-								$modal.modal('show');
-							};
-						}.bind(this),
-						failure: onFailure
-					});
-				} else if (this.hash === '#services') {
-					onegeoClient.action.get('/services', {
-						successful: load['services'].apply(window, arguments),
-						failure: onFailure
-					});
+				const that = this;
+				if (HASH_TAB.indexOf(this.hash) > -1) {
+					GET(this.hash.substring(1), {
+						failure: function() {
+							e.stopPropagation();
+							onXhrFailure.call(this, function() {
+								$(that).trigger('click');  // == $(this).click.call($(this));
+							});
+						}
+					})();
 				} else {
 					e.stopPropagation();
 				};
