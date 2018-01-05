@@ -471,12 +471,7 @@ $(function() {
 					typeof deleteCallback === 'function' && deleteCallback(function(location) {
 						$modal.on('hide.bs.modal', function(e) {
 							const key = location.split('/')[1];
-							onegeoClient.action.get('/' + key, {
-								successful: load[key].apply(window, arguments),
-								failure: function() {
-									onXhrFailure.call(this);
-								}
-							});
+							getThenLoad.call(this, key)();
 						}).modal('hide');
 					});
 				};
@@ -516,12 +511,7 @@ $(function() {
 					mode: $protocol.val() // Deprecated
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
-						onegeoClient.action.get('/sources', {
-							successful: load['sources'].apply(window, arguments),
-							failure: function() {
-								onXhrFailure.call(this);
-							}
-						});
+						getThenLoad.call(this, 'sources')();
 					}).modal('hide');
 				});
 			});
@@ -705,12 +695,7 @@ $(function() {
 					resource: $resource.val()
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
-						onegeoClient.action.get('/indexes', {
-							successful: load['indexes'].apply(window, arguments),
-							failure: function() {
-								onXhrFailure.call(this);
-							}
-						});
+						getThenLoad.call(this, 'indexes')();
 					}).modal('hide');
 				});
 			});
@@ -939,12 +924,7 @@ $(function() {
 			const $submit = $modal.find('button[name="submit"]').click(function(e) {
 				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
-						onegeoClient.action.get('/indexes', {
-							successful: load['indexes'].apply(window, arguments),
-							failure: function() {
-								onXhrFailure.call(this);
-							}
-						});
+						getThenLoad.call(this, 'indexes')();
 					}).modal('hide');
 				});
 			});
@@ -1047,12 +1027,7 @@ $(function() {
 					indexes: $indexes.val()
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
-						onegeoClient.action.get('/services', {
-							successful: load['services'].apply(window, arguments),
-							failure: function() {
-								onXhrFailure.call(this);
-							}
-						});
+						getThenLoad.call(this, 'services')();
 					}).modal('hide');
 				});
 			});
@@ -1109,12 +1084,7 @@ $(function() {
 			$modal.find('button[name="submit"]').click(function(e) {
 				typeof putServiceCallback === 'function' && putServiceCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
-						onegeoClient.action.get('/services', {
-							successful: load['services'].apply(window, arguments),
-							failure: function() {
-								onXhrFailure.call(this);
-							}
-						});
+						getThenLoad.call(this, 'services')();
 					}).modal('hide');
 				});
 			});
@@ -1122,30 +1092,45 @@ $(function() {
 			$modal.modal('show');
 		};
 
-		const load = {
-			'sources': function() {
-				return function(data) {
-					return loadTable('sources', parseData(data, ['location', 'name', 'mode', 'uri']));
-				};
-			},
-			'indexes': function() {
-				return function(data) {
-					return loadTable('indexes', parseData(data, ['location', 'name', 'resource']));
-				};
-			},
-			'services': function() {
-				return function(data) {
-					return loadTable('services', parseData(data, ['location', 'name', 'service_url', 'extended']));
-				};
-			}
-		};
+		const getThenLoad = function(key, options) {
+			const load = {
+				'sources': function() {
+					return function(data) {
+						return loadTable('sources', parseData(data, [
+							'location',
+							'name',
+							'mode',
+							'uri'
+						]));
+					};
+				},
+				'indexes': function() {
+					return function(data) {
+						return loadTable('indexes', parseData(data, [
+							'location',
+							'name',
+							'resource'
+						]));
+					};
+				},
+				'services': function() {
+					return function(data) {
+						return loadTable('services', parseData(data, [
+							'location',
+							'name',
+							'service_url',
+							'extended'
+						]));
+					};
+				}
+			};
 
-		const GET = function(key, options) {
 			const opts = options ? options : {};
 			const onSuccess = (typeof opts.successful == 'function') ? opts.successful : load[key].apply(window, arguments);
 			const onFailure = (typeof opts.failure == 'function') ? opts.failure : function() {
 				onXhrFailure.call(this);
 			};
+
 			return function() {
 				onegeoClient.action.get('/' + key, {
 					successful: onSuccess,
@@ -1213,7 +1198,7 @@ $(function() {
 										typeof callback === 'function' && callback(location);
 									},
 									failure: function() {
-										onXhrFailure.call(this, GET.call(this, 'sources'));
+										onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
 									}
 								})
 							}
@@ -1274,7 +1259,7 @@ $(function() {
 									console.log('Source deleted: ' + entry.location);
 								},
 								failure: function() {
-									onXhrFailure.call(this, GET.call(this, 'sources'));
+									onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
 								}
 							})
 						});
@@ -1434,7 +1419,7 @@ $(function() {
 										typeof callback === 'function' && callback(data);
 									},
 									failure: function() {
-										onXhrFailure.call(this, GET.call(this, 'indexes'));
+										onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
 									}
 								})
 							}
@@ -1464,7 +1449,7 @@ $(function() {
 											typeof callback === 'function' && callback(data);
 										},
 										failure: function() {
-											onXhrFailure.call(this, GET.call(this, 'indexes'));
+											onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
 										}
 									})
 								});
@@ -1496,7 +1481,7 @@ $(function() {
 									typeof callback === 'function' && callback(data);
 								},
 								failure: function() {
-									onXhrFailure.call(this, GET.call(this, 'indexes'));
+									onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
 								}
 							})
 						});
@@ -1558,7 +1543,7 @@ $(function() {
 										console.log('New index created: ' + location);
 									},
 									failure: function() {
-										onXhrFailure.call(this, GET.call(this, 'services'));
+										onXhrFailure.call(this, getThenLoad.call(this, 'services'));
 									}
 								})
 							}
@@ -1592,7 +1577,7 @@ $(function() {
 													typeof callback === 'function' && callback(data);
 												},
 												failure: function() {
-													onXhrFailure.call(this, GET.call(this, 'services'));
+													onXhrFailure.call(this, getThenLoad.call(this, 'services'));
 												}
 											})
 										});
@@ -1629,7 +1614,7 @@ $(function() {
 									typeof callback === 'function' && callback(entry.location);
 								},
 								failure: function() {
-									onXhrFailure.call(this, GET.call(this, 'services'));
+									onXhrFailure.call(this, getThenLoad.call(this, 'services'));
 								}
 							})
 						});
@@ -1713,7 +1698,7 @@ $(function() {
 			$(this).click(function(e) {
 				const that = this;
 				if (HASH_TAB.indexOf(this.hash) > -1) {
-					GET(this.hash.substring(1), {
+					getThenLoad(this.hash.substring(1), {
 						failure: function() {
 							e.stopPropagation();
 							onXhrFailure.call(this, function() {
