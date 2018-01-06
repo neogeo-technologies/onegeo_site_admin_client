@@ -1,7 +1,3 @@
-// Some utils for EditableGrib built with Jquery
-
-// Paginator
-
 EditableGrid.prototype.updatePaginator = function(grid) {
 
 	var paginator = $('#' + this.currentContainerid + '-paginator').empty();
@@ -79,7 +75,6 @@ EditableGrid.prototype.updatePaginator = function(grid) {
 	paginator.append(lastLink);
 };
 
-// Table builder
 
 var Table = function(containerId, containerName, metadata, buttons, options) {
 	
@@ -201,7 +196,9 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 	};
 };
 
+
 Table.prototype.constructor = Table;
+
 
 Table.prototype.update = function(data) {
 	
@@ -250,10 +247,11 @@ Table.prototype.update = function(data) {
 			const $button = this.buttons.after[name].addClass('disabled').prop('disabled', true);
 			$buttonGroup.append($button);
 		};
-		$container.after($buttonGroup);
+		$container.siblings('nav').after($buttonGroup);
 		// Fin de code moche
 	};
 };
+
 
 Table.prototype.empty = function() {
 	this.update([]);

@@ -38,14 +38,11 @@
 	var cache = {};
 	this.templator = function _itself(str, data) {
 		var fun;
-		// Figure out if we're getting a template, or if we need to
-		// load the template - and be sure to cache the result.
 		if (/\W/.test(str)) {
 			var js =
 				"var _p = []; " +
 				// "var print = function() { _p.push.apply(_p, arguments); }; " +
 				"with (obj) { _p.push('" +
-
 				// str
 				// 	.replace(/[\r\t\n]/g, ' ')
 				// 	.split('{%').join('\t')
@@ -55,7 +52,6 @@
 				// 	.split('%}').join("_p.push('")
 				// 	.split('\r').join("\\'") + "');" +
 				// "}; return _p.join('');"
-
 				str
 					.replace(/[\r\t\n]/g, " ")
 					.replace(/'(?=[^%]*%})/g,"\t")
@@ -253,6 +249,9 @@
 
 	<!-- Corps de la page -->
 	<body>
+		<div class="progress bar-on-top">
+			<div class="progress-bar" role="progressbar" style="width: 0%"></div>
+		</div>
 		<nav class="navbar navbar-default">
 			<div class="container">
 				<div class="row">
@@ -332,15 +331,18 @@ $(function() {
 
 		const window = this;
 
-
 		const onegeoClient = new OnegeoClient((settings.url || window.location.origin) + settings.path);
-
 
 		const onXhrFailure = function(callback) {
 			if (this.status === 401) {
 				modal_SignIn(callback);
 			} else {
-				const responseJSON = JSON.parse(this.responseText);
+				let responseJSON;
+				try {
+					responseJSON = JSON.parse(this.responseText);
+				} catch (error) {
+					// TODO
+				};
 				const message = (responseJSON && responseJSON.error) ? responseJSON.error : '[' + this.status + '] ' + this.statusText;
 				if ($('.modal').is(':visible')) {
 					$('.modal').on('hidden.bs.modal', modal_Error.apply(window, [message, callback])).modal('hide');
@@ -350,21 +352,17 @@ $(function() {
 			};
 		};
 
-
 		const disabledButton = function($button) {
 			$button.addClass('disabled').prop('disabled', true);
 		};
-
 
 		const enabledButton = function($button) {
 			$button.removeClass('disabled').prop('disabled', false);
 		};
 
-
 		const getTemplate = function(type, name) {
 			return settings.template[type][name];
 		};
-
 
 		const getModal = function() {
 			return $('.modal')
@@ -380,11 +378,24 @@ $(function() {
 				});
 		};
 
-
 		const getCarousel = function() {
 			return $('.carousel').carousel({interval: false, wrap: false, keyword: false});
 		};
 
+		const refreshProgressBar = function(e) {
+			let value = 0;
+			if (e.lengthComputable) {
+				value = Math.round(e.loaded / e.total * 100);
+				$('.progress-bar').css('width', value + '%');
+			};
+			value == 100 && setTimeout(function() {
+				$('.progress-bar').css('display', 'none');
+				$('.progress-bar').css('width', '0%');
+				setTimeout(function() {
+					$('.progress-bar').css('display', 'block');
+				}, 606);
+			}, 606);
+		};
 
 		const modal_Error = function(message, callback) {
 			const calleeName = arguments.callee.name.split('_');
@@ -401,7 +412,6 @@ $(function() {
 
 			$modal.modal('show');
 		};
-
 
 		const modal_SignIn = function(callback) {
 			const calleeName = arguments.callee.name.split('_');
@@ -434,7 +444,6 @@ $(function() {
 			$modal.modal('show');
 		};
 
-
 		const modal_SignOut = function(callback) {
 			const calleeName = arguments.callee.name.split('_');
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
@@ -449,7 +458,6 @@ $(function() {
 
 			$modal.modal('show');
 		};
-
 
 		const modal_Delete = function(value, deleteCallback) {
 			const calleeName = arguments.callee.name.split('_');
@@ -470,6 +478,7 @@ $(function() {
 				if ($name.val() === value) {
 					typeof deleteCallback === 'function' && deleteCallback(function(location) {
 						$modal.on('hide.bs.modal', function(e) {
+							console.log(location)
 							const key = location.split('/')[1];
 							getThenLoad.call(this, key)();
 						}).modal('hide');
@@ -479,7 +488,6 @@ $(function() {
 
 			$modal.modal('show');
 		};
-
 
 		const modal_AddSource = function(getURICallback, getProtocolCallback, postSourceCallback) {
 			const calleeName = arguments.callee.name.split('_');
@@ -559,7 +567,6 @@ $(function() {
 			$modal.modal('show');
 		};
 
-
 		const modal_OpenSource = function(data) {
 
 			const calleeName = arguments.callee.name.split('_');
@@ -636,7 +643,6 @@ $(function() {
 			$modal.modal('show');
 		};
 
-
 		const modal_CreateIndex = function(getSourcesCallback, getResourceCallback, postIndexCallback) {
 
 			const calleeName = arguments.callee.name.split('_');
@@ -705,7 +711,6 @@ $(function() {
 
 			$modal.modal('show');
 		};
-
 
 		const modal_UpdateIndex = function(data, putIndexCallback) {
 			const _cloned = clone(data);
@@ -883,7 +888,6 @@ $(function() {
 			const $modal = getModal();
 			const $carousel = getCarousel();
 
-
 			const arr = [];
 			for (let i = 0; i < data.columns.length; i ++) {
 				arr.push({
@@ -982,7 +986,6 @@ $(function() {
 			$modal.modal('show');
 		};
 
-
 		const modal_CreateService = function(getIndexesCallback, postServiceCallback) {
 			const calleeName = arguments.callee.name.split('_');
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
@@ -1037,7 +1040,6 @@ $(function() {
 
 			$modal.modal('show');
 		};
-
 
 
 		const modal_UpdateService = function(data, indexes, putServiceCallback) {
@@ -1127,6 +1129,7 @@ $(function() {
 
 			const opts = options ? options : {};
 			const onSuccess = (typeof opts.successful == 'function') ? opts.successful : load[key].apply(window, arguments);
+			const onDownloadProgress = (typeof opts.downprogress == 'function') ? opts.downprogress : function() {};
 			const onFailure = (typeof opts.failure == 'function') ? opts.failure : function() {
 				onXhrFailure.call(this);
 			};
@@ -1134,7 +1137,8 @@ $(function() {
 			return function() {
 				onegeoClient.action.get('/' + key, {
 					successful: onSuccess,
-					failure: onFailure
+					failure: onFailure,
+					downprogress: onDownloadProgress
 				});
 			};
 		};
@@ -1420,7 +1424,8 @@ $(function() {
 									},
 									failure: function() {
 										onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
-									}
+									},
+									upprogress: refreshProgressBar
 								})
 							}
 						);
@@ -1450,7 +1455,8 @@ $(function() {
 										},
 										failure: function() {
 											onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
-										}
+										},
+										upprogress: refreshProgressBar
 									})
 								});
 							},
@@ -1544,7 +1550,8 @@ $(function() {
 									},
 									failure: function() {
 										onXhrFailure.call(this, getThenLoad.call(this, 'services'));
-									}
+									},
+									upprogress: refreshProgressBar
 								})
 							}
 						);
@@ -1578,7 +1585,8 @@ $(function() {
 												},
 												failure: function() {
 													onXhrFailure.call(this, getThenLoad.call(this, 'services'));
-												}
+												},
+												upprogress: refreshProgressBar
 											})
 										});
 									},
@@ -1651,7 +1659,6 @@ $(function() {
 
 		};
 
-
 		$('button.login')
 			.click(function() {
 				if (onegeoClient.logged) {
@@ -1682,7 +1689,6 @@ $(function() {
 
 		const HASH_TAB = [];
 
-
 		$('a[data-toggle="tab"]')
 			.each(function(e) {
 				HASH_TAB.push($(this).prop('hash'));
@@ -1704,7 +1710,8 @@ $(function() {
 							onXhrFailure.call(this, function() {
 								$(that).trigger('click');  // == $(this).click.call($(this));
 							});
-						}
+						},
+						downprogress: refreshProgressBar
 					})();
 				} else {
 					e.stopPropagation();

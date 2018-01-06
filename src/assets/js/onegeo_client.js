@@ -1,5 +1,3 @@
-// Onegeo' pure JS client
-
 function OnegeoClient(baseUrl) {
 
 	if (window.XMLHttpRequest) {
@@ -19,7 +17,8 @@ function OnegeoClient(baseUrl) {
 				}.bind(this),
 				failure: obj.failure,
 				before: obj.before,
-				lastly: obj.lastly
+				lastly: obj.lastly,
+				downprogress: obj.downprogress
 			});
 		}.bind(this),
 		post: function(path, obj) {
@@ -32,7 +31,8 @@ function OnegeoClient(baseUrl) {
 				}.bind(this),
 				failure: obj.failure,
 				before: obj.before,
-				lastly: obj.lastly
+				lastly: obj.lastly,
+				upprogress: obj.upprogress
 			});
 		}.bind(this),
 		put: function(path, obj) {
@@ -45,7 +45,8 @@ function OnegeoClient(baseUrl) {
 				}.bind(this),
 				failure: obj.failure,
 				before: obj.before,
-				lastly: obj.lastly
+				lastly: obj.lastly,
+				upprogress: obj.upprogress
 			});
 		}.bind(this),
 		delete: function(path, obj) {
@@ -57,7 +58,8 @@ function OnegeoClient(baseUrl) {
 				}.bind(this),
 				failure: obj.failure,
 				before: obj.before,
-				lastly: obj.lastly
+				lastly: obj.lastly,
+				upprogress: obj.upprogress
 			});
 		}.bind(this)
 	};
@@ -102,18 +104,20 @@ OnegeoClient.prototype.__request = function(obj) {
 		before: <function>,
 		successful: <function>,
 		failure: <function>,
-		lastly: <function>
+		lastly: <function>,
+		progress: <function>,
+		upload: <function>
 	}
 	*/
 
 	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + obj.path : obj.path, true);
 
 	this.xhr.onload = function(evt) {
-		if (this.status == 200) {  // Done
+		if (this.status == 200) {
 			typeof obj.successful === 'function' && obj.successful.call(this);
-		} else if (this.status == 201) {  // Created
+		} else if (this.status == 201) {
 			typeof obj.successful === 'function' && obj.successful.call(this, this.getResponseHeader('Location'));
-		} else if (this.status == 204) {  // No content
+		} else if (this.status == 204) {
 			typeof obj.successful === 'function' && obj.successful.call(this);
 		} else {
 			typeof obj.failure === 'function' && obj.failure.call(this);
@@ -126,6 +130,14 @@ OnegeoClient.prototype.__request = function(obj) {
 
 	this.xhr.onloadend = function(evt) {
 		typeof obj.lastly === 'function' && obj.lastly.call(this);
+	};
+
+	this.xhr.onprogress = function(evt) {
+		typeof obj.downprogress === 'function' && obj.downprogress.call(this, evt);
+	};
+
+	this.xhr.upload.onprogress = function(evt) {
+		typeof obj.upprogress === 'function' && obj.upprogress.call(this, evt);
 	};
 
 	this.xhr.setRequestHeader('Content-Type', 'application/json');
