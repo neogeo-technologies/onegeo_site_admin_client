@@ -1,7 +1,7 @@
 {
 	"url": "http://127.0.0.1",
 	"path": "/api",
-	"title": "Administration des profils Onegeo",
+	"title": "Administration des profils d'indexation et de recherche",
 	"template":
 	{
 		"modal":
@@ -395,16 +395,17 @@
 									"attrs": {},
 									"elements": [
 										{
-											"template": "form_input",
+											"template": "form_input_group",
 											"data":
 											{
 												"attrs":
 												{
+													"addon": "/sources/",
 													"name": "location",
 													"type": "text",
-													"label": "<em>Location</em>",
+													"label": "<em>Emplacement (URL)</em>",
 													"autocomplete": "off",
-													"disabled": true
+													"disabled": false
 												}
 											}
 										},
@@ -418,7 +419,7 @@
 													"type": "text",
 													"label": "Nom",
 													"autocomplete": "off",
-													"disabled": true
+													"disabled": false
 												}
 											}
 										},
@@ -428,7 +429,7 @@
 											{
 												"attrs":
 												{
-													"name": "mode",
+													"name": "protocol",
 													"type": "text",
 													"label": "Protocole",
 													"autocomplete": "off",
@@ -504,7 +505,7 @@
 															{
 																"name": "entry-location",
 																"type": "text",
-																"label": "<em>Location</em>",
+																"label": "<em>Emplacement (URL)</em>",
 																"autocomplete": "off",
 																"disabled": true
 															}
@@ -662,13 +663,6 @@
 												"selected": true
 											}]
 										}
-									},
-									{
-										"template": "paragraph",
-										"data":
-										{
-											"text": "Si la source de données n'est pas dans la liste, vous pouvez l'<a href=\"#source\">ajouter ici</a>"
-										}
 									}]
 								}
 							},
@@ -772,16 +766,17 @@
 									"attrs": {},
 									"elements": [
 										{
-											"template": "form_input",
+											"template": "form_input_group",
 											"data":
 											{
 												"attrs":
 												{
+													"addon": "/indexes/",
 													"name": "location",
 													"type": "text",
-													"label": "<em>Location</em>",
+													"label": "<em>Emplacement (URL)</em>",
 													"autocomplete": "off",
-													"disabled": true
+													"disabled": false
 												}
 											}
 										},
@@ -795,7 +790,7 @@
 													"type": "text",
 													"label": "Nom",
 													"autocomplete": "off",
-													"disabled": true
+													"disabled": false
 												}
 											}
 										},
@@ -1073,16 +1068,17 @@
 									"attrs": {},
 									"elements": [
 									{
-										"template": "form_input",
+										"template": "form_input_group",
 										"data":
 										{
 											"attrs":
 											{
+												"addon": "/services/",
 												"name": "location",
 												"type": "text",
-												"label": "<em>Location</em>",
+												"label": "<em>Emplacement (URL)</em>",
 												"autocomplete": "off",
-												"disabled": true
+												"disabled": false
 											}
 										}
 									},

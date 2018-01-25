@@ -140,6 +140,26 @@
 		</div>
 	</template>
 
+	<!-- Template d'un élément "input group" -->
+	<template id="form_input_group">
+		<div class="form-group">
+			{% if (attrs.label) { %}
+			<label for="{%='id_' + attrs.name %}">{%= attrs.label %}</label>
+			{% }; %}
+			<div class="input-group">
+				<span class="input-group-addon" id="{%= 'id_' + attrs.name + '_addon' %}">{%= attrs.addon || '' %}</span>
+				<input id="{%='id_' + attrs.name %}" name="{%= attrs.name %}" list="{%= attrs.datalist ? attrs.name : '' %}" type="{%= attrs.type %}" pattern="{%= attrs.pattern || '.*' %}" class="form-control" placeholder="{%= attrs.placeholder || '' %}" autocomplete="{%= attrs.autocomplete || 'on' %}" value="{%= attrs.value || null %}" *="{%= attrs.disabled && 'disabled' %}*="  aria-describedby="{%= 'id_' + attrs.name + '_addon' %}"/>
+			</div>
+			{% if (attrs.datalist) { %}
+			<datalist id="{%= attrs.name %}">
+				{% for (const option of attrs.datalist.options) { %}
+				<option value="{%= option.value %}" *="{%= option.selected && 'selected' %} {%= option.disabled && 'disabled' %}*=">{%= option.text %}</option>
+				{% }; %}
+			</datalist>
+			{% }; %}
+		</div>
+	</template>
+
 	<!-- Template d'un élément "select" -->
 	<template id="form_select">
 		<div class="form-group">
@@ -256,10 +276,15 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
-						<a id="site_title" class="navbar-brand" href="#home"></a>
+						<div class="navbar-header">
+							<a class="navbar-brand" href="#home">
+								<span id="site_brand"></span>
+								<span id="site_title"></span>
+							</a>
+						</div>
 						<div class="navbar-right">
-							<label name="identity"></label>
 							<button type="button" class="btn btn-default navbar-btn login">
+								<span name="identity"></span>
 								<span class="glyphicon glyphicon-user"></span>
 							</button>
 						</div>
@@ -295,7 +320,23 @@
 					<div class="col-md-12">
 						<div class="tab-content">
 							<div id="home" role="tabpanel" class="tab-pane fade in">
-								<span>Bienvenue sur la page d'accueil</span>
+								<p>Bienvenu sur la page d'accueil</p>
+								<p>
+									TODO :
+									<ul>
+										<li>Si connecté
+											<ul>
+												<li>Des statistiques sur le comptes</li>
+												<li>L'état des dernières tâches exécutées</li>
+											</ul>
+										</li>
+										<li>Sinon
+											<ul>
+												<li>Un guide</li>
+											</ul>
+										</li>
+									</ul>
+								</p>
 							</div>
 							<div id="sources" role="tabpanel" class="tab-pane fade in"></div>
 							<div id="indexes" role="tabpanel" class="tab-pane fade in"></div>
@@ -309,7 +350,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12" style="text-align: center;">
-						<p>© <span name="current-year"></span> <a href='http://www.neogeo.fr' target="_blank">Neogeo-Technologies</p>
+						<p>© <span name="current-year"></span> <a href='http://www.neogeo.fr' target="blank">Neogeo-Technologies</p>
 					</div>
 				</div>
 			</div>
@@ -379,7 +420,11 @@ $(function() {
 		};
 
 		const getCarousel = function() {
-			return $('.carousel').carousel({interval: false, wrap: false, keyword: false});
+			return $('.carousel').carousel({
+				interval: false,
+				wrap: false,
+				keyword: false
+			});
 		};
 
 		const refreshProgressBar = function(e) {
@@ -402,7 +447,7 @@ $(function() {
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
 			const $modal = getModal();
 
-			$('p').text(message);
+			$modal.find('p').text(message);
 
 			$modal.find('button[name="close"]').click(function(e) {
 				$modal.on('hide.bs.modal', function() {
@@ -424,7 +469,7 @@ $(function() {
 				if ($username.val() && $password.val()) {
 					onegeoClient.connect($username.val(), $password.val(), function(isLogged) {
 						if (isLogged) {
-							$('label[name="identity"]').text($username.val());
+							$('[name="identity"]').text($username.val());
 							$modal.modal('hide');
 							typeof callback === 'function' && callback();
 						} else {
@@ -451,7 +496,7 @@ $(function() {
 
 			$modal.find('button[name="submit"]').click(function(e) {
 				onegeoClient.disconnect(function() {
-					$('label[name="identity"]').empty();
+					$('[name="identity"]').empty();
 					typeof callback === 'function' && callback();
 				});
 			});
@@ -516,7 +561,7 @@ $(function() {
 				typeof postSourceCallback === 'function' && postSourceCallback({
 					name: $name.val(),
 					uri: $uri.val(),
-					mode: $protocol.val() // Deprecated
+					protocol: $protocol.val() // Deprecated
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						getThenLoad.call(this, 'sources')();
@@ -575,9 +620,10 @@ $(function() {
 
 			const $modal = getModal();
 
-			for (const key of ['location', 'name', 'mode', 'uri']) {
+			for (const key of ['name', 'protocol', 'uri']) {
 				$modal.find('input[name="' + key + '"]').val(data[key]);
 			};
+			$modal.find('input[name="location"]').val(data['location'].split('/').pop());
 
 			const $carousel = getCarousel();
 
@@ -599,8 +645,8 @@ $(function() {
 					arr.push({
 						id: i,
 						values: [
-							data[i].location,
 							data[i].name,
+							data[i].location,
 							data[i].columns
 						]
 					});
@@ -867,7 +913,7 @@ $(function() {
 							template: "button",
 							data:
 							{
-								text: "Valider",
+								text: "Sauvegarder",
 								attrs:
 								{
 									name: "save",
@@ -976,9 +1022,12 @@ $(function() {
 				toSecondSlide();
 			};
 
-			for (const key of ['location', 'name']) {
-				$modal.find('input[name="' + key + '"]').val(data[key]);
-			};
+			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
+				_cloned.name = this.value;
+			});
+			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
+				_cloned.alias = this.value;
+			});
 			$modal.find('select[name="reindex-frequency"]').on('change', function(e) {
 				_cloned.reindex_frequency = this.value;
 			});
@@ -1050,9 +1099,8 @@ $(function() {
 
 			const _cloned = clone(data);
 
-			for (const key of ['location', 'name']) {
-				$modal.find('input[name="' + key + '"]').val(data[key]);
-			};
+			$modal.find('input[name="name"]').val(data['name']);
+			$modal.find('input[name="location"]').val(data['location'].split('/').pop());
 
 			const $indexes = $modal.find('select[name="indexes"]');
 			for (const index of indexes) {
@@ -1099,29 +1147,29 @@ $(function() {
 				'sources': function() {
 					return function(data) {
 						return loadTable('sources', parseData(data, [
-							'location',
 							'name',
-							'mode',
-							'uri'
+							'protocol',
+							'uri',
+							'location'
 						]));
 					};
 				},
 				'indexes': function() {
 					return function(data) {
 						return loadTable('indexes', parseData(data, [
-							'location',
 							'name',
-							'resource'
+							'resource',
+							'location'
 						]));
 					};
 				},
 				'services': function() {
 					return function(data) {
 						return loadTable('services', parseData(data, [
-							'location',
 							'name',
 							'service_url',
-							'extended'
+							'extended',
+							'location'
 						]));
 					};
 				}
@@ -1148,11 +1196,6 @@ $(function() {
 
 			// Tableau des sources de données :
 			'sources': new Table('table-sources', 'Sources', [{
-				name: 'location',
-				label: 'Location',
-				editable: false,
-				datatype: 'string'
-			}, {
 				name: 'name',
 				label: 'Nom',
 				editable: false,
@@ -1167,6 +1210,11 @@ $(function() {
 				label: 'URI',
 				editable: false,
 				datatype: 'url'
+			}, {
+				name: 'location',
+				label: '_HIDDEN',
+				editable: false,
+				datatype: 'string'
 			}], {
 				'add': {
 					method: function(e) {
@@ -1282,13 +1330,13 @@ $(function() {
 
 			// Tableau des ressources :
 			'resources': new Table('table-resources', 'Resources', [{
-				name: 'location',
-				label: 'Location',
+				name: 'name',
+				label: 'Nom',
 				editable: false,
 				datatype: 'string'
 			}, {
-				name: 'name',
-				label: 'Nom',
+				name: 'location',
+				label: '_HIDDEN',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1374,18 +1422,18 @@ $(function() {
 
 			// Tableau des profils d'indexation :
 			'indexes': new Table('table-indexes', 'Indexes', [{
-				name: 'location',
-				label: 'Location',
-				editable: false,
-				datatype: 'string'
-			}, {
 				name: 'name',
 				label: 'Nom',
 				editable: false,
 				datatype: 'string'
 			}, {
 				name: 'resource_location',
-				label: 'Ressouce (Location)',
+				label: 'Emplacement de la ressource',
+				editable: false,
+				datatype: 'string'
+			}, {
+				name: 'location',
+				label: '_HIDDEN',
 				editable: false,
 				datatype: 'string'
 			}], {
@@ -1506,11 +1554,6 @@ $(function() {
 
 			// Tableau des profils de recherche :
 			'services': new Table('table-services', 'Services', [{
-				name: 'location',
-				label: 'Location',
-				editable: false,
-				datatype: 'string'
-			}, {
 				name: 'name',
 				label: 'Nom',
 				editable: false,
@@ -1525,6 +1568,11 @@ $(function() {
 				label: 'Extension chargée',
 				editable: false,
 				datatype: 'boolean'
+			}, {
+				name: 'location',
+				label: '_HIDDEN',
+				editable: false,
+				datatype: 'string'
 			}], {
 				'add': {
 					method: function(e) {
@@ -1724,10 +1772,9 @@ $(function() {
 			HASH_TAB.indexOf(hash) > -1 && $('a[href="' + hash + '"]').tab('show');
 		});
 
-		const title = settings.title || 'Site de gestion de services de recherches Onegeo';
-		$('#site_title').text(title);
-		$('head>title').text(title);
-
+		$('#site_brand').text('Onegeo');
+		$('head>title').text('Onegeo');
+		$('#site_title').text(settings.title);
 		$('[name="current-year"]').text((new Date()).getFullYear());
 
 		$('a[href="' + HASH_TAB[0] + '"]').tab('show');

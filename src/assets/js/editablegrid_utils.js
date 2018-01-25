@@ -148,7 +148,7 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 			if (column.datatype == 'url') {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
-						cell.innerHTML = value + ' <a href="' + value + '"><span class="glyphicon glyphicon-link"></span></a>';
+						cell.innerHTML = value + ' <a href="' + value + '" target="_blank"><span class="glyphicon glyphicon-link"></span></a>';
 					}
 				}));
 			};
