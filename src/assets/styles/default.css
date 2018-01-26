@@ -52,6 +52,10 @@ textarea.code {
 	background-color: transparent;
 }
 
+.piled-menu {
+	margin-bottom: 40px;
+}
+
 #site_brand {
 	display: inline-block;
 	margin: -7px 0px;

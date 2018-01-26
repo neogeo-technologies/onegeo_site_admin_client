@@ -102,7 +102,7 @@
 	<template id="form_tablist">
 		<div class="row">
 			<div class="col-md-3">
-				<ul class="nav nav-pills nav-stacked" role="tablist">
+				<ul class="nav nav-pills nav-stacked piled-menu" role="tablist">
 					{% for (const entry of tabs) { %}
 					<li role="presentation" class="{%= entry.active && 'active' %}"><a href="#{%= entry.id %}" name="{%= entry.id %}" aria-controls="{%= entry.id %}" role="tab" data-toggle="tab">{%= entry.label %}</a></li>
 					{% }; %}
@@ -226,7 +226,9 @@
 			<div class="modal-dialog {%= dialog.class || '' %}" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<button type="button" name="close" class="close" data-dismiss="modal" aria-label="Close"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+						<button type="button" name="close" class="close" data-dismiss="modal" aria-label="Close">
+							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+						</button>
 						<h4 class="modal-title">{%= heading.title.text %}</h4>
 					</div>
 					<form onsubmit="{%=body.onsubmit || 'return false;' %}">
@@ -283,8 +285,8 @@
 							</a>
 						</div>
 						<div class="navbar-right">
-							<button type="button" class="btn btn-default navbar-btn login">
-								<span name="identity"></span>
+							<button id="sign_in" type="button" class="btn navbar-btn">
+								<span id="identity"></span>
 								<span class="glyphicon glyphicon-user"></span>
 							</button>
 						</div>
@@ -298,7 +300,9 @@
 					<div class="col-md-12">
 						<ul id="menu" class="nav nav-tabs" role="tablist">
 							<li role="presentation">
-								<a href="#home" aria-controls="home" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-home"></span></a>
+								<a href="#home" aria-controls="home" role="tab" data-toggle="tab">
+									<span class="glyphicon glyphicon-home"></span>
+								</a>
 							</li>
 							<li role="presentation">
 								<a href="#sources" aria-controls="sources" role="tab" data-toggle="tab">Sources de données</a>
@@ -369,28 +373,29 @@ $(function() {
 		};
 		xhr.send(null);
 	})(function(settings) {
-
 		const window = this;
 
 		const onegeoClient = new OnegeoClient((settings.url || window.location.origin) + settings.path);
 
 		const onXhrFailure = function(callback) {
 			if (this.status === 401) {
-				modal_SignIn(callback);
-			} else {
-				let responseJSON;
-				try {
-					responseJSON = JSON.parse(this.responseText);
-				} catch (error) {
-					// TODO
-				};
-				const message = (responseJSON && responseJSON.error) ? responseJSON.error : '[' + this.status + '] ' + this.statusText;
-				if ($('.modal').is(':visible')) {
-					$('.modal').on('hidden.bs.modal', modal_Error.apply(window, [message, callback])).modal('hide');
-				} else {
-					modal_Error(message, callback);
-				};
+				return modal_SignIn(callback);
 			};
+
+			let responseJSON;
+			try {
+				responseJSON = JSON.parse(this.responseText);
+			} catch (error) {
+				// TODO
+			};
+
+			const message = (responseJSON && responseJSON.error) ? responseJSON.error : this.status + ' (' + this.statusText + ')';
+			if ($('.modal').is(':visible')) {
+				$('.modal').on('hidden.bs.modal', modal_Error.apply(window, [message, callback])).modal('hide');
+			} else {
+				modal_Error(message, callback);
+			};
+
 		};
 
 		const disabledButton = function($button) {
@@ -405,18 +410,21 @@ $(function() {
 			return settings.template[type][name];
 		};
 
+		const killModal = function() {
+			$('.modal-backdrop').remove();
+			$('body').removeClass('modal-open');
+			$('.modal').remove();
+		};
+
 		const getModal = function() {
 			return $('.modal')
 				.modal({
 					'backdrop': 'static',
 					'show': false
 				})
-				.on('show.bs.modal', function() {
-					// TODO:
-				})
-				.on('hidden.bs.modal', function() {
-					$(this).remove();
-				});
+				.on('show.bs.modal', function(e) {})
+				.on('hide.bs.modal', function(e) {})
+				.on('hidden.bs.modal', killModal);
 		};
 
 		const getCarousel = function() {
@@ -443,6 +451,7 @@ $(function() {
 		};
 
 		const modal_Error = function(message, callback) {
+			killModal();
 			const calleeName = arguments.callee.name.split('_');
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
 			const $modal = getModal();
@@ -469,7 +478,7 @@ $(function() {
 				if ($username.val() && $password.val()) {
 					onegeoClient.connect($username.val(), $password.val(), function(isLogged) {
 						if (isLogged) {
-							$('[name="identity"]').text($username.val());
+							$('#identity').text($username.val());
 							$modal.modal('hide');
 							typeof callback === 'function' && callback();
 						} else {
@@ -482,9 +491,7 @@ $(function() {
 				};
 			});
 
-			$modal.find('button[name="close"]').click(function(e) {
-				$('a[href="' + HASH_TAB[0] + '"]').tab('show');
-			});
+			$modal.find('button[name="close"]').click(goHome);
 
 			$modal.modal('show');
 		};
@@ -612,18 +619,14 @@ $(function() {
 			$modal.modal('show');
 		};
 
-		const modal_OpenSource = function(data) {
+		const modal_UpdateSource = function(data, putSourceCallback) {
+			const _cloned = clone(data);
 
 			const calleeName = arguments.callee.name.split('_');
 			const template = getTemplate(calleeName[0], calleeName[1])
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
 
 			const $modal = getModal();
-
-			for (const key of ['name', 'protocol', 'uri']) {
-				$modal.find('input[name="' + key + '"]').val(data[key]);
-			};
-			$modal.find('input[name="location"]').val(data['location'].split('/').pop());
 
 			const $carousel = getCarousel();
 
@@ -635,8 +638,18 @@ $(function() {
 				}).carousel(0);
 			});
 
-			const $close = $modal.find('button[name="close"]').click(function(e) {
+			const close = function(e) {
 				$modal.modal('hide');
+			};
+
+			const $cancel = $modal.find('button[name="cancel"]').click(close);
+
+			const $submit = $modal.find('button[name="submit"]').click(function(e) {
+				typeof putSourceCallback === 'function' && putSourceCallback(_cloned, function(location) {
+					$modal.on('hidden.bs.modal', function(e) {
+						getThenLoad.call(this, 'sources')();
+					}).modal('hide');
+				});
 			});
 
 			const loadResourcesTable = function(data) {
@@ -686,6 +699,19 @@ $(function() {
 			};
 
 			loadResourcesTable(data.resources);
+
+			for (const key of ['protocol', 'uri']) {
+				$modal.find('input[name="' + key + '"]').val(data[key]);
+			};
+
+			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
+				_cloned.name = this.value;
+			});
+
+			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
+				_cloned.name = this.value;
+			});
+
 			$modal.modal('show');
 		};
 
@@ -1278,7 +1304,19 @@ $(function() {
 								onegeoClient.action.get(entry.location + '/resources', {
 									successful: function(data) {
 										sourceData['resources'] = data;
-										modal_OpenSource(sourceData);
+										modal_UpdateSource(sourceData, function(data, callback) {
+											onegeoClient.action.put(entry.location, {
+												data: data,
+												successful: function(location) {
+													console.log('Source updated: ' + location);
+													typeof callback === 'function' && callback(data);
+												},
+												failure: function() {
+													onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
+												},
+												upprogress: refreshProgressBar
+											})
+										});
 									},
 									failure: function() {
 										onXhrFailure.call(this);
@@ -1707,7 +1745,7 @@ $(function() {
 
 		};
 
-		$('button.login')
+		$('#sign_in')
 			.click(function() {
 				if (onegeoClient.logged) {
 					modal_SignOut(function() {
@@ -1772,12 +1810,21 @@ $(function() {
 			HASH_TAB.indexOf(hash) > -1 && $('a[href="' + hash + '"]').tab('show');
 		});
 
+		$(window).bind('statechange', function(e) {
+			console.log('state is changing')
+		});
+
 		$('#site_brand').text('Onegeo');
 		$('head>title').text('Onegeo');
 		$('#site_title').text(settings.title);
 		$('[name="current-year"]').text((new Date()).getFullYear());
 
-		$('a[href="' + HASH_TAB[0] + '"]').tab('show');
+		const goHome = function() {
+			$('a[href="' + HASH_TAB[0] + '"]').tab('show');
+		};
+
+		goHome();
+
 	});
 });
 	</script>
