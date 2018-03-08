@@ -529,10 +529,8 @@ $(function() {
 			$modal.find('button[name="submit"]').click(function(e) {
 				if ($name.val() === value) {
 					typeof deleteCallback === 'function' && deleteCallback(function(location) {
-						$modal.on('hide.bs.modal', function(e) {
-							console.log(location)
-							const key = location.split('/')[1];
-							getThenLoad.call(this, key)();
+						$modal.on('hidden.bs.modal', function(e) {
+							getThenLoad.call(this, location.split('/')[1])();
 						}).modal('hide');
 					});
 				};
@@ -739,6 +737,7 @@ $(function() {
 
 			const $next = $modal.find('button[name="next"]').click(function(e) {
 				e.stopPropagation();
+				// TODO: Reprendre l'ordre des callbacks
 				$carousel.on('slide.bs.carousel', function(e) {
 					disabledButton($next);
 					const i = $carousel.find('.active').index() + 1;
@@ -759,7 +758,7 @@ $(function() {
 							for (const entry of data) {
 								$resource.append($('<option>', {
 									value: entry.location,
-									text: entry.name
+									text: entry.location
 								}));
 							};
 						});
@@ -1125,18 +1124,27 @@ $(function() {
 
 			const _cloned = clone(data);
 
-			$modal.find('input[name="name"]').val(data['name']);
-			$modal.find('input[name="location"]').val(data['location'].split('/').pop());
+			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
+				_cloned.name = this.value;
+			});
 
-			const $indexes = $modal.find('select[name="indexes"]');
+			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
+				_cloned.name = this.value;
+			});
+
+			const $indexes = $modal.find('select[name="indexes"]').on('change', function(e) {
+				_cloned.indexes = [];
+				$('option:selected', this).each(function() {
+					_cloned.indexes.push(this.value);
+				});
+			});
 			for (const index of indexes) {
 				$indexes.append($('<option>', {
 					value: index.location,
-					text: index.name,
-					selected: (data.indexes.indexOf(index.name) > -1) ? true : false
+					text: index.location,
+					selected: (data.indexes.indexOf(index.location) > -1) ? true : false
 				}));
 			};
-
 			$queryDsl = $('textarea[name="query-dsl"]')
 				.keydown(function(e) {
 					if (e.keyCode === 9) {
@@ -1149,7 +1157,10 @@ $(function() {
 						e.preventDefault();
 					};
 				})
-				.val(JSON.stringify(data.config, null, 4));
+				.val(JSON.stringify(data.config, null, 4))
+				.on('change', function(e) {
+					_cloned.config = this.value;
+				});
 
 			table['qs-params'].update(data.qs_params || []);
 
@@ -1184,7 +1195,7 @@ $(function() {
 					return function(data) {
 						return loadTable('indexes', parseData(data, [
 							'name',
-							'resource',
+							'resource.name',
 							'location'
 						]));
 					};
@@ -1193,8 +1204,7 @@ $(function() {
 					return function(data) {
 						return loadTable('services', parseData(data, [
 							'name',
-							'service_url',
-							'extended',
+							'indexes.name',
 							'location'
 						]));
 					};
@@ -1202,6 +1212,7 @@ $(function() {
 			};
 
 			const opts = options ? options : {};
+			const data =  opts.data ? opts.data : undefined;
 			const onSuccess = (typeof opts.successful == 'function') ? opts.successful : load[key].apply(window, arguments);
 			const onDownloadProgress = (typeof opts.downprogress == 'function') ? opts.downprogress : function() {};
 			const onFailure = (typeof opts.failure == 'function') ? opts.failure : function() {
@@ -1210,6 +1221,7 @@ $(function() {
 
 			return function() {
 				onegeoClient.action.get('/' + key, {
+					data: data,
 					successful: onSuccess,
 					failure: onFailure,
 					downprogress: onDownloadProgress
@@ -1343,10 +1355,11 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						modal_Delete(entry.name, function(data) {
+						modal_Delete(entry.name, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
 									console.log('Source deleted: ' + entry.location);
+									typeof callback === 'function' && callback(entry.location);
 								},
 								failure: function() {
 									onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
@@ -1466,7 +1479,7 @@ $(function() {
 				datatype: 'string'
 			}, {
 				name: 'resource_location',
-				label: 'Emplacement de la ressource',
+				label: 'Ressource',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1566,11 +1579,11 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						modal_Delete(entry.name, function(data, callback) {
+						modal_Delete(entry.name, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
-									console.log('Index deleted: ' + location);
-									typeof callback === 'function' && callback(data);
+									console.log('Index deleted: ' + entry.location);
+									typeof callback === 'function' && callback(entry.location);
 								},
 								failure: function() {
 									onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
@@ -1597,15 +1610,10 @@ $(function() {
 				editable: false,
 				datatype: 'string'
 			}, {
-				name: 'service_url',
-				label: 'URL du service',
+				name: 'indexes',
+				label: 'Index',
 				editable: false,
-				datatype: 'url'
-			}, {
-				name: 'extended',
-				label: 'Extension chargée',
-				editable: false,
-				datatype: 'boolean'
+				datatype: 'string'
 			}, {
 				name: 'location',
 				label: '_HIDDEN',
@@ -1766,7 +1774,11 @@ $(function() {
 			for (let i = 0; i < data.length; i ++) {
 				const values = [];
 				for (const attr of attrs) {
-					values.push(data[i][attr]);
+					let str = 'data[i]';
+					for (const k of attr.split('.')) {
+						str += "['" + k + "']";
+					};
+					values.push(eval(str));
 				};
 				arr.push({id: i, values: values});
 			};
@@ -1791,6 +1803,7 @@ $(function() {
 				const that = this;
 				if (HASH_TAB.indexOf(this.hash) > -1) {
 					getThenLoad(this.hash.substring(1), {
+						data: {'include': this.hash.substring(1) == 'sources' ? false : true},
 						failure: function() {
 							e.stopPropagation();
 							onXhrFailure.call(this, function() {

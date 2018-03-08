@@ -11,6 +11,7 @@ function OnegeoClient(baseUrl) {
 		get: function(path, obj) {
 			return this.__request({
 				method: 'GET',
+				data: obj.data,
 				path: path,
 				successful: function() {
 					return typeof obj.successful === 'function' && obj.successful.call(this.xhr, JSON.parse(this.xhr.responseText));
@@ -41,7 +42,6 @@ function OnegeoClient(baseUrl) {
 				data: JSON.stringify(obj.data),
 				path: path,
 				successful: function() {
-					console.log(0);
 					return typeof obj.successful === 'function' && obj.successful.call(this.xhr);
 				}.bind(this),
 				failure: obj.failure,
@@ -111,7 +111,17 @@ OnegeoClient.prototype.__request = function(obj) {
 	}
 	*/
 
-	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + obj.path : obj.path, true);
+	if (obj.method == 'GET' && obj.data) {
+		obj.path += '?';
+		for (const k in obj.data) {
+			obj.path += '&' + k + '=' + obj.data[k];
+		};
+		obj.data = undefined;
+	};
+
+	const path = encodeURIComponent(obj.path);
+
+	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + path : path, true);
 
 	this.xhr.onload = function(evt) {
 		if ([200, 202, 204].indexOf(this.status) > -1) {
