@@ -313,6 +313,9 @@
 							<li role="presentation">
 								<a href="#services" aria-controls="services" role="tab" data-toggle="tab">Profils de recherche</a>
 							</li>
+							<li role="presentation">
+								<a href="#dashboard" aria-controls="dashboard" role="tab" data-toggle="tab">Dashboard</a>
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -345,6 +348,7 @@
 							<div id="sources" role="tabpanel" class="tab-pane fade in"></div>
 							<div id="indexes" role="tabpanel" class="tab-pane fade in"></div>
 							<div id="services" role="tabpanel" class="tab-pane fade in"></div>
+							<div id="dashboard" role="tabpanel" class="tab-pane fade in"></div>
 						</div>
 					</div>
 				</div>
@@ -559,26 +563,24 @@ $(function() {
 			})
 
 			const $protocol = $modal.find('select[name="protocol"]').on('change', function(e) {
-				enabledButton($submit);
+				enabledButton($next)
 			});
-
-			$modal.find('button[name="submit"]').click(function(e) {
-				typeof postSourceCallback === 'function' && postSourceCallback({
-					name: $name.val(),
-					uri: $uri.val(),
-					protocol: $protocol.val() // Deprecated
-				}, function(location) {
-					$modal.on('hidden.bs.modal', function(e) {
-						getThenLoad.call(this, 'sources')();
-					}).modal('hide');
-				});
+			// bouton close
+			const $close= $modal.find('button[name="close"]').click(function(e) {
+						$modal.on('hidden.bs.modal', function(e) {
+							getThenLoad.call(this, 'sources')();
+						}).modal('hide');
 			});
+			$close.hide();
 
 			const $next = $modal.find('button[name="next"]').click(function(e) {
 				e.stopPropagation();
-				$carousel.on('slide.bs.carousel', function(e) {
+
+				$carousel.one('slide.bs.carousel', function(e) {
 					disabledButton($next);
+
 					const i = $carousel.find('.active').index() + 1;
+
 					if (i === 1) {
 						typeof getURICallback === 'function' && getURICallback(function(data) {
 							const $datalist = $uri.siblings('datalist#' + $uri.attr('name')).empty();
@@ -590,9 +592,8 @@ $(function() {
 							};
 						});
 					};
-					if (i === 2) {
-						$next.hide();
-						$submit.show();
+					if (i === 2){
+
 						typeof getProtocolCallback === 'function' && getProtocolCallback(function(data) {
 							for (const key in data) {
 								$protocol.append($('<option>', {
@@ -601,7 +602,45 @@ $(function() {
 								}));
 							};
 						});
-					}
+						$next["0"].childNodes[0].data ="Créer"
+					};
+					if (i === 3) {
+
+						$next.hide();
+						$close.show();
+						typeof postSourceCallback === 'function' && postSourceCallback({
+							name: $name.val(),
+							uri: $uri.val(),
+							protocol: $protocol.val() // Deprecated
+						}, function(data) {
+
+							if (this.status === 201) {
+								$modal.on('hidden.bs.modal', function(e) {
+									// on rafraîchit le tableau
+									getThenLoad.call(this, 'sources')();
+								}).modal('hide');
+							};
+							if (this.status == 202) {
+
+								onegeoClient.action.get(data.task_url, {
+									successful: function(data) {
+
+										// tâche terminée
+										if (this.status === 200 ) {
+											console.log(data)
+											$modal.on('hidden.bs.modal', function(e) {
+														getThenLoad.call(this, 'sources')();
+											}).modal('hide');
+										};
+									},
+									failure: function() {
+										onXhrFailure.call(this);
+									}
+								})
+							};
+						});
+					};
+
 				}).carousel(this.name);
 			});
 
@@ -632,7 +671,6 @@ $(function() {
 				e.preventDefault();
 				$carousel.on('slid.bs.carousel', function(e) {
 					$previous.hide();
-					// $next.show();
 				}).carousel(0);
 			});
 
@@ -1208,6 +1246,16 @@ $(function() {
 							'location'
 						]));
 					};
+				},
+				'dashboard': function() {
+					return function(data) {
+						return loadTable('dashboard', parseData(data, [
+							'id',
+							'status',
+							'location',
+							'username'
+						]));
+					};
 				}
 			};
 
@@ -1283,15 +1331,16 @@ $(function() {
 							function(data, callback) {
 								onegeoClient.action.post('/sources', {
 									data: data,
-									successful: function(location) {
-										console.log('New source created: ' + location);
-										typeof callback === 'function' && callback(location);
+									successful: function(data) {
+										console.log('New source created: ' + location.task_url);
+										typeof callback === 'function' && callback.call(this, data);
 									},
 									failure: function() {
 										onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
 									}
 								})
-							}
+							},
+
 						);
 					},
 					position: 'before',
@@ -1749,8 +1798,31 @@ $(function() {
 				label: 'Type',
 				editable: false,
 				datatype: 'string'
-			}])
+			}]),
 
+			// Dashboard pour le suivi des taches
+			// Tableau des ressources :
+			'dashboard': new Table('table-dashboard', 'Dashboard', [{
+				id: 'id',
+				label: 'id',
+				editable: false,
+				datatype: 'string'
+			}, {
+				name: 'status',
+				label: 'status',
+				editable: false,
+				datatype: 'string'
+			}, {
+				name: 'location',
+				label: 'location',
+				editable: false,
+				datatype: 'object'
+			}, {
+				name: 'username',
+				label: 'username',
+				editable: false,
+				datatype: 'string'
+			}])
 		};
 
 		$('#sign_in')

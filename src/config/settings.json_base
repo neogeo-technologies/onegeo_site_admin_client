@@ -330,6 +330,32 @@
 										}
 									}]
 								}
+							},
+							{
+								"template": "sub_template",
+								"data":
+								{
+									"attrs": {},
+									"elements": [
+									{
+										"template": "span",
+										"data":
+										{
+											"text": "<h3>Étape 4</h3>",
+											"attrs":
+											{}
+										}
+									},
+									{
+										"template": "paragraph",
+										"data":
+										{
+											"text":  "Vous pouvez suivre l'avancement de le création de votre source en vous referant à l'onglet Dashboard ou en suivant le lien ci-après",
+											"attrs":
+											{}
+										}
+									}]
+								}
 							}]
 						}
 					}]
@@ -353,18 +379,17 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Créer",
+							"text": "Fermer",
 							"attrs":
 							{
-								"name": "submit",
-								"type": "submit",
-								"class": "btn-primary"
+								"name": "close",
+								"type": "button"
 							}
 						}
 					}]
 				}
 			},
-			"OpenSource":
+			"UpdateSource":
 			{
 				"dialog":
 				{
