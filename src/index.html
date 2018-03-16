@@ -314,7 +314,7 @@
 								<a href="#services" aria-controls="services" role="tab" data-toggle="tab">Profils de recherche</a>
 							</li>
 							<li role="presentation">
-								<a href="#dashboard" aria-controls="dashboard" role="tab" data-toggle="tab">Dashboard</a>
+								<a href="#tasks" aria-controls="tasks" role="tab" data-toggle="tab">Tableau de bord</a>
 							</li>
 						</ul>
 					</div>
@@ -348,7 +348,7 @@
 							<div id="sources" role="tabpanel" class="tab-pane fade in"></div>
 							<div id="indexes" role="tabpanel" class="tab-pane fade in"></div>
 							<div id="services" role="tabpanel" class="tab-pane fade in"></div>
-							<div id="dashboard" role="tabpanel" class="tab-pane fade in"></div>
+							<div id="tasks" role="tabpanel" class="tab-pane fade in"></div>
 						</div>
 					</div>
 				</div>
@@ -620,7 +620,7 @@ $(function() {
 									getThenLoad.call(this, 'sources')();
 								}).modal('hide');
 							};
-							if (this.status == 202) {
+							if (this.status == 200) {
 
 								onegeoClient.action.get(data.task_url, {
 									successful: function(data) {
@@ -629,7 +629,7 @@ $(function() {
 										if (this.status === 200 ) {
 											console.log(data)
 											$modal.on('hidden.bs.modal', function(e) {
-														getThenLoad.call(this, 'sources')();
+												getThenLoad.call(this, 'sources')();
 											}).modal('hide');
 										};
 									},
@@ -1247,13 +1247,12 @@ $(function() {
 						]));
 					};
 				},
-				'dashboard': function() {
+				'tasks': function() {
 					return function(data) {
-						return loadTable('dashboard', parseData(data, [
+						return loadTable('tasks', parseData(data, [
 							'id',
 							'status',
-							'location',
-							'username'
+							'location'
 						]));
 					};
 				}
@@ -1332,7 +1331,7 @@ $(function() {
 								onegeoClient.action.post('/sources', {
 									data: data,
 									successful: function(data) {
-										console.log('New source created: ' + location.task_url);
+										// console.log('New source created: ' + location.task_url);
 										typeof callback === 'function' && callback.call(this, data);
 									},
 									failure: function() {
@@ -1802,7 +1801,7 @@ $(function() {
 
 			// Dashboard pour le suivi des taches
 			// Tableau des ressources :
-			'dashboard': new Table('table-dashboard', 'Dashboard', [{
+			'tasks': new Table('table-tasks', 'Tasks', [{
 				id: 'id',
 				label: 'id',
 				editable: false,
@@ -1817,11 +1816,6 @@ $(function() {
 				label: 'location',
 				editable: false,
 				datatype: 'object'
-			}, {
-				name: 'username',
-				label: 'username',
-				editable: false,
-				datatype: 'string'
 			}])
 		};
 
