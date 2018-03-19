@@ -1,13 +1,15 @@
+var cookiekey  = window.location.host;
 
-// createcookies
+// set cookies
 const  setCookie = function(key,data,hours) {
-if (hours) {
-	var date = new Date();
-	date.setTime(date.getTime()+(hours*60*60*1000));
-	var expires = "; expires="+date.toGMTString();
-}
-else var expires = "";
-document.cookie = key+"="+data+expires+"; path=/";
+	if (hours) {
+		var date = new Date();
+		date.setTime(date.getTime()+(hours*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}else {
+		var expires = "";
+	}
+	document.cookie = key+"="+data+expires+"; path=/";
 }
 
 // get cookies
@@ -17,7 +19,7 @@ const getCookie = function (key) {
 	return (value != null) ? unescape(value[1]) : null;
 }
 
-// erase cookies
+// delete cookies
 const deleteCookie = function(key) { setCookie(key, '', -1); }
 
 
@@ -28,14 +30,13 @@ function OnegeoClient(baseUrl) {
 	};
 
 	this.baseUrl = baseUrl || null;
-	const cookie_key = "onegeo";
-	user_data = getCookie(cookie_key);
-
-	if(user_data){
-			user_data = atob(user_data).split(':');
+	if(getCookie(cookiekey)){
+			user_data = atob(getCookie(cookiekey)).split(':');
 			this.basicAuth = 'Basic ' + btoa(user_data[0] + ':' + user_data[1]);
 			this.logged = true;
 			$('#identity').text(user_data[0]);
+	}else{
+			this.basicAuth = null;
 	}
 
 
@@ -104,8 +105,7 @@ OnegeoClient.prototype.connect = function(user, pwd, cb) {
 	this.basicAuth = 'Basic ' + btoa(user + ':' + pwd);
 	this.action.get('/sources', {
 		successful: function() {
-			const cookie_key = "onegeo";
-			setCookie(cookie_key, btoa(user + ':' + pwd), 1);
+			setCookie(cookiekey, btoa(user + ':' + pwd), 1);
 			this.logged = true;
 		}.bind(this),
 		failure: function() {
@@ -119,6 +119,7 @@ OnegeoClient.prototype.connect = function(user, pwd, cb) {
 
 OnegeoClient.prototype.disconnect = function(cb) {
 	this.basicAuth = null;
+	deleteCookie(cookiekey);
 	this.__request({
 		method: 'HEAD',
 		path: '/',
