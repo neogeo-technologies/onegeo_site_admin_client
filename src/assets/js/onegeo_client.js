@@ -47,7 +47,12 @@ function OnegeoClient(baseUrl) {
 				data: obj.data,
 				path: path,
 				successful: function() {
-					return typeof obj.successful === 'function' && obj.successful.call(this.xhr, JSON.parse(this.xhr.responseText));
+					if(this.xhr.responseText){
+						return typeof obj.successful === 'function' && obj.successful.call(this.xhr,JSON.parse(this.xhr.responseText));
+					}else{
+						return typeof obj.successful === 'function' && obj.successful.call(this.xhr,this.xhr.responseText);
+					}
+
 				}.bind(this),
 				failure: obj.failure,
 				before: obj.before,
@@ -61,7 +66,11 @@ function OnegeoClient(baseUrl) {
 				data: JSON.stringify(obj.data),
 				path: path,
 				successful: function() {
-					return typeof obj.successful === 'function' && obj.successful.call(this.xhr, JSON.parse(this.xhr.responseText));
+					if(this.xhr.responseText){
+						return typeof obj.successful === 'function' && obj.successful.call(this.xhr,JSON.parse(this.xhr.responseText));
+					}else{
+						return typeof obj.successful === 'function' && obj.successful.call(this.xhr,this.xhr.responseText);
+					}
 				}.bind(this),
 				failure: obj.failure,
 				before: obj.before,

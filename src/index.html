@@ -1233,7 +1233,7 @@ $(function() {
 					return function(data) {
 						return loadTable('indexes', parseData(data, [
 							'name',
-							'resource.name',
+							'resource',
 							'location'
 						]));
 					};
@@ -1252,7 +1252,8 @@ $(function() {
 						return loadTable('tasks', parseData(data, [
 							'id',
 							'status',
-							'location'
+							'location',
+							'elasped_time'
 						]));
 					};
 				}
@@ -1814,6 +1815,11 @@ $(function() {
 			}, {
 				name: 'location',
 				label: 'location',
+				editable: false,
+				datatype: 'object'
+			},{
+				name: 'elapsed_time',
+				label: 'temps écoulé',
 				editable: false,
 				datatype: 'object'
 			}])
