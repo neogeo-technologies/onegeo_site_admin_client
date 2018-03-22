@@ -1621,6 +1621,32 @@ $(function() {
 						}
 					})
 				},
+				'index': {
+					method: function(e) {
+						e.preventDefault();
+						e.stopPropagation();
+						const grid = this.grid;
+						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+						onegeoClient.action.post('/action', {
+							data: entry,
+							successful: function(location) {
+								console.log('New index created: ' + location);
+							},
+							failure: function() {
+								onXhrFailure.call(this, getThenLoad.call(this, 'services'));
+							},
+							upprogress: refreshProgressBar
+						})
+					},
+					position: 'after',
+					html: templator('button', {
+						text: 'Index <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>',
+						attrs: {
+							name: 'index',
+							type: 'button'
+						}
+					})
+				},
 				'remove': {
 					method: function(e) {
 						e.preventDefault();
