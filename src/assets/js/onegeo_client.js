@@ -41,7 +41,9 @@ function OnegeoClient(baseUrl) {
 
 
 	this.action = {
+
 		get: function(path, obj) {
+			console.log(path,obj)
 			return this.__request({
 				method: 'GET',
 				data: obj.data,
@@ -61,6 +63,7 @@ function OnegeoClient(baseUrl) {
 			});
 		}.bind(this),
 		post: function(path, obj) {
+
 			return this.__request({
 				method: 'POST',
 				data: JSON.stringify(obj.data),

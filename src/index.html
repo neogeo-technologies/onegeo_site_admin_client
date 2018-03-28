@@ -626,7 +626,6 @@ $(function() {
 
 										// tâche terminée
 										if (this.status === 200 ) {
-											console.log(data)
 											$modal.on('hidden.bs.modal', function(e) {
 												getThenLoad.call(this, 'sources')();
 											}).modal('hide');
@@ -792,10 +791,11 @@ $(function() {
 						$next.hide();
 						$submit.show();
 						typeof getSourcesCallback === 'function' && getResourceCallback($source.val() + '/resources', function(data) {
+								console.log("atat")
 							for (const entry of data) {
 								$resource.append($('<option>', {
 									value: entry.location,
-									text: entry.location
+									text: entry.name
 								}));
 							};
 						});
@@ -1249,10 +1249,11 @@ $(function() {
 				'tasks': function() {
 					return function(data) {
 						return loadTable('tasks', parseData(data, [
-							'id',
+							'name',
 							'status',
 							'location',
-							'elapsed_time'
+							'elapsed_time',
+							'description'
 						]));
 					};
 				}
@@ -1555,6 +1556,7 @@ $(function() {
 							function(resourceLocation, callback) {
 								onegeoClient.action.get(resourceLocation, {
 									successful: function(data) {
+									
 										typeof callback === 'function' && callback(data);
 									},
 									failure: function() {
@@ -1627,8 +1629,7 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						onegeoClient.action.post('/action', {
-							data: entry,
+						onegeoClient.action.get(entry.location + '/publish', {
 							successful: function(location) {
 								console.log('New index created: ' + location);
 							},
@@ -1828,8 +1829,8 @@ $(function() {
 			// Dashboard pour le suivi des taches
 			// Tableau des ressources :
 			'tasks': new Table('table-tasks', 'Tasks', [{
-				id: 'id',
-				label: 'id',
+				name: 'name',
+				label: 'name',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1845,6 +1846,11 @@ $(function() {
 			},{
 				name: 'elapsed_time',
 				label: 'temps écoulé',
+				editable: false,
+				datatype: 'object'
+			},{
+				name: 'description',
+				label: 'description',
 				editable: false,
 				datatype: 'object'
 			}])
