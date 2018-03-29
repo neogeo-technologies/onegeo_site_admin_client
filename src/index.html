@@ -747,6 +747,13 @@ $(function() {
 			});
 
 			$modal.modal('show');
+
+			// bouton close
+			const $close= $modal.find('button[name="close"]').click(function(e) {
+						$modal.on('hidden.bs.modal', function(e) {
+							getThenLoad.call(this, 'sources')();
+						}).modal('hide');
+			});
 		};
 
 		const modal_CreateIndex = function(getSourcesCallback, getResourceCallback, postIndexCallback) {
@@ -791,7 +798,6 @@ $(function() {
 						$next.hide();
 						$submit.show();
 						typeof getSourcesCallback === 'function' && getResourceCallback($source.val() + '/resources', function(data) {
-								console.log("atat")
 							for (const entry of data) {
 								$resource.append($('<option>', {
 									value: entry.location,
@@ -821,6 +827,7 @@ $(function() {
 		};
 
 		const modal_UpdateIndex = function(data, putIndexCallback) {
+
 			const _cloned = clone(data);
 
 			const updateColumn = function(columnName, attribute, value) {
@@ -1034,6 +1041,7 @@ $(function() {
 			const $cancel = $modal.find('button[name="cancel"]').click(close);
 
 			const $submit = $modal.find('button[name="submit"]').click(function(e) {
+
 				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						getThenLoad.call(this, 'indexes')();
@@ -1332,7 +1340,6 @@ $(function() {
 								onegeoClient.action.post('/sources', {
 									data: data,
 									successful: function(data) {
-										// console.log('New source created: ' + location.task_url);
 										typeof callback === 'function' && callback.call(this, data);
 									},
 									failure: function() {
@@ -1369,7 +1376,6 @@ $(function() {
 											onegeoClient.action.put(entry.location, {
 												data: data,
 												successful: function(location) {
-													console.log('Source updated: ' + location);
 													typeof callback === 'function' && callback(data);
 												},
 												failure: function() {
@@ -1407,7 +1413,6 @@ $(function() {
 						modal_Delete(entry.name, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
-									console.log('Source deleted: ' + entry.location);
 									typeof callback === 'function' && callback(entry.location);
 								},
 								failure: function() {
@@ -1527,7 +1532,7 @@ $(function() {
 				editable: false,
 				datatype: 'string'
 			}, {
-				name: 'resource_location',
+				name: 'resource',
 				label: 'Ressource',
 				editable: false,
 				datatype: 'string'
@@ -1556,7 +1561,7 @@ $(function() {
 							function(resourceLocation, callback) {
 								onegeoClient.action.get(resourceLocation, {
 									successful: function(data) {
-									
+
 										typeof callback === 'function' && callback(data);
 									},
 									failure: function() {
@@ -1568,7 +1573,6 @@ $(function() {
 								onegeoClient.action.post('/indexes', {
 									data: data,
 									successful: function(location) {
-										console.log('New index created: ' + location);
 										typeof callback === 'function' && callback(data);
 									},
 									failure: function() {
@@ -1599,7 +1603,6 @@ $(function() {
 									onegeoClient.action.put(entry.location, {
 										data: data,
 										successful: function(location) {
-											console.log('Index updated: ' + location);
 											typeof callback === 'function' && callback(data);
 										},
 										failure: function() {
@@ -1654,6 +1657,7 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+						console.log(entry)
 						modal_Delete(entry.name, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
