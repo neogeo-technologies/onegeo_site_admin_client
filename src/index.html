@@ -1241,6 +1241,7 @@ $(function() {
 						return loadTable('indexes', parseData(data, [
 							'name',
 							'resource',
+							'index_alias',
 							'location'
 						]));
 					};
@@ -1249,7 +1250,7 @@ $(function() {
 					return function(data) {
 						return loadTable('services', parseData(data, [
 							'name',
-							'indexes.name',
+							'indexes_list',
 							'location'
 						]));
 					};
@@ -1532,6 +1533,11 @@ $(function() {
 				editable: false,
 				datatype: 'string'
 			}, {
+				name: 'index_alias',
+				label: 'Alias Index',
+				editable: false,
+				datatype: 'string'
+			}, {
 				name: 'resource',
 				label: 'Ressource',
 				editable: false,
@@ -1689,8 +1695,8 @@ $(function() {
 				editable: false,
 				datatype: 'string'
 			}, {
-				name: 'indexes',
-				label: 'Index',
+				name: 'indexes_list',
+				label: 'Index du profil',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1715,11 +1721,11 @@ $(function() {
 									}
 								})
 							},
-							function(data) {
+							function(data, callback) {
 								onegeoClient.action.post('/services', {
 									data: data,
 									successful: function(location) {
-										console.log('New index created: ' + location);
+										typeof callback === 'function' && callback.call(this, data);
 									},
 									failure: function() {
 										onXhrFailure.call(this, getThenLoad.call(this, 'services'));
