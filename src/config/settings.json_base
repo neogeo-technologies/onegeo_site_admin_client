@@ -350,7 +350,7 @@
 										"template": "paragraph",
 										"data":
 										{
-											"text":  "Vous pouvez suivre l'avancement de le création de votre source en vous referant à l'onglet Dashboard ou en suivant le lien ci-après",
+											"text":  "Vous pouvez suivre l'avancement de le création de votre source en vous referant à l'onglet Dashboard",
 											"attrs":
 											{}
 										}
@@ -597,6 +597,19 @@
 							{
 								"name": "close",
 								"type": "button"
+							}
+						}
+					},
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Sauvegarder les modifications",
+							"attrs":
+							{
+								"name": "submit",
+								"type": "button",
+								"class": "btn-default"
 							}
 						}
 					}]

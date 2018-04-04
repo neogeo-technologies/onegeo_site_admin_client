@@ -739,7 +739,7 @@ $(function() {
 			};
 
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
-				_cloned.name = this.value;
+				_cloned.location = this.value;
 			});
 
 			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
@@ -1175,6 +1175,7 @@ $(function() {
 
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
 				_cloned.name = this.value;
+				// # erreur todo
 			});
 
 			const $indexes = $modal.find('select[name="indexes"]').on('change', function(e) {
@@ -1840,27 +1841,27 @@ $(function() {
 			// Tableau des ressources :
 			'tasks': new Table('table-tasks', 'Tasks', [{
 				name: 'name',
-				label: 'name',
+				label: 'Nom',
 				editable: false,
 				datatype: 'string'
 			}, {
 				name: 'status',
-				label: 'status',
+				label: 'Status',
 				editable: false,
 				datatype: 'string'
 			}, {
 				name: 'location',
-				label: 'location',
+				label: 'Emplacement',
 				editable: false,
 				datatype: 'object'
 			},{
 				name: 'elapsed_time',
-				label: 'temps écoulé',
+				label: 'Temps écoulé (secondes)',
 				editable: false,
 				datatype: 'object'
 			},{
 				name: 'description',
-				label: 'description',
+				label: 'Type de tâches',
 				editable: false,
 				datatype: 'object'
 			}])
