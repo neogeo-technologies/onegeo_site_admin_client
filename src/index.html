@@ -500,6 +500,26 @@ $(function() {
 			$modal.modal('show');
 		};
 
+
+		///////////////
+		const modal_IndexInCreation = function(callback) {
+			const calleeName = arguments.callee.name.split('_');
+			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
+			const $modal = getModal();
+			$modal.modal('show');
+
+			$modal.find('button[name="close"]').click(function(e) {
+				$modal.on('hide.bs.modal', function() {
+					typeof callback === 'function' && callback();
+				}).modal('hide');
+			});
+
+	};
+
+
+
+		////////////
+
 		const modal_SignOut = function(callback) {
 			const calleeName = arguments.callee.name.split('_');
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
@@ -737,7 +757,7 @@ $(function() {
 			for (const key of ['protocol', 'uri']) {
 				$modal.find('input[name="' + key + '"]').val(data[key]);
 			};
-
+			// todoooo
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
 				_cloned.location = this.value;
 			});
@@ -827,7 +847,7 @@ $(function() {
 		};
 
 		const modal_UpdateIndex = function(data, putIndexCallback) {
-
+			console.log(data)
 			const _cloned = clone(data);
 
 			const updateColumn = function(columnName, attribute, value) {
@@ -1002,6 +1022,8 @@ $(function() {
 
 			const $modal = getModal();
 			const $carousel = getCarousel();
+			// mise à jour de la frequence de reindexation
+			$modal.find('select[name="reindex-frequency"]').val(data.reindex_frequency);
 
 			const arr = [];
 			for (let i = 0; i < data.columns.length; i ++) {
@@ -1041,8 +1063,13 @@ $(function() {
 			const $cancel = $modal.find('button[name="cancel"]').click(close);
 
 			const $submit = $modal.find('button[name="submit"]').click(function(e) {
-
+				console.log(_cloned)
+				if (! _cloned.location.includes("/indexes/")){
+						_cloned.location = "/indexes/" + _cloned.location;
+				}
+				console.log(_cloned)
 				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function(location) {
+
 					$modal.on('hidden.bs.modal', function(e) {
 						getThenLoad.call(this, 'indexes')();
 					}).modal('hide');
@@ -1096,7 +1123,7 @@ $(function() {
 				_cloned.name = this.value;
 			});
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
-				_cloned.alias = this.value;
+				_cloned.location =  this.value;
 			});
 			$modal.find('select[name="reindex-frequency"]').on('change', function(e) {
 				_cloned.reindex_frequency = this.value;
@@ -1166,7 +1193,7 @@ $(function() {
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
 			const $modal = getModal();
 			const $carousel = getCarousel();
-
+			console.log(data)
 			const _cloned = clone(data);
 
 			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
@@ -1174,7 +1201,7 @@ $(function() {
 			});
 
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
-				_cloned.name = this.value;
+				_cloned.location = this.value;
 				// # erreur todo
 			});
 
@@ -1187,7 +1214,7 @@ $(function() {
 			for (const index of indexes) {
 				$indexes.append($('<option>', {
 					value: index.location,
-					text: index.location,
+					text: index.name + " ("+index.location+")",
 					selected: (data.indexes.indexOf(index.location) > -1) ? true : false
 				}));
 			};
@@ -1215,6 +1242,9 @@ $(function() {
 			});
 
 			$modal.find('button[name="submit"]').click(function(e) {
+				if (! _cloned.location.includes("/services/")){
+						_cloned.location = "/services/" + _cloned.location;
+				}
 				typeof putServiceCallback === 'function' && putServiceCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						getThenLoad.call(this, 'services')();
@@ -1242,7 +1272,6 @@ $(function() {
 						return loadTable('indexes', parseData(data, [
 							'name',
 							'resource',
-							'index_alias',
 							'location'
 						]));
 					};
@@ -1533,19 +1562,16 @@ $(function() {
 				label: 'Nom',
 				editable: false,
 				datatype: 'string'
-			}, {
-				name: 'index_alias',
-				label: 'Alias Index',
-				editable: false,
-				datatype: 'string'
-			}, {
+			},
+			{
 				name: 'resource',
-				label: 'Ressource',
+				label: 'Nom de la Resource',
 				editable: false,
 				datatype: 'string'
-			}, {
+			},
+			 {
 				name: 'location',
-				label: '_HIDDEN',
+				label: 'Emplacement',
 				editable: false,
 				datatype: 'string'
 			}], {
@@ -1639,9 +1665,11 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+						console.log("_cloneeed")
 						onegeoClient.action.get(entry.location + '/publish', {
-							successful: function(location) {
+							successful: function(location,callback) {
 								console.log('New index created: ' + location);
+								modal_IndexInCreation(callback);
 							},
 							failure: function() {
 								onXhrFailure.call(this, getThenLoad.call(this, 'services'));
@@ -1651,9 +1679,9 @@ $(function() {
 					},
 					position: 'after',
 					html: templator('button', {
-						text: 'Index <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>',
+						text: 'Indexation <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>',
 						attrs: {
-							name: 'index',
+							name: 'Index',
 							type: 'button'
 						}
 					})
@@ -1858,7 +1886,7 @@ $(function() {
 				name: 'elapsed_time',
 				label: 'Temps écoulé (secondes)',
 				editable: false,
-				datatype: 'object'
+				datatype: 'double'
 			},{
 				name: 'description',
 				label: 'Type de tâches',

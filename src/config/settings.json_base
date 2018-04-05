@@ -1220,6 +1220,47 @@
 						}
 					}]
 				}
+			},
+			"IndexInCreation":
+			{
+				"dialog":
+				{
+					"class": "modal-md"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "<span aria-hidden=\"true\"></span> Index en Cours de Creation"
+					}
+				},
+				"body":
+				{
+					"elements": [
+					{
+						"template": "paragraph",
+						"data":
+						{
+							"text": "Vous pouvez suivre l'avancement de le création de votre source en vous referant à l'onglet Dashboard"
+						}
+					}]
+				},
+				"footer":
+				{
+					"elements": [
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Fermer",
+							"attrs":
+							{
+								"name": "close",
+								"type": "submit"
+							}
+						}
+					}]
+				}
 			}
 		}
 	}
