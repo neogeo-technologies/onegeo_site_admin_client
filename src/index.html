@@ -1063,11 +1063,9 @@ $(function() {
 			const $cancel = $modal.find('button[name="cancel"]').click(close);
 
 			const $submit = $modal.find('button[name="submit"]').click(function(e) {
-				console.log(_cloned)
 				if (! _cloned.location.includes("/indexes/")){
 						_cloned.location = "/indexes/" + _cloned.location;
 				}
-				console.log(_cloned)
 				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function(location) {
 
 					$modal.on('hidden.bs.modal', function(e) {
@@ -1193,7 +1191,6 @@ $(function() {
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
 			const $modal = getModal();
 			const $carousel = getCarousel();
-			console.log(data)
 			const _cloned = clone(data);
 
 			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
@@ -1665,7 +1662,6 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						console.log("_cloneeed")
 						onegeoClient.action.get(entry.location + '/publish', {
 							successful: function(location,callback) {
 								console.log('New index created: ' + location);
@@ -1692,7 +1688,6 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						console.log(entry)
 						modal_Delete(entry.name, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
@@ -1730,7 +1725,7 @@ $(function() {
 				datatype: 'string'
 			}, {
 				name: 'location',
-				label: '_HIDDEN',
+				label: 'Emplacement',
 				editable: false,
 				datatype: 'string'
 			}], {
