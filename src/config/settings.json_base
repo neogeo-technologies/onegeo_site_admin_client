@@ -1241,7 +1241,7 @@
 						"template": "paragraph",
 						"data":
 						{
-							"text": "Vous pouvez suivre l'avancement de le création de votre source en vous referant à l'onglet Dashboard"
+							"text": "Vous pouvez suivre l'avancement de le création de votre index ElasticSearch en vous referant à l'onglet Dashboard"
 						}
 					}]
 				},
