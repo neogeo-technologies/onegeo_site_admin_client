@@ -516,8 +516,6 @@ $(function() {
 
 	};
 
-
-
 		////////////
 
 		const modal_SignOut = function(callback) {
@@ -1278,7 +1276,8 @@ $(function() {
 						return loadTable('services', parseData(data, [
 							'name',
 							'indexes_list',
-							'location'
+							'location',
+							'es_result'
 						]));
 					};
 				},
@@ -1728,6 +1727,11 @@ $(function() {
 				label: 'Emplacement',
 				editable: false,
 				datatype: 'string'
+			},{
+				name: 'es_result',
+				label: 'Resultat',
+				editable: false,
+				datatype: 'url'
 			}], {
 				'add': {
 					method: function(e) {
