@@ -1284,11 +1284,11 @@ $(function() {
 				'tasks': function() {
 					return function(data) {
 						return loadTable('tasks', parseData(data, [
-							'name',
+							'description',
 							'status',
-							'location',
 							'elapsed_time',
-							'description'
+							'location'
+
 						]));
 					};
 				}
@@ -1867,31 +1867,26 @@ $(function() {
 			// Dashboard pour le suivi des taches
 			// Tableau des ressources :
 			'tasks': new Table('table-tasks', 'Tasks', [{
-				name: 'name',
-				label: 'Nom',
-				editable: false,
-				datatype: 'string'
-			}, {
+					name: 'description',
+					label: 'Type de tâches',
+					editable: false,
+					datatype: 'object'
+				}, {
 				name: 'status',
 				label: 'Status',
 				editable: false,
 				datatype: 'string'
 			}, {
-				name: 'location',
-				label: 'Emplacement',
-				editable: false,
-				datatype: 'object'
-			},{
 				name: 'elapsed_time',
 				label: 'Temps écoulé (secondes)',
 				editable: false,
 				datatype: 'double'
 			},{
-				name: 'description',
-				label: 'Type de tâches',
+				name: 'location',
+				label: 'Emplacement',
 				editable: false,
 				datatype: 'object'
-			}])
+			},])
 		};
 
 		$('#sign_in')
