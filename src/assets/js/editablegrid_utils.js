@@ -77,21 +77,24 @@ EditableGrid.prototype.updatePaginator = function(grid) {
 
 
 var Table = function(containerId, containerName, metadata, buttons, options) {
-	
+
 	var that = this;
-	this.tableClasses = 'table table-bordered table-condensed';
 
 	this.options = {
+		tableClasses: 'table table-bordered',
 		selectable: true,
 		pageSize: 10,
 		onChange: function(rowIndex, columnIndex, oldValue, newValue, row) {}
 	};
 
 	if (options) {
+		if (options.tableClasses) {
+			this.options.tableClasses = options.tableClasses;
+		};
 		if (options.selectable == false) {
 			this.options.selectable = false;
 		} else {
-			this.tableClasses += ' table-hover'; 
+			this.options.tableClasses += ' table-hover';
 		};
 		if (options.pageSize && typeof options.pageSize == 'number') {
 			this.options.pageSize = options.pageSize;
@@ -100,9 +103,9 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 			this.options.onChange = options.onChange;
 		};
 	};
-	
+
 	this.metadata = metadata;
-	
+
 	this.containerId = containerId;
 
 	this.events = {
@@ -113,7 +116,7 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 	this.method = {};
 
 	this.buttons = {
-		before: {}, 
+		before: {},
 		after: {},
 		inner: {}  // Bof
 	};
@@ -152,16 +155,86 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 					}
 				}));
 			};
+			if (column.datatype == 'path') {
+				this.setCellRenderer(column.name, new CellRenderer({
+					render: function(cell, value) {
+						while (value.charAt(0) === '/') {
+						 	value = value.substr(1)
+						};
+						cell.innerHTML = '<a href="#' + value + '">/' + value + '</a>';
+					}
+				}));
+			};
+			if (column.datatype == 'path[]') {
+				this.setCellRenderer(column.name, new CellRenderer({
+					render: function(cell, value) {
+						let values = []
+						for (let str of value) {
+							while (str.charAt(0) === '/') {
+								str = str.substr(1)
+							};
+							values.push('<a href="#' + str + '">/' + str + '</a>');
+						};
+
+						cell.innerHTML = values.join(', ');
+					}
+				}));
+			};
+			if (column.datatype == 'datetime') {
+				this.setCellRenderer(column.name, new CellRenderer({
+					render: function(cell, value) {
+						cell.innerHTML = value ? moment(value).format('llll') : '...';
+					}
+				}));
+			};
+			if (column.datatype == 'deltatime') {
+				this.setCellRenderer(column.name, new CellRenderer({
+					render: function(cell, value) {
+						const pad = function (num) {
+							return ('0' + num).slice(-2);
+						};
+						const format = function (s) {
+							var text = '';
+							var m = Math.floor(s / 60);
+							s = s % 60;
+							var h = Math.floor(m / 60);
+							m = m % 60;
+							text += h ? pad(h) + 'h ' : '';
+							text += m ? pad(m) + 'm ' : '';
+							text += s ? pad(s) + 's ' : '';
+							return text;
+						};
+						cell.innerHTML = value ? format(value) : '...';
+					}
+				}));
+			};
 			if (column.datatype == 'html') {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
 						if (value) {
 							cell.innerHTML = value;
-							// 
 							$button = $(cell).find('button[name=' + column.name + ']').click(function(e) {
 								return that.method[column.name].apply(that, [e, cell.rowIndex]);
 							});
 						};
+					}
+				}));
+			};
+			if (column.name == 'status') {
+				this.setCellRenderer(column.name, new CellRenderer({
+					render: function(cell, value) {
+						let className;
+						cell.innerHTML = value
+						if (value == 'Running') {
+							className = 'warning';
+						};
+						if (value == 'Failed') {
+							className = 'danger';
+						};
+						if (value == 'Done') {
+							className = 'success';
+						};
+						$(cell).parent().addClass(className);
 					}
 				}));
 			};
@@ -201,12 +274,12 @@ Table.prototype.constructor = Table;
 
 
 Table.prototype.update = function(data) {
-	
+
 	const $container = $(document.getElementById(this.containerId));
-	
+
 	for (const position in this.buttons) {
 		for (const name in this.buttons[position]) {
-			$(this.buttons[position][name]).click(function(e) {
+			$(this.buttons[position][name]).off('click').click(function(e) {  // Ugly Off Click
 				e.preventDefault();
 				this.method[name].apply(this, arguments);
 			}.bind(this));
@@ -214,7 +287,7 @@ Table.prototype.update = function(data) {
 	};
 
 	if (data.length < 1) {
-		
+
 		// Début de code moche
 		const $buttonGroup = $('<div class="buttons-on-the-right-side"/>');
 		for (const name in this.buttons.before) {
@@ -223,14 +296,14 @@ Table.prototype.update = function(data) {
 		$container.before($buttonGroup);
 		// Fin de code moche
 
-		$container.html('<div class="alert alert-warning" role="alert">Vide</div>');
+		$container.html('<div class="alert alert-warning" role="alert">Empty</div>');
 		$container.show();
 	} else {
 		this.grid.load({
 			metadata: this.metadata,
 			data: data
 		});
-		this.grid.renderGrid(this.containerId, this.tableClasses);
+		this.grid.renderGrid(this.containerId, this.options.tableClasses);
 		this.grid.initializeGrid();
 		this.grid.refreshGrid();
 

@@ -3,6 +3,7 @@ textarea.code {
 	border: 1px solid #ccc;
 	box-shadow: none;
 	font-family: "Andale Mono", monospace !important;
+	font-size: smaller;
 	font-color: #333333;
 	resize: vertical;
 	-webkit-tab-size: 4;
