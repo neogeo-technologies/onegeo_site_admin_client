@@ -190,18 +190,15 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 			if (column.datatype == 'deltatime') {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
-						const pad = function (num) {
-							return ('0' + num).slice(-2);
-						};
 						const format = function (s) {
 							var text = '';
 							var m = Math.floor(s / 60);
 							s = s % 60;
 							var h = Math.floor(m / 60);
 							m = m % 60;
-							text += h ? pad(h) + 'h ' : '';
-							text += m ? pad(m) + 'm ' : '';
-							text += s ? pad(s) + 's ' : '';
+							text += h ? h + 'h ' : '';
+							text += m ? m + 'm ' : '';
+							text += s ? s.toFixed(1) + 's ' : '';
 							return text;
 						};
 						cell.innerHTML = value ? format(value) : '...';

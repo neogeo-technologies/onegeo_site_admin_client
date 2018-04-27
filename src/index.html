@@ -477,21 +477,6 @@ $(function() {
 			$modal.modal('show');
 		};
 
-
-		const modal_IndexingRunning = function(callback) {
-			const calleeName = arguments.callee.name.split('_');
-			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
-			const $modal = getModal();
-
-			$modal.find('button[name="done"]').click(function(e) {
-				$modal.on('hide.bs.modal', function() {
-					typeof callback === 'function' && callback();
-				}).modal('hide');
-			});
-
-			$modal.modal('show');
-		};
-
 		const modal_SignOut = function(callback) {
 			const calleeName = arguments.callee.name.split('_');
 			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
@@ -1208,8 +1193,23 @@ $(function() {
 			$modal.modal('show');
 		};
 
+		const modal_IndexingRunning = function(callback) {
+			const calleeName = arguments.callee.name.split('_');
+			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
+			const $modal = getModal();
+
+			$modal.find('button[name="done"]').click(function(e) {
+				$modal.on('hide.bs.modal', function() {
+					typeof callback === 'function' && callback();
+				}).modal('hide');
+			});
+
+			$modal.modal('show');
+		};
+
 		const getThenLoad = function(key, options) {
 			const load = {
+				'home': function() {},
 				'sources': function() {
 					return function(data) {
 						return loadTable('sources', parseData(data, [
@@ -1303,7 +1303,7 @@ $(function() {
 						const grid = this.grid;
 						modal_AddSource(
 							function(callback) {
-								onegeoClient.action.get('/sources_directories', {
+								onegeoClient.action.get('/pdfdir', {
 									successful: function(data) {
 										typeof callback === 'function' && callback(data);
 									},
@@ -1313,7 +1313,7 @@ $(function() {
 								})
 							},
 							function(callback) {
-								onegeoClient.action.get('/supported_modes', {
+								onegeoClient.action.get('/protocols', {
 									successful: function(data) {
 										typeof callback === 'function' && callback(data);
 									},
@@ -1908,22 +1908,32 @@ $(function() {
 		$('a[data-toggle="tab"]:not([href="' + HASH_TAB[0] + '"])').each(function(e) {
 			$(this).click(function(e) {
 				const that = this;
+				// This is ugly and this should be factorized
 				if (HASH_TAB.indexOf(this.hash) > -1) {
 					getThenLoad(this.hash.substring(1), {
-						// data: {'include': this.hash.substring(1) == 'sources' ? false : true},
 						failure: function() {
 							e.stopPropagation();
 							onXhrFailure.call(this, function() {
-								$(that).trigger('click');  // == $(this).click.call($(this));
+								$(this).click.call($(this)); // == $(that).trigger('click');
 							});
 						},
 						downprogress: refreshProgressBar
 					})();
+				//
 				} else {
 					e.stopPropagation();
 				};
 			});
 		});
+
+		const goHash = function(hash) {
+			// TODO
+		};
+
+		const goHome = function() {
+			const val = 'home';
+			HASH_TAB.indexOf('#' + val) > -1 && $('a[href="#' + val + '"]').tab('show');
+		};
 
 		$(window).bind('hashchange', function(e) {
 			const hash = window.location.hash;
@@ -1939,12 +1949,11 @@ $(function() {
 		$('#site_title').text(settings.title);
 		$('[name="current-year"]').text((new Date()).getFullYear());
 
-		const goHome = function() {
-			$('a[href="' + HASH_TAB[0] + '"]').tab('show');
+		if (!window.location.hash || '#home') {
+			goHome();
+		} else {
+			goHash(window.location.hash);
 		};
-
-		goHome();
-		// TODO -> goHash();
 
 	});
 });
