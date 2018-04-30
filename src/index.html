@@ -359,6 +359,9 @@ $(function() {
 		const onegeoClient = new OnegeoClient((settings.url || window.location.origin) + settings.path);
 
 		const onXhrFailure = function(callback) {
+
+			console.log(callback)
+
 			if (this.status === 401) {
 				return modal_SignIn(callback);
 			};
@@ -971,7 +974,7 @@ $(function() {
 				arr.push({
 					id: i,
 					values: [
-						data.columns[i].rejected ? false : true,
+						data.columns[i].rejected,
 						data.columns[i].name,
 						data.columns[i].alias,
 						data.columns[i].type,
@@ -1004,11 +1007,7 @@ $(function() {
 			const $cancel = $modal.find('button[name="cancel"]').click(close);
 
 			const $submit = $modal.find('button[name="submit"]').click(function(e) {
-				if (! _cloned.location.includes("/indexes/")){
-						_cloned.location = "/indexes/" + _cloned.location;
-				}
 				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function(location) {
-
 					$modal.on('hidden.bs.modal', function(e) {
 						getThenLoad.call(this, 'indexes')();
 					}).modal('hide');
@@ -1062,7 +1061,7 @@ $(function() {
 				_cloned.name = this.value;
 			});
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
-				_cloned.location =  this.value;
+				_cloned.location = $modal.find('input[name="location"]').siblings('.input-group-addon').text() + this.value;
 			});
 			$modal.find('select[name="reindex-frequency"]').on('change', function(e) {
 				_cloned.reindex_frequency = this.value;
@@ -1139,8 +1138,7 @@ $(function() {
 			});
 
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
-				_cloned.location = this.value;
-				// # erreur todo
+				_cloned.location = $modal.find('input[name="location"]').siblings('.input-group-addon').text() + this.value;
 			});
 
 			const $indexes = $modal.find('select[name="indexes"]').on('change', function(e) {
@@ -1180,9 +1178,6 @@ $(function() {
 			});
 
 			$modal.find('button[name="submit"]').click(function(e) {
-				if (!_cloned.location.includes('/services/')) {
-					_cloned.location = '/services/' + _cloned.location;
-				};
 				typeof putServiceCallback === 'function' && putServiceCallback(_cloned, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
 						getThenLoad.call(this, 'services')();
@@ -1243,7 +1238,7 @@ $(function() {
 					return function(data) {
 						return loadTable('tasks', parseData(data, [
 							'status',
-							'type',
+							'action',
 							'target',
 							'dates.start',
 							'dates.end',
@@ -1472,7 +1467,7 @@ $(function() {
 			// Tableau des propriétés de données :
 			'index-columns': new Table('table-index-columns', 'IndexColumns', [{
 				name: 'rejected',
-				label: 'Added',
+				label: 'Rejected',
 				editable: true,
 				datatype: 'boolean'
 			}, {
@@ -1620,7 +1615,7 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						onegeoClient.action.get(entry.location + '/publish', {
+						onegeoClient.action.get(entry.location + '/indexing', {
 							successful: function(location,callback) {
 								console.log('New index created: ' + location);
 								modal_IndexingRunning(callback);
@@ -1831,8 +1826,8 @@ $(function() {
 					editable: false,
 					datatype: 'string'
 				}, {
-					name: 'description',
-					label: 'Type',
+					name: 'action',
+					label: 'Action',
 					editable: false,
 					datatype: 'string'
 				}, {
@@ -1914,7 +1909,7 @@ $(function() {
 						failure: function() {
 							e.stopPropagation();
 							onXhrFailure.call(this, function() {
-								$(this).click.call($(this)); // == $(that).trigger('click');
+								$(that).trigger('click'); // $(this).click.call($(this));
 							});
 						},
 						downprogress: refreshProgressBar
