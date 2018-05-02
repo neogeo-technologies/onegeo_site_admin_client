@@ -166,7 +166,8 @@ OnegeoClient.prototype.__request = function(obj) {
 		obj.data = undefined;
 	};
 
-	const path = encodeURIComponent(obj.path);
+	// const path = encodeURIComponent(obj.path);
+	const path = obj.path;
 
 	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + path : path, true);
 
