@@ -1,7 +1,7 @@
 {
 	"url": "http://127.0.0.1",
 	"path": "/api",
-	"title": "Administration des profils d'indexation et de recherche",
+	"title": "Data Manager",
 	"template":
 	{
 		"modal":
@@ -16,7 +16,7 @@
 				{
 					"title":
 					{
-						"text": "<span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> Une erreur est survenue"
+						"text": "<span class=\"glyphicon glyphicon-alert\" aria-hidden=\"true\"></span> An error occured"
 					}
 				},
 				"body":
@@ -37,7 +37,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Fermer",
+							"text": "Close",
 							"attrs":
 							{
 								"name": "close",
@@ -57,7 +57,7 @@
 				{
 					"title":
 					{
-						"text": "Connectez-vous"
+						"text": "Signing in"
 					}
 				},
 				"body":
@@ -71,7 +71,7 @@
 							{
 								"name": "username",
 								"type": "text",
-								"placeholder": "Utilisateur"
+								"placeholder": "Username"
 							}
 						}
 					},
@@ -83,7 +83,7 @@
 							{
 								"name": "password",
 								"type": "password",
-								"placeholder": "Mot de passe"
+								"placeholder": "Password"
 							}
 						}
 					}]
@@ -95,7 +95,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Se connecter",
+							"text": "Sign in",
 							"attrs":
 							{
 								"name": "submit",
@@ -115,7 +115,7 @@
 				{
 					"title":
 					{
-						"text": "Fermer la session"
+						"text": "Signing out"
 					}
 				},
 				"body":
@@ -125,7 +125,7 @@
 						"template": "paragraph",
 						"data":
 						{
-							"text": "Vous êtes sur le point de vous déconnecter."
+							"text": "Are you sure you want to sign out?"
 						}
 					}]
 				},
@@ -136,7 +136,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Se déconnecter",
+							"text": "Sign out",
 							"attrs":
 							{
 								"name": "submit",
@@ -154,7 +154,7 @@
 				{
 					"title":
 					{
-						"text": "Êtes-vous absolument sûr ?"
+						"text": "Are you 100 percent certain of that?"
 					}
 				},
 				"body":
@@ -164,14 +164,14 @@
 						"template": "paragraph",
 						"data":
 						{
-							"text": "Cette action est irreversible et supprimera définitivement l'élément."
+							"text": "This intervention will definitively remove the resource on our servers."
 						}
 					},
 					{
 						"template": "paragraph",
 						"data":
 						{
-							"text": "Pour confirmer, veuillez réécrire le nom de l'élément à supprimer."
+							"text": "To confirm, please indicates the name of the resource to be deleted."
 						}
 					},
 					{
@@ -182,7 +182,7 @@
 							{
 								"name": "name",
 								"type": "text",
-								"placeholder": "Nom de l'élément à supprimer",
+								"placeholder": "Name of the resource to be deleted.",
 								"autocomplete": "off"
 							}
 						}
@@ -195,7 +195,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Oui, supprimer définitivement l'élément",
+							"text": "Yes, I am sure to delete it",
 							"attrs":
 							{
 								"name": "submit",
@@ -216,7 +216,7 @@
 				{
 					"title":
 					{
-						"text": "Ajouter une nouvelle source de données"
+						"text": "Connecting to a new external data source"
 					}
 				},
 				"body":
@@ -238,7 +238,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 1</h3>",
+											"text": "<h3>Step 1</h3>",
 											"attrs":
 											{}
 										}
@@ -251,9 +251,7 @@
 											{
 												"name": "name",
 												"type": "text",
-												"placeholder": "[a-z0-9_]{3,100}",
-												"label": "Nom de la source de données",
-												"pattern": "[a-z0-9_]{3,100}",
+												"label": "Give a name for your new data source.",
 												"autocomplete": "off"
 											}
 										}
@@ -270,7 +268,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 2</h3>",
+											"text": "<h3>Step 2</h3>",
 											"attrs":
 											{}
 										}
@@ -283,8 +281,8 @@
 											{
 												"name": "uri",
 												"type": "text",
-												"placeholder": "Sélectionnez ou indiquez une valeur",
-												"label": "Indiquez l'URI de la source de données",
+												"placeholder": "Choose or type URI",
+												"label": "Give the URI to connect to the data",
 												"autocomplete": "off",
 												"datalist":
 												{
@@ -305,7 +303,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 3</h3>",
+											"text": "<h3>Step 3</h3>",
 											"attrs":
 											{}
 										}
@@ -318,12 +316,12 @@
 											{
 												"name": "protocol",
 												"type": "text",
-												"label": "Sélectionnez le protocole de connexion à la source de données"
+												"label": "Select the appropriate connection protocol"
 											},
 											"options": [
 											{
 												"value": null,
-												"text": "Choisissez un protocole",
+												"text": "Choose in the drop-down list",
 												"disabled": true,
 												"selected": true
 											}]
@@ -341,7 +339,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 4</h3>",
+											"text": "<h3>Done</h3>",
 											"attrs":
 											{}
 										}
@@ -350,7 +348,7 @@
 										"template": "paragraph",
 										"data":
 										{
-											"text":  "Vous pouvez suivre l'avancement de le création de votre source en vous referant à l'onglet Dashboard",
+											"text":  "Please note that it may take a few minute for the data to analyzing. <br />You can trace the progress from Dashboard menu.",
 											"attrs":
 											{}
 										}
@@ -367,7 +365,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Étape suivante",
+							"text": "Next step",
 							"attrs":
 							{
 								"name": "next",
@@ -379,11 +377,24 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Fermer",
+							"text": "Submit",
 							"attrs":
 							{
-								"name": "close",
-								"type": "button"
+								"name": "submit",
+								"type": "submit",
+								"class": "btn-primary"
+							}
+						}
+					},
+					{
+						"template": "button",
+						"data":
+						{
+							"text": "Close",
+							"attrs":
+							{
+								"name": "done",
+								"type": "submit"
 							}
 						}
 					}]
@@ -399,7 +410,7 @@
 				{
 					"title":
 					{
-						"text": "Aperçu de la source de données"
+						"text": "Data source configuration"
 					}
 				},
 				"body":
@@ -413,7 +424,7 @@
 							{
 								"active": true,
 								"id": "glob",
-								"label": "Configuration générale",
+								"label": "Main configuration",
 								"template": "sub_template",
 								"data":
 								{
@@ -428,7 +439,7 @@
 													"addon": "/sources/",
 													"name": "location",
 													"type": "text",
-													"label": "<em>Emplacement (URL)</em>",
+													"label": "Location",
 													"autocomplete": "off",
 													"disabled": false
 												}
@@ -442,7 +453,7 @@
 												{
 													"name": "name",
 													"type": "text",
-													"label": "Nom",
+													"label": "Name",
 													"autocomplete": "off",
 													"disabled": false
 												}
@@ -456,7 +467,7 @@
 												{
 													"name": "protocol",
 													"type": "text",
-													"label": "Protocole",
+													"label": "Protocol",
 													"autocomplete": "off",
 													"disabled": true
 												}
@@ -482,7 +493,7 @@
 							{
 								"active": false,
 								"id": "plus",
-								"label": "Ressources disponibles",
+								"label": "Available resources",
 								"template": "sub_template",
 								"data":
 								{
@@ -504,7 +515,7 @@
 														"template": "label",
 														"data":
 														{
-															"text": "Liste des ressources disponibles"
+															"text": "List of available resources (featuretypes)"
 														}
 													},
 													{
@@ -530,7 +541,7 @@
 															{
 																"name": "entry-location",
 																"type": "text",
-																"label": "<em>Emplacement (URL)</em>",
+																"label": "Location",
 																"autocomplete": "off",
 																"disabled": true
 															}
@@ -544,7 +555,7 @@
 															{
 																"name": "entry-name",
 																"type": "text",
-																"label": "Nom",
+																"label": "Name",
 																"autocomplete": "off",
 																"disabled": true
 															}
@@ -554,7 +565,7 @@
 														"template": "label",
 														"data":
 														{
-															"text": "Structure attributaire de la ressource"
+															"text": "Columns"
 														}
 													},
 													{
@@ -568,7 +579,7 @@
 														"template": "button",
 														"data":
 														{
-															"text": "<span class=\"glyphicon glyphicon-arrow-left\" aria-hidden=\"true\"></span> Revenir à la liste des ressources",
+															"text": "<span class=\"glyphicon glyphicon-arrow-left\" aria-hidden=\"true\"></span> Back to the list",
 															"attrs":
 															{
 																"name": "previous",
@@ -592,10 +603,10 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Fermer",
+							"text": "Cancel",
 							"attrs":
 							{
-								"name": "close",
+								"name": "cancel",
 								"type": "button"
 							}
 						}
@@ -604,12 +615,12 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Sauvegarder les modifications",
+							"text": "Save",
 							"attrs":
 							{
 								"name": "submit",
 								"type": "button",
-								"class": "btn-default"
+								"class": "btn-primary"
 							}
 						}
 					}]
@@ -625,7 +636,7 @@
 				{
 					"title":
 					{
-						"text": "Créer un nouvel index de données"
+						"text": "Adding a new indexation profile"
 					}
 				},
 				"body":
@@ -647,7 +658,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 1</h3>",
+											"text": "<h3>Step 1</h3>",
 											"attrs":
 											{}
 										}
@@ -660,9 +671,7 @@
 											{
 												"name": "name",
 												"type": "text",
-												"placeholder": "[a-z0-9_]{3,100}",
-												"label": "Indiquez un nom pour ce nouvel index de données",
-												"pattern": "[a-z0-9_]{3,100}",
+												"label": "Give a name for your new indexation profile.",
 												"autocomplete": "off"
 											}
 										}
@@ -679,7 +688,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 2</h3>",
+											"text": "<h3>Step 2</h3>",
 											"attrs":
 											{}
 										}
@@ -692,11 +701,11 @@
 											{
 												"name": "source",
 												"type": "text",
-												"label": "Sélectionnez la source de données"
+												"label": "Select the data source"
 											},
 											"options": [{
 												"value": null,
-												"text": "Choisissez une source de données",
+												"text": "Choose in the drop-down list",
 												"disabled": true,
 												"selected": true
 											}]
@@ -714,7 +723,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 3</h3>",
+											"text": "<h3>Step 3</h3>",
 											"attrs":
 											{}
 										}
@@ -727,12 +736,12 @@
 											{
 												"name": "resource",
 												"type": "text",
-												"label": "Sélectionnez la resource de données"
+												"label": "Select feature type"
 											},
 											"options": [
 											{
 												"value": null,
-												"text": "Choisissez une ressource",
+												"text": "Choose in the drop-down list",
 												"disabled": true,
 												"selected": true
 											}]
@@ -750,7 +759,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Étape suivante",
+							"text": "Next step",
 							"attrs":
 							{
 								"name": "next",
@@ -762,7 +771,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Créer",
+							"text": "Submit",
 							"attrs":
 							{
 								"name": "submit",
@@ -783,7 +792,7 @@
 				{
 					"title":
 					{
-						"text": "Configuration du profil d'indexation"
+						"text": "Indexation profile configuration"
 					}
 				},
 				"body":
@@ -797,7 +806,7 @@
 							{
 								"active": true,
 								"id": "glob",
-								"label": "Configuration générale",
+								"label": "Main configuration",
 								"template": "sub_template",
 								"data":
 								{
@@ -812,7 +821,7 @@
 													"addon": "/indexes/",
 													"name": "location",
 													"type": "text",
-													"label": "<em>Emplacement (URL)</em>",
+													"label": "Location",
 													"autocomplete": "off",
 													"disabled": false
 												}
@@ -826,7 +835,7 @@
 												{
 													"name": "name",
 													"type": "text",
-													"label": "Nom",
+													"label": "Name",
 													"autocomplete": "off",
 													"disabled": false
 												}
@@ -840,20 +849,20 @@
 												{
 													"name": "reindex-frequency",
 													"type": "text",
-													"label": "Fréquence de réindexation automatique"
+													"label": "Reindexation frequency"
 												},
 												"options": [
 												{
 													"value": "monthly",
-													"text": "Tous les mois"
+													"text": "Monthly"
 												},
 												{
 													"value": "weekly",
-													"text": "Toutes les semaines"
+													"text": "Weekly"
 												},
 												{
 													"value": "daily",
-													"text": "Tous les jours"
+													"text": "Daily"
 												}]
 											}
 										}
@@ -863,7 +872,7 @@
 							{
 								"active": false,
 								"id": "plus",
-								"label": "Configuration des attributs",
+								"label": "Fields settings",
 								"template": "sub_template",
 								"data":
 								{
@@ -885,7 +894,7 @@
 														"template": "label",
 														"data":
 														{
-															"text": "Paramètres d'indexation des attributs"
+															"text": "Fields settings"
 														}
 													},
 													{
@@ -920,7 +929,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Annuler",
+							"text": "Cancel",
 							"attrs":
 							{
 								"name": "cancel",
@@ -933,12 +942,12 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Sauvegarder les modifications",
+							"text": "Save",
 							"attrs":
 							{
 								"name": "submit",
 								"type": "button",
-								"class": "btn-default"
+								"class": "btn-primary"
 							}
 						}
 					}]
@@ -954,7 +963,7 @@
 				{
 					"title":
 					{
-						"text": "Créer un nouveau service de recherche"
+						"text": "Create a new search model"
 					}
 				},
 				"body":
@@ -976,7 +985,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 1</h3>",
+											"text": "<h3>Step 1</h3>",
 											"attrs":
 											{}
 										}
@@ -989,9 +998,7 @@
 											{
 												"name": "name",
 												"type": "text",
-												"placeholder": "[a-z0-9_]{3,100}",
-												"label": "Indiquez un nom pour ce nouveau service de recherche",
-												"pattern": "[a-z0-9_]{3,100}",
+												"label": "Give a name for your new search model.",
 												"autocomplete": "off"
 											}
 										}
@@ -1008,7 +1015,7 @@
 										"template": "span",
 										"data":
 										{
-											"text": "<h3>Étape 2</h3>",
+											"text": "<h3>Step 2</h3>",
 											"attrs":
 											{}
 										}
@@ -1017,7 +1024,7 @@
 										"template": "paragraph",
 										"data":
 										{
-											"text": "Un service de recherche doit pointer sur au moins un profil d'indexation."
+											"text": "Choose at least one indexation profiles to attach to the search profile."
 										}
 									},
 									{
@@ -1028,7 +1035,7 @@
 											{
 												"name": "indexes",
 												"type": "text",
-												"label": "Choisissez les profils d'indexation à rattacher au profil de recherche"
+												"label": "Choose in the drop-down list"
 											},
 											"options": []
 										}
@@ -1037,7 +1044,7 @@
 										"template": "paragraph",
 										"data":
 										{
-											"text": "Ou bien valider directement la création du profil, vous avez la toujours possiblité de le configurer plus tard."
+											"text": "Or submit, you always have the possibility to configure it later."
 										}
 									}]
 								}
@@ -1052,7 +1059,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Étape suivante",
+							"text": "Next step",
 							"attrs":
 							{
 								"name": "next",
@@ -1064,7 +1071,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Créer",
+							"text": "Submit",
 							"attrs":
 							{
 								"name": "submit",
@@ -1085,7 +1092,7 @@
 				{
 					"title":
 					{
-						"text": "Configuration du profil de recherche"
+						"text": "Search model configuration"
 					}
 				},
 				"body":
@@ -1098,7 +1105,7 @@
 							"tabs": [
 							{
 								"id": "glob",
-								"label": "Configuration générale",
+								"label": "Main configuration",
 								"active": true,
 								"template": "sub_template",
 								"data":
@@ -1114,7 +1121,7 @@
 												"addon": "/services/",
 												"name": "location",
 												"type": "text",
-												"label": "<em>Emplacement (URL)</em>",
+												"label": "Location",
 												"autocomplete": "off",
 												"disabled": false
 											}
@@ -1128,9 +1135,9 @@
 											{
 												"name": "name",
 												"type": "text",
-												"label": "Nom",
+												"label": "Name",
 												"autocomplete": "off",
-												"disabled": true
+												"disabled": false
 											}
 										}
 									},
@@ -1142,7 +1149,7 @@
 											{
 												"name": "indexes",
 												"type": "text",
-												"label": "Choisissez les profils d'indexation à rattacher au profil de recherche"
+												"label": "Choose indexation profiles to attach to the search profile"
 											},
 											"options": []
 										}
@@ -1152,7 +1159,7 @@
 							{
 								"active": false,
 								"id": "plus",
-								"label": "Paramètres de requête",
+								"label": "Request parameters",
 								"template": "sub_template",
 								"data":
 								{
@@ -1165,24 +1172,11 @@
 											"attrs":
 											{
 												"name": "query-dsl",
+												"help": "Please refer to the <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/5.6/query-dsl.html\" target=\"_blank\">Elasticsearch documentation</a>. You can add substitution variables in Query DSL which can be used as query-string parameters with service provided. You have to use the following syntax: <strong>\"{%foo%}\"</strong>",
 												"class": "code",
 												"rows": "24",
-												"label": "Définition du modèle de requête"
+												"label": "Set a Query DSL"
 											}
-										}
-									},
-									{
-										"template": "label",
-										"data":
-										{
-											"text": "Liste des paramètres de la chaîne de recherche"
-										}
-									},
-									{
-										"template": "table_grid",
-										"data":
-										{
-											"name": "qs-params"
 										}
 									}]
 								}
@@ -1197,7 +1191,7 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Annuler",
+							"text": "Cancel",
 							"attrs":
 							{
 								"name": "cancel",
@@ -1210,18 +1204,18 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Sauvegarder les modifications",
+							"text": "Save",
 							"attrs":
 							{
 								"name": "submit",
 								"type": "button",
-								"class": "btn-default"
+								"class": "btn-primary"
 							}
 						}
 					}]
 				}
 			},
-			"IndexInCreation":
+			"IndexingRunning":
 			{
 				"dialog":
 				{
@@ -1231,7 +1225,7 @@
 				{
 					"title":
 					{
-						"text": "<span aria-hidden=\"true\"></span> Index en Cours de Creation"
+						"text": "Indexing running"
 					}
 				},
 				"body":
@@ -1241,7 +1235,7 @@
 						"template": "paragraph",
 						"data":
 						{
-							"text": "Vous pouvez suivre l'avancement de le création de votre index ElasticSearch en vous referant à l'onglet Dashboard"
+							"text": "Please note that it may take some time for the data to indexing. <br />You can trace the progress from Dashboard menu."
 						}
 					}]
 				},
@@ -1252,10 +1246,10 @@
 						"template": "button",
 						"data":
 						{
-							"text": "Fermer",
+							"text": "Close",
 							"attrs":
 							{
-								"name": "close",
+								"name": "done",
 								"type": "submit"
 							}
 						}
