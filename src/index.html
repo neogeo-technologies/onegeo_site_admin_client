@@ -360,8 +360,6 @@ $(function() {
 
 		const onXhrFailure = function(callback) {
 
-			console.log(callback)
-
 			if (this.status === 401) {
 				return modal_SignIn(callback);
 			};
@@ -872,38 +870,64 @@ $(function() {
 							}
 						}
 					});
+					// template.elements.push({
+					// 	template: 'form_select',
+					// 	data: {
+					// 		attrs: {
+					// 			name: 'analyzer',
+					// 			type: 'text',
+					// 			label: 'The analyzer which should be used for analyzed string fields.'
+					// 		},
+					// 		options: [
+					// 			{
+					// 				value: 'default',
+					// 				text: 'Use default',
+					// 				selected: true
+					// 			}
+					// 		]
+					// 	}
+					// });
 					template.elements.push({
-						template: 'form_select',
+						template: 'form_input',
 						data: {
 							attrs: {
 								name: 'analyzer',
 								type: 'text',
-								label: 'The analyzer which should be used for analyzed string fields.'
-							},
-							options: [
-								{
-									value: 'default',
-									text: 'Use default',
-									selected: true
-								}
-							]
+								value: data.analyzer,
+								label: 'The analyzer which should be used for analyzed string fields.',
+								placeholder: 'Use default (leave blank)',
+								autocomplete: 'off'
+							}
 						}
 					});
+					// template.elements.push({
+					// 	template: 'form_select',
+					// 	data: {
+					// 		attrs: {
+					// 			name: 'search_analyzer',
+					// 			type: 'text',
+					// 			label: 'The analyzer that should be used at search time on analyzed fields.'
+					// 		},
+					// 		options: [
+					// 			{
+					// 				value: 'default',
+					// 				text: 'Defaults to the analyzer setting',
+					// 				selected: true
+					// 			}
+					// 		]
+					// 	}
+					// });
 					template.elements.push({
-						template: 'form_select',
+						template: 'form_input',
 						data: {
 							attrs: {
 								name: 'search_analyzer',
 								type: 'text',
-								label: 'The analyzer that should be used at search time on analyzed fields.'
-							},
-							options: [
-								{
-									value: 'default',
-									text: 'Defaults to the analyzer setting',
-									selected: true
-								}
-							]
+								value: data.search_analyzer,
+								label: 'The analyzer that should be used at search time on analyzed fields.',
+								placeholder: 'Defaults to the analyzer setting (leave blank)',
+								autocomplete: 'off'
+							}
 						}
 					});
 				};

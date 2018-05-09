@@ -161,7 +161,8 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 						while (value.charAt(0) === '/') {
 						 	value = value.substr(1)
 						};
-						cell.innerHTML = '<a href="#' + value + '">/' + value + '</a>';
+						// cell.innerHTML = '<a href="#' + value + '">/' + value + '</a>';
+						cell.innerHTML = '<span>' + value + '</span>';
 					}
 				}));
 			};
@@ -173,7 +174,8 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 							while (str.charAt(0) === '/') {
 								str = str.substr(1)
 							};
-							values.push('<a href="#' + str + '">/' + str + '</a>');
+							// values.push('<a href="#' + str + '">/' + str + '</a>');
+							values.push('<span>' + str + '</span>');
 						};
 
 						cell.innerHTML = values.join(', ');

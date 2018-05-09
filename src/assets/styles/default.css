@@ -66,3 +66,7 @@ textarea.code {
 	border-radius: 4px;
 	font-weight: bold;
 }
+
+#sign_in>#identity {
+	font-weight: bold;
+}
