@@ -1158,7 +1158,7 @@ $(function() {
 			for (const index of indexes) {
 				$indexes.append($('<option>', {
 					value: index.location,
-					text: index.name + ' (' + index.location + ')',
+					text: index.title + ' (' + index.location + ')',
 					selected: (data.indexes.indexOf(index.location) > -1) ? true : false
 				}));
 			};
