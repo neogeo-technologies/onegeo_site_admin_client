@@ -500,7 +500,7 @@ $(function() {
 
 			const $button = $modal.find('button[name="submit"]').addClass('disabled').prop('disabled', true);
 
-			const $name = $modal.find('input[name="name"]').on('input', function(e) {
+			const $title = $modal.find('input[name="title"]').on('input', function(e) {
 				if ($(this).val() === value) {
 					$button.removeClass('disabled').prop('disabled', false);
 				} else {
@@ -509,7 +509,7 @@ $(function() {
 			});
 
 			$modal.find('button[name="submit"]').click(function(e) {
-				if ($name.val() === value) {
+				if ($title.val() === value) {
 					typeof deleteCallback === 'function' && deleteCallback(function(location) {
 						$modal.on('hidden.bs.modal', function(e) {
 							getThenLoad.call(this, location.split('/')[1])();
@@ -530,7 +530,7 @@ $(function() {
 			const $carousel = getCarousel();
 
 			// Définit les actions..
-			const $name = $modal.find('input[name="name"]').on('input', function() {
+			const $title = $modal.find('input[name="title"]').on('input', function() {
 				let m;
 				const regex = /^.+/g;
 				((m = regex.exec($(this).val())) !== null) ? enabledButton($next) : disabledButton($next);
@@ -546,7 +546,7 @@ $(function() {
 
 			const $submit = $modal.find('button[name="submit"]').hide().click(function(e) {
 				typeof postSourceCallback === 'function' && postSourceCallback({
-					name: $name.val(),
+					title: $title.val(),
 					uri: $uri.val(),
 					protocol: $protocol.val()
 				}, function(data) {
@@ -660,7 +660,7 @@ $(function() {
 					arr.push({
 						id: i,
 						values: [
-							data[i].name,
+							data[i].title,
 							data[i].location,
 							data[i].columns
 						]
@@ -672,7 +672,7 @@ $(function() {
 					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
 					grid.lastSelectedRowIndex > -1 && $carousel
 						.on('slide.bs.carousel', function(e) {
-							for (const key of ['location', 'name']) {
+							for (const key of ['location', 'title']) {
 								$modal.find('input[name="entry-' + key + '"]').val(entry[key]);
 							};
 							loadColumnsTable(entry.columns);
@@ -710,7 +710,7 @@ $(function() {
 				_cloned.location = $modal.find('input[name="location"]').siblings('.input-group-addon').text() + this.value;
 			});
 
-			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
+			$modal.find('input[name="title"]').val(data['title']).on('change', function(e) {
 				_cloned.name = this.value;
 			});
 
@@ -726,7 +726,7 @@ $(function() {
 			const $modal = getModal();
 			const $carousel = getCarousel();
 
-			const $name = $modal.find('input[name="name"]').on('input', function() {
+			const $title = $modal.find('input[name="title"]').on('input', function() {
 				let m;
 				const regex = /^.+/g;
 				((m = regex.exec($(this).val())) !== null) ? enabledButton($next) : disabledButton($next);
@@ -751,7 +751,7 @@ $(function() {
 							for (const entry of data) {
 								$source.append($('<option>', {
 									value: entry.location,
-									text: entry.name
+									text: entry.title
 								}));
 							};
 						});
@@ -763,7 +763,7 @@ $(function() {
 							for (const entry of data) {
 								$resource.append($('<option>', {
 									value: entry.location,
-									text: entry.name
+									text: entry.title
 								}));
 							};
 						});
@@ -773,7 +773,7 @@ $(function() {
 
 			const $submit = $modal.find('button[name="submit"]').hide().click(function(e) {
 				typeof postIndexCallback === 'function' && postIndexCallback({
-					name: $name.val(),
+					title: $title.val(),
 					resource: $resource.val()
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
@@ -788,7 +788,7 @@ $(function() {
 			$modal.modal('show');
 		};
 
-		const modal_UpdateIndex = function(data, putIndexCallback) {
+		const modal_UpdateIndex = function(data, putIndexCallback, getAnalysisCallback) {
 
 			const _cloned = clone(data);
 
@@ -808,7 +808,7 @@ $(function() {
 				};
 			};
 
-			const generateTemplate = function(data) {
+			const generateTemplate = function(data, options) {
 				const template = {
 					attrs: {},
 					elements: [
@@ -824,7 +824,7 @@ $(function() {
 									attrs: {
 										name: 'column-name',
 										type: 'text',
-										label: 'Name',
+										label: 'Column name',
 										autocomplete: 'off',
 										value: data.name,
 										disabled: true
@@ -870,23 +870,15 @@ $(function() {
 							}
 						}
 					});
-					// template.elements.push({
-					// 	template: 'form_select',
-					// 	data: {
-					// 		attrs: {
-					// 			name: 'analyzer',
-					// 			type: 'text',
-					// 			label: 'The analyzer which should be used for analyzed string fields.'
-					// 		},
-					// 		options: [
-					// 			{
-					// 				value: 'default',
-					// 				text: 'Use default',
-					// 				selected: true
-					// 			}
-					// 		]
-					// 	}
-					// });
+
+					let analyzersOptions = []
+					for (let i = 0; i < options.analyzers.length; i ++) {
+						analyzersOptions.push({
+							value: options.analyzers[i],
+							text: options.analyzers[i]
+						});
+					};
+
 					template.elements.push({
 						template: 'form_input',
 						data: {
@@ -896,27 +888,13 @@ $(function() {
 								value: data.analyzer,
 								label: 'The analyzer which should be used for analyzed string fields.',
 								placeholder: 'Use default (leave blank)',
-								autocomplete: 'off'
+								autocomplete: 'off',
+								datalist: {
+									options: analyzersOptions
+								}
 							}
 						}
 					});
-					// template.elements.push({
-					// 	template: 'form_select',
-					// 	data: {
-					// 		attrs: {
-					// 			name: 'search_analyzer',
-					// 			type: 'text',
-					// 			label: 'The analyzer that should be used at search time on analyzed fields.'
-					// 		},
-					// 		options: [
-					// 			{
-					// 				value: 'default',
-					// 				text: 'Defaults to the analyzer setting',
-					// 				selected: true
-					// 			}
-					// 		]
-					// 	}
-					// });
 					template.elements.push({
 						template: 'form_input',
 						data: {
@@ -926,7 +904,10 @@ $(function() {
 								value: data.search_analyzer,
 								label: 'The analyzer that should be used at search time on analyzed fields.',
 								placeholder: 'Defaults to the analyzer setting (leave blank)',
-								autocomplete: 'off'
+								autocomplete: 'off',
+								datalist: {
+									options: analyzersOptions
+								}
 							}
 						}
 					});
@@ -1031,7 +1012,7 @@ $(function() {
 			const $cancel = $modal.find('button[name="cancel"]').click(close);
 
 			const $submit = $modal.find('button[name="submit"]').click(function(e) {
-				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function(location) {
+				typeof putIndexCallback === 'function' && putIndexCallback(_cloned, function() {
 					$modal.on('hidden.bs.modal', function(e) {
 						getThenLoad.call(this, 'indexes')();
 					}).modal('hide');
@@ -1066,23 +1047,26 @@ $(function() {
 			};
 
 			table['index-columns'].method.edit = function(e, rowIndex) {
-				const columnName = this.grid.getValueAt(rowIndex, this.grid.getColumnIndex('name'));
-				$('.carousel-inner').find('.item').last().empty().append(templator('sub_template', generateTemplate(getColumn(columnName))));
-				for (const key of ['name', 'alias', 'type']) {
-					$modal.find('input[name="' + key + '"]').val(data[key]);
-				};
-				const $previous = $modal.find('button[name="previous"]').click(toFirstSlide);
-				const $save = $modal.find('button[name="save"]').click(function(e) {
-					$('.carousel-inner').find('.item').last().find('input,select').each(function() {
-						updateColumn(columnName, this.name, this.type == 'checkbox' ? this.checked : this.value);
+				const that = this;
+				typeof getAnalysisCallback === 'function' && getAnalysisCallback(function(analysisData) {
+					const columnName = that.grid.getValueAt(rowIndex, that.grid.getColumnIndex('name'));
+					$('.carousel-inner').find('.item').last().empty().append(templator('sub_template', generateTemplate(getColumn(columnName), analysisData)));
+					for (const key of ['name', 'alias', 'type']) {
+						$modal.find('input[name="' + key + '"]').val(data[key]);
+					};
+					const $previous = $modal.find('button[name="previous"]').click(toFirstSlide);
+					const $save = $modal.find('button[name="save"]').click(function(e) {
+						$('.carousel-inner').find('.item').last().find('input,select').each(function() {
+							updateColumn(columnName, this.name, this.type == 'checkbox' ? this.checked : this.value);
+						});
+						toFirstSlide();
 					});
-					toFirstSlide();
+					toSecondSlide();
 				});
-				toSecondSlide();
 			};
 
-			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
-				_cloned.name = this.value;
+			$modal.find('input[name="title"]').val(data['title']).on('change', function(e) {
+				_cloned.title = this.value;
 			});
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
 				_cloned.location = $modal.find('input[name="location"]').siblings('.input-group-addon').text() + this.value;
@@ -1102,7 +1086,7 @@ $(function() {
 			const $carousel = getCarousel();
 
 			// Définit les actions..
-			const $name = $modal.find('input[name="name"]').on('input', function() {
+			const $title = $modal.find('input[name="title"]').on('input', function() {
 				let m;
 				const regex = /^.+/g;
 				((m = regex.exec($(this).val())) !== null) ? enabledButton($next) : disabledButton($next);
@@ -1124,7 +1108,7 @@ $(function() {
 							for (const entry of data) {
 								$indexes.append($('<option>', {
 									value: entry.location,
-									text: entry.name
+									text: entry.title
 								}));
 							};
 						});
@@ -1134,7 +1118,7 @@ $(function() {
 
 			const $submit = $modal.find('button[name="submit"]').hide().click(function(e) {
 				typeof postServiceCallback === 'function' && postServiceCallback({
-					name: $name.val(),
+					title: $title.val(),
 					indexes: $indexes.val()
 				}, function(location) {
 					$modal.on('hidden.bs.modal', function(e) {
@@ -1157,7 +1141,7 @@ $(function() {
 			const $carousel = getCarousel();
 			const _cloned = clone(data);
 
-			$modal.find('input[name="name"]').val(data['name']).on('change', function(e) {
+			$modal.find('input[name="title"]').val(data['title']).on('change', function(e) {
 				_cloned.name = this.value;
 			});
 
@@ -1232,7 +1216,7 @@ $(function() {
 				'sources': function() {
 					return function(data) {
 						return loadTable('sources', parseData(data, [
-							'name',
+							'title',
 							'location',
 							'protocol',
 							'uri'
@@ -1242,7 +1226,7 @@ $(function() {
 				'indexes': function() {
 					return function(data) {
 						return loadTable('indexes', parseData(data, [
-							'name',
+							'title',
 							'location',
 							'resource'
 						]));
@@ -1251,7 +1235,7 @@ $(function() {
 				'services': function() {
 					return function(data) {
 						return loadTable('services', parseData(data, [
-							'name',
+							'title',
 							'location',
 							'indexes',  // indexes.name
 							'service_url'
@@ -1295,8 +1279,8 @@ $(function() {
 
 			// Tableau des sources de données :
 			'sources': new Table('table-sources', 'Sources', [{
-				name: 'name',
-				label: 'Name',
+				name: 'title',
+				label: 'Title',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1322,7 +1306,7 @@ $(function() {
 						const grid = this.grid;
 						modal_AddSource(
 							function(callback) {
-								onegeoClient.action.get('/pdfdir', {
+								onegeoClient.action.get('/uris', {
 									successful: function(data) {
 										typeof callback === 'function' && callback(data);
 									},
@@ -1415,7 +1399,7 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						modal_Delete(entry.name, function(callback) {
+						modal_Delete(entry.title, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
 									typeof callback === 'function' && callback(entry.location);
@@ -1440,8 +1424,8 @@ $(function() {
 
 			// Tableau des ressources :
 			'resources': new Table('table-resources', 'Resources', [{
-				name: 'name',
-				label: 'Name',
+				name: 'title',
+				label: 'Title',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1471,7 +1455,7 @@ $(function() {
 			// Tableau des propriétés de données :
 			'columns': new Table('table-columns', 'Columns', [{
 				name: 'name',
-				label: 'Name',
+				label: 'Column name',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1496,7 +1480,7 @@ $(function() {
 				datatype: 'boolean'
 			}, {
 				name: 'name',
-				label: 'Name',
+				label: 'Column name',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1532,8 +1516,8 @@ $(function() {
 
 			// Tableau des profils d'indexation :
 			'indexes': new Table('table-indexes', 'Indexes', [{
-				name: 'name',
-				label: 'Name',
+				name: 'title',
+				label: 'Title',
 				editable: false,
 				datatype: 'string'
 			},
@@ -1568,7 +1552,6 @@ $(function() {
 							function(resourceLocation, callback) {
 								onegeoClient.action.get(resourceLocation, {
 									successful: function(data) {
-
 										typeof callback === 'function' && callback(data);
 									},
 									failure: function() {
@@ -1606,18 +1589,30 @@ $(function() {
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
 						onegeoClient.action.get(entry.location, {
 							successful: function(data) {
-								modal_UpdateIndex(data, function(data, callback) {
-									onegeoClient.action.put(entry.location, {
-										data: data,
-										successful: function(location) {
-											typeof callback === 'function' && callback(data);
-										},
-										failure: function() {
-											onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
-										},
-										upprogress: refreshProgressBar
-									})
-								});
+								modal_UpdateIndex(data,
+									function(data, callback) {
+										onegeoClient.action.put(entry.location, {
+											data: data,
+											successful: function() {
+												typeof callback === 'function' && callback();
+											},
+											failure: function() {
+												onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
+											},
+											upprogress: refreshProgressBar
+										})
+									},
+									function(callback) {
+										onegeoClient.action.get('/analysis/', {
+											successful: function(data) {
+												typeof callback === 'function' && callback(data);
+											},
+											failure: function() {
+												onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
+											}
+										})
+									}
+								);
 							},
 							failure : function() {
 								onXhrFailure.call(this);
@@ -1640,7 +1635,7 @@ $(function() {
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
 						onegeoClient.action.get(entry.location + '/indexing', {
-							successful: function(location,callback) {
+							successful: function(location, callback) {
 								console.log('New index created: ' + location);
 								modal_IndexingRunning(callback);
 							},
@@ -1665,7 +1660,7 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						modal_Delete(entry.name, function(callback) {
+						modal_Delete(entry.title, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
 									console.log('Index deleted: ' + entry.location);
@@ -1691,8 +1686,8 @@ $(function() {
 
 			// Tableau des profils de recherche :
 			'services': new Table('table-services', 'Services', [{
-				name: 'name',
-				label: 'Name',
+				name: 'title',
+				label: 'Title',
 				editable: false,
 				datatype: 'string'
 			}, {
@@ -1800,7 +1795,7 @@ $(function() {
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						modal_Delete(entry.name, function(callback) {
+						modal_Delete(entry.title, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
 									console.log('Service deleted: ' + entry.location);

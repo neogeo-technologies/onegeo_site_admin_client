@@ -1,26 +1,25 @@
 var cookiekey  = window.location.host;
 
-// set cookies
-const  setCookie = function(key,data,hours) {
+const setCookie = function(key, data, hours) {
 	if (hours) {
 		var date = new Date();
-		date.setTime(date.getTime()+(hours*60*60*1000));
-		var expires = "; expires="+date.toGMTString();
-	}else {
-		var expires = "";
-	}
-	document.cookie = key+"="+data+expires+"; path=/";
-}
+		date.setTime(date.getTime() + (hours * 60 * 60 * 1000));
+		var expires = '; expires=' + date.toGMTString();
+	} else {
+		var expires = '';
+	};
+	document.cookie = key + '=' + data + expires + '; path=/';
+};
 
-// get cookies
-const getCookie = function (key) {
-	var re = new RegExp(key + "=([^;]+)");
+const getCookie = function(key) {
+	var re = new RegExp(key + '=([^;]+)');
 	var value = re.exec(document.cookie);
 	return (value != null) ? unescape(value[1]) : null;
-}
+};
 
-// delete cookies
-const deleteCookie = function(key) { setCookie(key, '', -1); }
+const deleteCookie = function(key) {
+	setCookie(key, '', -1);
+};
 
 
 function OnegeoClient(baseUrl) {
@@ -30,31 +29,27 @@ function OnegeoClient(baseUrl) {
 	};
 
 	this.baseUrl = baseUrl || null;
-	if(getCookie(cookiekey)){
-			user_data = atob(getCookie(cookiekey)).split(':');
-			this.basicAuth = 'Basic ' + btoa(user_data[0] + ':' + user_data[1]);
-			this.logged = true;
-			$('#identity').text(user_data[0]);
-	}else{
-			this.basicAuth = null;
-	}
-
+	if (getCookie(cookiekey)) {
+		user_data = atob(getCookie(cookiekey)).split(':');
+		this.basicAuth = 'Basic ' + btoa(user_data[0] + ':' + user_data[1]);
+		this.logged = true;
+		// $('#identity').text(user_data[0]);
+	} else {
+		this.basicAuth = null;
+	};
 
 	this.action = {
-
 		get: function(path, obj) {
-			console.log(path,obj)
 			return this.__request({
 				method: 'GET',
 				data: obj.data,
 				path: path,
 				successful: function() {
-					if(this.xhr.responseText){
-						return typeof obj.successful === 'function' && obj.successful.call(this.xhr,JSON.parse(this.xhr.responseText));
-					}else{
-						return typeof obj.successful === 'function' && obj.successful.call(this.xhr,this.xhr.responseText);
-					}
-
+					if (this.xhr.responseText) {
+						return typeof obj.successful === 'function' && obj.successful.call(this.xhr, JSON.parse(this.xhr.responseText));
+					} else {
+						return typeof obj.successful === 'function' && obj.successful.call(this.xhr, this.xhr.responseText);
+					};
 				}.bind(this),
 				failure: obj.failure,
 				before: obj.before,
@@ -63,16 +58,15 @@ function OnegeoClient(baseUrl) {
 			});
 		}.bind(this),
 		post: function(path, obj) {
-
 			return this.__request({
 				method: 'POST',
 				data: JSON.stringify(obj.data),
 				path: path,
 				successful: function() {
-					if(this.xhr.responseText){
-						return typeof obj.successful === 'function' && obj.successful.call(this.xhr,JSON.parse(this.xhr.responseText));
+					if (this.xhr.responseText) {
+						return typeof obj.successful === 'function' && obj.successful.call(this.xhr, JSON.parse(this.xhr.responseText));
 					}else{
-						return typeof obj.successful === 'function' && obj.successful.call(this.xhr,this.xhr.responseText);
+						return typeof obj.successful === 'function' && obj.successful.call(this.xhr, this.xhr.responseText);
 					}
 				}.bind(this),
 				failure: obj.failure,
@@ -166,10 +160,7 @@ OnegeoClient.prototype.__request = function(obj) {
 		obj.data = undefined;
 	};
 
-	// const path = encodeURIComponent(obj.path);
-	const path = obj.path;
-
-	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + path : path, true);
+	this.xhr.open(obj.method, this.baseUrl ? this.baseUrl + obj.path : obj.path, true);
 
 	this.xhr.onload = function(evt) {
 		if ([200, 202, 204].indexOf(this.status) > -1) {

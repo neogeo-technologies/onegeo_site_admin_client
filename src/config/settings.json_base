@@ -180,9 +180,9 @@
 						{
 							"attrs":
 							{
-								"name": "name",
+								"name": "title",
 								"type": "text",
-								"placeholder": "Name of the resource to be deleted.",
+								"placeholder": "Title of the resource to be deleted.",
 								"autocomplete": "off"
 							}
 						}
@@ -249,10 +249,11 @@
 										{
 											"attrs":
 											{
-												"name": "name",
+												"name": "title",
 												"type": "text",
-												"label": "Give a name for your new data source.",
-												"autocomplete": "off"
+												"label": "Give a title for your new data source.",
+												"autocomplete": "off",
+												"placeholder": "Free-text title"
 											}
 										}
 									}]
@@ -451,9 +452,9 @@
 											{
 												"attrs":
 												{
-													"name": "name",
+													"name": "title",
 													"type": "text",
-													"label": "Name",
+													"label": "Title",
 													"autocomplete": "off",
 													"disabled": false
 												}
@@ -553,9 +554,9 @@
 														{
 															"attrs":
 															{
-																"name": "entry-name",
+																"name": "entry-title",
 																"type": "text",
-																"label": "Name",
+																"label": "Title",
 																"autocomplete": "off",
 																"disabled": true
 															}
@@ -669,10 +670,11 @@
 										{
 											"attrs":
 											{
-												"name": "name",
+												"name": "title",
 												"type": "text",
-												"label": "Give a name for your new indexation profile.",
-												"autocomplete": "off"
+												"label": "Give a title for your new indexation profile.",
+												"autocomplete": "off",
+												"placeholder": "Free-text title"
 											}
 										}
 									}]
@@ -833,9 +835,9 @@
 											{
 												"attrs":
 												{
-													"name": "name",
+													"name": "title",
 													"type": "text",
-													"label": "Name",
+													"label": "Title",
 													"autocomplete": "off",
 													"disabled": false
 												}
@@ -996,10 +998,11 @@
 										{
 											"attrs":
 											{
-												"name": "name",
+												"name": "title",
 												"type": "text",
-												"label": "Give a name for your new search model.",
-												"autocomplete": "off"
+												"label": "Give a title for your new search model.",
+												"autocomplete": "off",
+												"placeholder": "Free-text title"
 											}
 										}
 									}]
@@ -1133,9 +1136,9 @@
 										{
 											"attrs":
 											{
-												"name": "name",
+												"name": "title",
 												"type": "text",
-												"label": "Name",
+												"label": "Title",
 												"autocomplete": "off",
 												"disabled": false
 											}
@@ -1172,7 +1175,7 @@
 											"attrs":
 											{
 												"name": "query-dsl",
-												"help": "Please refer to the <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/5.6/query-dsl.html\" target=\"_blank\">Elasticsearch documentation</a>. You can add substitution variables in Query DSL which can be used as query-string parameters with service provided. You have to use the following syntax: <strong>\"{%foo%}\"</strong>",
+												"help": "Please refer to the <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\" target=\"_blank\">Elasticsearch documentation</a>. You can add substitution variables in Query DSL which can be used as query-string parameters with service provided. In order to do this, you have to use the following syntax: <code>\"{%foo%}\"</code> or <code>\"{%bar|with specify a default value%}\"</code>.",
 												"class": "code",
 												"rows": "24",
 												"label": "Set a Query DSL"

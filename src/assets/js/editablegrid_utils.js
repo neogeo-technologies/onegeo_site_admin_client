@@ -158,11 +158,11 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 			if (column.datatype == 'path') {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
-						while (value.charAt(0) === '/') {
-						 	value = value.substr(1)
-						};
+						// while (value.charAt(0) === '/') {
+						//  	value = value.substr(1)
+						// };
 						// cell.innerHTML = '<a href="#' + value + '">/' + value + '</a>';
-						cell.innerHTML = '<span>' + value + '</span>';
+						cell.innerHTML = '<strong>' + value + '</strong>';
 					}
 				}));
 			};
