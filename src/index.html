@@ -1246,7 +1246,7 @@ $(function() {
 					return function(data) {
 						return loadTable('tasks', parseData(data, [
 							'status',
-							'action',
+							'task_name',
 							'target',
 							'dates.start',
 							'dates.end',
@@ -1845,8 +1845,8 @@ $(function() {
 					editable: false,
 					datatype: 'string'
 				}, {
-					name: 'action',
-					label: 'Action',
+					name: 'task_name',
+					label: 'Task name',
 					editable: false,
 					datatype: 'string'
 				}, {

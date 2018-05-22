@@ -158,9 +158,9 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 			if (column.datatype == 'path') {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
-						// while (value.charAt(0) === '/') {
-						//  	value = value.substr(1)
-						// };
+						while (value.charAt(0) === '/') {
+						 	value = value.substr(1)
+						};
 						// cell.innerHTML = '<a href="#' + value + '">/' + value + '</a>';
 						cell.innerHTML = '<strong>' + value + '</strong>';
 					}
@@ -175,9 +175,8 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 								str = str.substr(1)
 							};
 							// values.push('<a href="#' + str + '">/' + str + '</a>');
-							values.push('<span>' + str + '</span>');
+							values.push('<strong>' + str + '</strong>');
 						};
-
 						cell.innerHTML = values.join(', ');
 					}
 				}));
@@ -223,15 +222,11 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
 						let className;
-						cell.innerHTML = value
-						if (value == 'Running') {
-							className = 'warning';
-						};
-						if (value == 'Failed') {
-							className = 'danger';
-						};
-						if (value == 'Done') {
-							className = 'success';
+						cell.innerHTML = value;
+						switch (value.toLowerCase()) {
+							case 'pending': className = 'warning';  break;
+							case 'failed': className = 'danger'; break;
+							case 'done': className = 'success'; break;
 						};
 						$(cell).parent().addClass(className);
 					}
