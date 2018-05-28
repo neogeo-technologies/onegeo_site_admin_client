@@ -1,6 +1,6 @@
 {
 	"url": "http://127.0.0.1",
-	"path": "/api",
+	"path": "/",
 	"title": "Data Manager",
 	"template":
 	{
@@ -437,7 +437,7 @@
 											{
 												"attrs":
 												{
-													"addon": "/sources/",
+													"addon": "/api/sources/",
 													"name": "location",
 													"type": "text",
 													"label": "Location",
@@ -820,7 +820,7 @@
 											{
 												"attrs":
 												{
-													"addon": "/indexes/",
+													"addon": "/api/indexes/",
 													"name": "location",
 													"type": "text",
 													"label": "Location",
@@ -1121,7 +1121,7 @@
 										{
 											"attrs":
 											{
-												"addon": "/services/",
+												"addon": "/api/services/",
 												"name": "location",
 												"type": "text",
 												"label": "Location",
@@ -1257,6 +1257,113 @@
 							}
 						}
 					}]
+				}
+			},
+			"OpenTask":
+			{
+				"dialog":
+				{
+					"class": "modal-lg"
+				},
+				"heading":
+				{
+					"title":
+					{
+						"text": "Task details"
+					}
+				},
+				"body":
+				{
+					"elements": [
+						{
+							"template": "form_input",
+							"data":
+							{
+								"attrs":
+								{
+									"name": "location",
+									"type": "text",
+									"label": "Location",
+									"autocomplete": "off",
+									"disabled": true
+								}
+							}
+						},
+						{
+							"template": "form_input",
+							"data":
+							{
+								"attrs":
+								{
+									"name": "status",
+									"type": "text",
+									"label": "Status",
+									"autocomplete": "off",
+									"disabled": true
+								}
+							}
+						},
+						{
+							"template": "form_input",
+							"data":
+							{
+								"attrs":
+								{
+									"name": "task_name",
+									"type": "text",
+									"label": "Task name",
+									"autocomplete": "off",
+									"disabled": true
+								}
+							}
+						},
+						{
+							"template": "form_input",
+							"data":
+							{
+								"attrs":
+								{
+									"name": "target",
+									"type": "text",
+									"label": "Target location",
+									"autocomplete": "off",
+									"disabled": true
+								}
+							}
+						},
+						{
+							"template": "form_textarea",
+							"data":
+							{
+								"attrs":
+								{
+									"label": "Description",
+									"name": "description",
+									"class": "code",
+									"rows": "24",
+									"disabled": true
+								}
+							}
+						}
+					]
+				},
+				"footer":
+				{
+					"elements": [
+						{
+							"template": "button",
+							"data":
+							{
+								"text": "Close",
+								"attrs":
+								{
+									"name": "close",
+									"type": "button",
+									"class": "btn-default"
+								}
+							}
+						}
+					]
 				}
 			}
 		}

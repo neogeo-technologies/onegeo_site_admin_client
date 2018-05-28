@@ -24,6 +24,8 @@ const deleteCookie = function(key) {
 
 function OnegeoClient(baseUrl) {
 
+	console.log(baseUrl)
+
 	if (window.XMLHttpRequest) {
 		this.xhr = new window.XMLHttpRequest();
 	};
@@ -109,7 +111,7 @@ OnegeoClient.prototype.constructor = OnegeoClient;
 
 OnegeoClient.prototype.connect = function(user, pwd, cb) {
 	this.basicAuth = 'Basic ' + btoa(user + ':' + pwd);
-	this.action.get('/sources', {
+	this.action.get('/api/sources', {
 		successful: function() {
 			setCookie(cookiekey, btoa(user + ':' + pwd), 1);
 			this.logged = true;

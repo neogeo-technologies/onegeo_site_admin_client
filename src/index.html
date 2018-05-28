@@ -1210,6 +1210,26 @@ $(function() {
 			$modal.modal('show');
 		};
 
+
+		const modal_OpenTask = function(data) {
+			const calleeName = arguments.callee.name.split('_');
+			$('body').prepend(templator(calleeName[0], getTemplate(calleeName[0], calleeName[1])));
+			const $modal = getModal();
+
+			for (const key of ['location', 'target', 'status', 'task_name']) {
+				$modal.find('input[name="' + key + '"]').val(data[key]);
+			};
+
+			$modal.find('textarea[name="description"]').val(JSON.stringify(data['description'], null, 2));
+
+			$modal.find('button[name="close"]').click(function(e) {
+				$modal.modal('hide');
+			});
+
+			$modal.modal('show');
+		};
+
+
 		const getThenLoad = function(key, options) {
 			const load = {
 				'home': function() {},
@@ -1250,7 +1270,8 @@ $(function() {
 							'target',
 							'dates.start',
 							'dates.end',
-							'elapsed_time'
+							'elapsed_time',
+							'location'
 						]));
 					};
 				}
@@ -1265,7 +1286,7 @@ $(function() {
 			};
 
 			return function() {
-				onegeoClient.action.get('/' + key, {
+				onegeoClient.action.get('/api/' + key, {
 					data: data,
 					successful: onSuccess,
 					failure: onFailure,
@@ -1306,7 +1327,7 @@ $(function() {
 						const grid = this.grid;
 						modal_AddSource(
 							function(callback) {
-								onegeoClient.action.get('/uris', {
+								onegeoClient.action.get('/api/uris', {
 									successful: function(data) {
 										typeof callback === 'function' && callback(data);
 									},
@@ -1316,7 +1337,7 @@ $(function() {
 								})
 							},
 							function(callback) {
-								onegeoClient.action.get('/protocols', {
+								onegeoClient.action.get('/api/protocols', {
 									successful: function(data) {
 										typeof callback === 'function' && callback(data);
 									},
@@ -1326,7 +1347,7 @@ $(function() {
 								})
 							},
 							function(data, callback) {
-								onegeoClient.action.post('/sources', {
+								onegeoClient.action.post('/api/sources', {
 									data: data,
 									successful: function(data) {
 										typeof callback === 'function' && callback.call(this, data);
@@ -1540,7 +1561,7 @@ $(function() {
 						const grid = this.grid;
 						modal_CreateIndex(
 							function(callback) {
-								onegeoClient.action.get('/sources', {
+								onegeoClient.action.get('/api/sources', {
 									successful: function(data) {
 										typeof callback === 'function' && callback(data);
 									},
@@ -1560,7 +1581,7 @@ $(function() {
 								})
 							},
 							function(data, callback) {
-								onegeoClient.action.post('/indexes', {
+								onegeoClient.action.post('/api/indexes', {
 									data: data,
 									successful: function(location) {
 										typeof callback === 'function' && callback(data);
@@ -1603,7 +1624,7 @@ $(function() {
 										})
 									},
 									function(callback) {
-										onegeoClient.action.get('/analysis/', {
+										onegeoClient.action.get('/api/analysis/', {
 											successful: function(data) {
 												typeof callback === 'function' && callback(data);
 											},
@@ -1628,13 +1649,39 @@ $(function() {
 						}
 					})
 				},
+				// 'overview': {
+				// 	method: function(e) {
+				// 		e.preventDefault();
+				// 		e.stopPropagation();
+				// 		const grid = this.grid;
+				// 		const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+				// 		onegeoClient.action.get(entry.location + '/index', {
+				// 			successful: function(data) {
+				//				// TODO
+				// 			},
+				// 			failure: function() {
+				// 				onXhrFailure.call(this, getThenLoad.call(this, 'services'));
+				// 			},
+				// 			upprogress: refreshProgressBar
+				// 		})
+				// 	},
+				// 	position: 'after',
+				// 	html: templator('button', {
+				// 		text: 'Overview <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+				// 		attrs: {
+				// 			class: 'btn-default',
+				// 			name: 'overview',
+				// 			type: 'button'
+				// 		}
+				// 	})
+				// },
 				'index': {
 					method: function(e) {
 						e.preventDefault();
 						e.stopPropagation();
 						const grid = this.grid;
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						onegeoClient.action.get(entry.location + '/indexing', {
+						onegeoClient.action.post(entry.location, {
 							successful: function(location, callback) {
 								console.log('New index created: ' + location);
 								modal_IndexingRunning(callback);
@@ -1647,8 +1694,9 @@ $(function() {
 					},
 					position: 'after',
 					html: templator('button', {
-						text: 'Indexing data <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>',
+						text: 'Start indexing data <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>',
 						attrs: {
+							class: 'btn-warning',
 							name: 'indexing',
 							type: 'button'
 						}
@@ -1713,7 +1761,7 @@ $(function() {
 						const grid = this.grid;
 						modal_CreateService(
 							function(callback) {
-								onegeoClient.action.get('/indexes', {
+								onegeoClient.action.get('/api/indexes', {
 									successful: function(data) {
 										typeof callback === 'function' && callback(data);
 									},
@@ -1723,7 +1771,7 @@ $(function() {
 								})
 							},
 							function(data, callback) {
-								onegeoClient.action.post('/services', {
+								onegeoClient.action.post('/api/services', {
 									data: data,
 									successful: function(location) {
 										typeof callback === 'function' && callback.call(this, data);
@@ -1754,7 +1802,7 @@ $(function() {
 						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
 						onegeoClient.action.get(entry.location, {
 							successful: function(data) {
-								onegeoClient.action.get('/indexes', {
+								onegeoClient.action.get('/api/indexes', {
 									successful: function(indexes) {
 										modal_UpdateService(data, indexes, function(data, callback) {
 											onegeoClient.action.put(entry.location, {
@@ -1869,8 +1917,38 @@ $(function() {
 					label: 'Elapsed time',
 					editable: false,
 					datatype: 'deltatime'
+				}, {
+					name: 'location',
+					label: '_HIDDEN',
+					editable: false,
+					datatype: 'path'
 				}
-			], null, {pageSize: 100})
+			], {
+				'update': {
+					method: function(e) {
+						e.preventDefault();
+						e.stopPropagation();
+						const grid = this.grid;
+						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+						onegeoClient.action.get(entry.location, {
+							successful: function(data) {
+								modal_OpenTask(data);
+							},
+							failure: function() {
+								onXhrFailure.call(this);
+							}
+						});
+					},
+					position: 'after',
+					html: templator('button', {
+						text: 'Details <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>',
+						attrs: {
+							name: 'open',
+							type: 'button'
+						}
+					})
+				}
+			}, {pageSize: 100})
 		};
 
 		$('#sign_in')
