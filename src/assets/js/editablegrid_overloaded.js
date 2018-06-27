@@ -54,6 +54,7 @@ EditableGrid.prototype._rendergrid = function(containerid, className, tableid) {
 			// attach handler on click or double click
 			table.editablegrid = this;
 			if (doubleclick) table.ondblclick = function(e) {
+				// this.editablegrid.mouseDblClicked(e);
 				this.editablegrid.mouseClicked(e);
 			};
 			else table.onclick = function(e) {
@@ -131,6 +132,7 @@ EditableGrid.prototype._rendergrid = function(containerid, className, tableid) {
 			// attach handler on click or double click
 			_$(containerid).editablegrid = this;
 			if (doubleclick) _$(containerid).ondblclick = function(e) {
+				// this.editablegrid.mouseDblClicked(e);
 				this.editablegrid.mouseClicked(e);
 			};
 			else _$(containerid).onclick = function(e) {
@@ -170,4 +172,16 @@ EditableGrid.prototype.editCell = function(rowIndex, columnIndex) {
 			};
 		};
 	};
+};
+
+EditableGrid.prototype.rowSelectedByDblClick = function(rowIndex) {};
+
+
+EditableGrid.prototype.mouseDblClicked = function(e)
+{
+	e = e || window.event;
+	with (this) {
+
+
+	}
 };

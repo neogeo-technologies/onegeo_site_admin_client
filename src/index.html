@@ -1702,6 +1702,33 @@ $(function() {
 						}
 					})
 				},
+				'force_update': {
+					method: function(e) {
+						e.preventDefault();
+						e.stopPropagation();
+						const grid = this.grid;
+						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+						onegeoClient.action.post(entry.location + '?_force_update', {
+							successful: function(location, callback) {
+								console.log('Force updating index: ' + location);
+								modal_IndexingRunning(callback);
+							},
+							failure: function() {
+								onXhrFailure.call(this, getThenLoad.call(this, 'services'));
+							},
+							upprogress: refreshProgressBar
+						})
+					},
+					position: 'after',
+					html: templator('button', {
+						text: 'Start updating index <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>',
+						attrs: {
+							class: 'btn-danger',
+							name: 'indexing-force-update',
+							type: 'button'
+						}
+					})
+				},
 				'remove': {
 					method: function(e) {
 						e.preventDefault();
@@ -1948,7 +1975,7 @@ $(function() {
 						}
 					})
 				}
-			}, {pageSize: 100})
+			}, {pageSize: 10})
 		};
 
 		$('#sign_in')

@@ -110,6 +110,7 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 
 	this.events = {
 		onRowSelected: function(row) {},
+		// onRowSelectedByDblClick: function(row) {},
 		onRowUnselected: function(row) {},
 	};
 
@@ -129,6 +130,8 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 	this.grid = new EditableGrid(containerName, {pageSize: this.options.pageSize});
 
 	this.grid.initializeGrid = function() {
+
+		// this.doubleclick = true;
 
 		this.tableRendered = function() {
 			this.rowSelected(-1, -1);
@@ -258,6 +261,11 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 					};
 				};
 			}.bind(this);
+			// this.rowSelectedByDblClick = function(nRowIdx) {
+			// 	if (typeof that.events.onRowUnselected === 'function') {
+			// 		that.events.onRowSelectedByDblClick.apply(this, arguments);
+			// 	};
+			// }.bind(this);
 		};
 
 	};
