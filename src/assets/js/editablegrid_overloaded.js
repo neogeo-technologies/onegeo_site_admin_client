@@ -182,6 +182,5 @@ EditableGrid.prototype.mouseDblClicked = function(e)
 	e = e || window.event;
 	with (this) {
 
-
 	}
 };

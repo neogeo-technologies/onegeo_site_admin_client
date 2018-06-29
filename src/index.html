@@ -110,7 +110,7 @@
 
 	<!-- Template d'un élément "button" -->
 	<template id="button">
-		<button type="{%= attrs.type %}" name="{%= attrs.name %}" class="btn {%= attrs.class || 'btn-default' %}">{%= text %}</button>
+		<button type="{%= attrs.type %}" name="{%= attrs.name %}" class="btn {%= attrs.class || 'btn-default' %} {%= attrs.disabled && 'disabled' %} {%= attrs.hidden && 'hidden' %}">{%= text %}</button>
 	</template>
 
 	<!-- Template d'un élément "input" -->
@@ -510,9 +510,9 @@ $(function() {
 
 			$modal.find('button[name="submit"]').click(function(e) {
 				if ($title.val() === value) {
-					typeof deleteCallback === 'function' && deleteCallback(function(location) {
+					typeof deleteCallback === 'function' && deleteCallback(function(key) {
 						$modal.on('hidden.bs.modal', function(e) {
-							getThenLoad.call(this, location.split('/')[1])();
+							getThenLoad.call(this, key)();
 						}).modal('hide');
 					});
 				};
@@ -1248,7 +1248,8 @@ $(function() {
 						return loadTable('indexes', parseData(data, [
 							'title',
 							'location',
-							'resource'
+							'resource',
+							'synchronized'
 						]));
 					};
 				},
@@ -1423,7 +1424,7 @@ $(function() {
 						modal_Delete(entry.title, function(callback) {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
-									typeof callback === 'function' && callback(entry.location);
+									typeof callback === 'function' && callback('sources');
 								},
 								failure: function() {
 									onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
@@ -1553,6 +1554,12 @@ $(function() {
 				label: 'Related data location',
 				editable: false,
 				datatype: 'path'
+			},
+			{
+				name: 'synchronized',
+				label: 'Index is synchronized',
+				editable: false,
+				datatype: 'boolean'
 			}], {
 				'add': {
 					method: function(e) {
@@ -1675,34 +1682,7 @@ $(function() {
 				// 		}
 				// 	})
 				// },
-				'index': {
-					method: function(e) {
-						e.preventDefault();
-						e.stopPropagation();
-						const grid = this.grid;
-						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
-						onegeoClient.action.post(entry.location, {
-							successful: function(location, callback) {
-								console.log('New index created: ' + location);
-								modal_IndexingRunning(callback);
-							},
-							failure: function() {
-								onXhrFailure.call(this, getThenLoad.call(this, 'services'));
-							},
-							upprogress: refreshProgressBar
-						})
-					},
-					position: 'after',
-					html: templator('button', {
-						text: 'Start indexing data <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>',
-						attrs: {
-							class: 'btn-warning',
-							name: 'indexing',
-							type: 'button'
-						}
-					})
-				},
-				'force_update': {
+				'sync_index': {
 					method: function(e) {
 						e.preventDefault();
 						e.stopPropagation();
@@ -1721,11 +1701,39 @@ $(function() {
 					},
 					position: 'after',
 					html: templator('button', {
-						text: 'Start updating index <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>',
+						text: 'Synchronize <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>',
 						attrs: {
-							class: 'btn-danger',
-							name: 'indexing-force-update',
+							class: 'btn-warning',
+							name: 'sync-index',
 							type: 'button'
+						}
+					})
+				},
+				're_index': {
+					method: function(e) {
+						e.preventDefault();
+						e.stopPropagation();
+						const grid = this.grid;
+						const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+						onegeoClient.action.post(entry.location, {
+							successful: function(location, callback) {
+								console.log('New index created: ' + location);
+								modal_IndexingRunning(callback);
+							},
+							failure: function() {
+								onXhrFailure.call(this, getThenLoad.call(this, 'services'));
+							},
+							upprogress: refreshProgressBar
+						})
+					},
+					position: 'after',
+					html: templator('button', {
+						text: 'Update <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>',
+						attrs: {
+							class: 'btn-info',
+							name: 're-index-data',
+							type: 'button',
+							// hidden: true
 						}
 					})
 				},
@@ -1739,7 +1747,7 @@ $(function() {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
 									console.log('Index deleted: ' + entry.location);
-									typeof callback === 'function' && callback(entry.location);
+									typeof callback === 'function' && callback('indexes');
 								},
 								failure: function() {
 									onXhrFailure.call(this, getThenLoad.call(this, 'indexes'));
@@ -1756,6 +1764,12 @@ $(function() {
 							class: 'btn-danger'
 						}
 					})
+				}
+			},
+			// options
+			{
+				'onRowSelected': function(rowId) {
+					$('[name="re-index-data"]').prop('disabled', !this.getRowValues(rowId).synchronized);
 				}
 			}),
 
@@ -1874,7 +1888,7 @@ $(function() {
 							onegeoClient.action.delete(entry.location, {
 								successful: function() {
 									console.log('Service deleted: ' + entry.location);
-									typeof callback === 'function' && callback(entry.location);
+									typeof callback === 'function' && callback('services');
 								},
 								failure: function() {
 									onXhrFailure.call(this, getThenLoad.call(this, 'services'));
@@ -2060,7 +2074,7 @@ $(function() {
 		});
 
 		$(window).bind('statechange', function(e) {
-			console.log('state is changing')
+			console.log('state is changing');
 		});
 
 		$('#site_brand').text('Onegeo');

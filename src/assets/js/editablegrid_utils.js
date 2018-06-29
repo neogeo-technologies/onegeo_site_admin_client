@@ -80,6 +80,12 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 
 	var that = this;
 
+	this.events = {
+		onRowSelected: function(rowIndex) {},
+		onRowSelectedByDblClick: function(row) {},
+		onRowUnselected: function(row) {},
+	};
+
 	this.options = {
 		tableClasses: 'table table-bordered',
 		selectable: true,
@@ -102,17 +108,14 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 		if (options.onChange && typeof options.onChange == 'function') {
 			this.options.onChange = options.onChange;
 		};
+		if (options.onRowSelected && typeof options.onRowSelected == 'function') {
+			this.events.onRowSelected = options.onRowSelected;
+		};
 	};
 
 	this.metadata = metadata;
 
 	this.containerId = containerId;
-
-	this.events = {
-		onRowSelected: function(row) {},
-		// onRowSelectedByDblClick: function(row) {},
-		onRowUnselected: function(row) {},
-	};
 
 	this.method = {};
 
@@ -147,7 +150,7 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 				this.setCellRenderer(column.name, new CellRenderer({
 					render: function(cell, value) {
 						cell.style.textAlign = 'center';
-						cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '<span class="glyphicon glyphicon-minus"></span>';
+						cell.innerHTML = (value == true) ? '<span class="glyphicon glyphicon-ok"></span>' : '';
 					}
 				}));
 			};
@@ -248,8 +251,8 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 						const $button = $(that.buttons.after[button]);
 						$button && $button.removeClass('disabled').prop('disabled', false);
 					};
-					if (typeof that.events.onRowUnselected === 'function') {
-						that.events.onRowUnselected.apply(this, arguments);
+					if (typeof that.events.onRowSelected === 'function') {
+						that.events.onRowSelected.call(this, nRowIdx);
 					};
 				} else {
 					for (const button in that.buttons.after) {
@@ -257,15 +260,15 @@ var Table = function(containerId, containerName, metadata, buttons, options) {
 						$button && $button.addClass('disabled').prop('disabled', true);
 					};
 					if (typeof that.events.onRowUnselected === 'function') {
-						that.events.onRowSelected.apply(this, arguments);
+						that.events.onRowUnselected.call(this, nRowIdx);
 					};
 				};
 			}.bind(this);
-			// this.rowSelectedByDblClick = function(nRowIdx) {
-			// 	if (typeof that.events.onRowUnselected === 'function') {
-			// 		that.events.onRowSelectedByDblClick.apply(this, arguments);
-			// 	};
-			// }.bind(this);
+			this.rowSelectedByDblClick = function(nRowIdx) {
+				if (typeof that.events.onRowUnselected === 'function') {
+					that.events.onRowSelectedByDblClick.call(this, nRowIdx);
+				};
+			}.bind(this);
 		};
 
 	};
