@@ -74,5 +74,6 @@ textarea.code {
 @-moz-document url-prefix() {
 	.carousel-inner {
 		padding-right: 1px;
+		padding-bottom: 1px;
 	}
 }
