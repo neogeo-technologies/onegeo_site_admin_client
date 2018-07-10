@@ -70,3 +70,9 @@ textarea.code {
 #sign_in>#identity {
 	font-weight: bold;
 }
+
+@-moz-document url-prefix() {
+	.carousel-inner {
+		padding-right: 1px;
+	}
+}
