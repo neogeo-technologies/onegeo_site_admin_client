@@ -1,3 +1,7 @@
+html {
+    min-width: 768px;
+}
+
 textarea.code {
 	border-radius: 0;
 	border: 1px solid #ccc;
@@ -75,5 +79,23 @@ textarea.code {
 	.carousel-inner {
 		padding-right: 1px;
 		padding-bottom: 1px;
+	}
+}
+
+@media (min-width: 768px) {
+	.modal-lg {
+		width: 720px;
+	}
+}
+
+@media (min-width: 992px) {
+	.modal-lg {
+		width: 940px;
+	}
+}
+
+@media (min-width: 1200px) {
+	.modal-lg {
+		width: 1140px;
 	}
 }
