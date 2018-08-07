@@ -577,15 +577,37 @@
 														}
 													},
 													{
-														"template": "button",
+														"template": "buttons_group",
 														"data":
 														{
-															"text": "<span class=\"glyphicon glyphicon-arrow-left\" aria-hidden=\"true\"></span> Back to the list",
 															"attrs":
 															{
-																"name": "previous",
-																"type": "button"
-															}
+																"class": "buttons-on-the-left-side"
+															},
+															"buttons": [{
+																"template": "button",
+																"data":
+																{
+																	"text": "<span class=\"glyphicon glyphicon-arrow-left\" aria-hidden=\"true\"></span> Back to the list",
+																	"attrs":
+																	{
+																		"name": "previous",
+																		"type": "button"
+																	}
+																}
+															},
+															{
+																"template": "button",
+																"data":
+																{
+																	"text": "Save",
+																	"attrs":
+																	{
+																		"name": "save",
+																		"type": "button"
+																	}
+																}
+															}]
 														}
 													}]
 												}
@@ -854,6 +876,10 @@
 													"label": "Reindexation frequency"
 												},
 												"options": [
+												{
+													"value": "never",
+													"text": "Never"
+												},
 												{
 													"value": "monthly",
 													"text": "Monthly"
