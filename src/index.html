@@ -622,7 +622,7 @@ $(function() {
 			$modal.modal('show');
 		};
 
-		const modal_UpdateSource = function(data, putSourceCallback) {
+		const modal_UpdateSource = function(data, putSourceCallback, putResourceCallback) {
 			const _cloned = clone(data);
 
 			const calleeName = arguments.callee.name.split('_');
@@ -655,6 +655,7 @@ $(function() {
 			});
 
 			const loadResourcesTable = function(data) {
+
 				const arr = [];
 				for (let i = 0; i < data.length; i ++) {
 					arr.push({
@@ -666,10 +667,51 @@ $(function() {
 						]
 					});
 				};
+
 				table['resources'].method['open'] = function(e) {
 					e.preventDefault();
 					const grid = table['resources'].grid;
 					const entry = grid.getRowValues(grid.lastSelectedRowIndex);
+					const _cloned = clone(entry);
+
+					const loadColumnsTable = function(data) {
+
+						const updateColumn = function(columnName, attribute, value) {
+							for (let i = 0; i < _cloned.columns.length ; i ++) {
+								if (_cloned.columns[i].name == columnName) {
+									_cloned.columns[i][attribute] = value;
+								};
+							};
+						};
+
+						const arr = [];
+						for (let i = 0; i < data.length; i ++) {
+							arr.push({
+								id: i,
+								values: [
+									data[i].name,
+									data[i].type || null,
+									data[i].occurs ? '[' + data[i].occurs[0] + ', ' + data[i].occurs[1] + ']' : null,
+									data[i].rule || null
+								]
+							});
+						};
+
+						table['columns'].update(arr);
+
+						table['columns'].options.onChange = function(rowIndex, columnIndex, oldValue, newValue, row) {
+							updateColumn(this.grid.getValueAt(rowIndex, this.grid.getColumnIndex('name')), this.grid.getColumnName(columnIndex), newValue);
+						};
+
+						const $save = $modal.find('button[name="save"]').click(function(e) {
+							typeof putResourceCallback === 'function' && putResourceCallback(_cloned, function() {
+								// TODO
+								$carousel.carousel(0);
+							});
+						});
+
+					};
+
 					grid.lastSelectedRowIndex > -1 && $carousel
 						.on('slide.bs.carousel', function(e) {
 							for (const key of ['location', 'title']) {
@@ -682,22 +724,8 @@ $(function() {
 						})
 						.carousel(1);
 				};
-				table['resources'].update(arr);
-			};
 
-			const loadColumnsTable = function(data) {
-				const arr = [];
-				for (let i = 0; i < data.length; i ++) {
-					arr.push({
-						id: i,
-						values: [
-							data[i].name,
-							data[i].type || null,
-							data[i].occurs ? '[' + data[i].occurs[0] + ', ' + data[i].occurs[1] + ']' : null
-						]
-					});
-				};
-				table['columns'].update(arr);
+				table['resources'].update(arr);
 			};
 
 			loadResourcesTable(data.resources);
@@ -705,7 +733,7 @@ $(function() {
 			for (const key of ['protocol', 'uri']) {
 				$modal.find('input[name="' + key + '"]').val(data[key]);
 			};
-			// todo
+
 			$modal.find('input[name="location"]').val(data['location'].split('/').pop()).on('change', function(e) {
 				_cloned.location = $modal.find('input[name="location"]').siblings('.input-group-addon').text() + this.value;
 			});
@@ -1383,18 +1411,33 @@ $(function() {
 								onegeoClient.action.get(entry.location + '/resources', {
 									successful: function(data) {
 										sourceData['resources'] = data;
-										modal_UpdateSource(sourceData, function(data, callback) {
-											onegeoClient.action.put(entry.location, {
-												data: data,
-												successful: function(location) {
-													typeof callback === 'function' && callback(data);
-												},
-												failure: function() {
-													onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
-												},
-												upprogress: refreshProgressBar
-											})
-										});
+										modal_UpdateSource(
+											sourceData,
+											function(data, callback) {
+												onegeoClient.action.put(entry.location, {
+													data: data,
+													successful: function(location) {
+														typeof callback === 'function' && callback(data);
+													},
+													failure: function() {
+														onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
+													},
+													upprogress: refreshProgressBar
+												})
+											},
+											function(data, callback) {
+												onegeoClient.action.put(data.location, {
+													data: data,
+													successful: function(location) {
+														typeof callback === 'function' && callback(data);
+													},
+													failure: function() {
+														onXhrFailure.call(this, getThenLoad.call(this, 'sources'));
+													},
+													upprogress: refreshProgressBar
+												})
+											},
+										);
 									},
 									failure: function() {
 										onXhrFailure.call(this);
@@ -1483,12 +1526,17 @@ $(function() {
 			}, {
 				name: 'type',
 				label: 'Type',
-				editable: false,
+				editable: true,
 				datatype: 'string'
 			}, {
 				name: 'occurs',
 				label: 'Occurs',
 				editable: false,
+				datatype: 'string'
+			}, {
+				name: 'rule',
+				label: 'Rule',
+				editable: true,
 				datatype: 'string'
 			}], null, {
 				selectable: false
@@ -1701,7 +1749,7 @@ $(function() {
 					},
 					position: 'after',
 					html: templator('button', {
-						text: 'Synchronize <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>',
+						text: 'Start indexing <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>',
 						attrs: {
 							class: 'btn-warning',
 							name: 'sync-index',
