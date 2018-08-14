@@ -1,8 +1,5 @@
 # Optional npm cache directory
 .npm
 
-# bower
-src/assets/libs
-
 # settings
 src/config/settings.json
